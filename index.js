@@ -21,5 +21,6 @@ try {
 
 // Error on Startup
 } catch(e) {
-  throw new Error(e);
+  console.error('Failed to start the application:', e);
+  process.exit(1);
 }

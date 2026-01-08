@@ -74,31 +74,24 @@ const Stratum = function (logger, client, config, configMain, template) {
   // Setup Pool Stratum Capabilities
   /* eslint-disable */
   /* istanbul ignore next */
-  this.setupStratum = function(callback) {
-
-    // Build out Initial Functionality
+  this.setupStratum = async function() {
     _this.network = new Network(logger, _this.client, _this.config, _this.configMain);
     _this.shares = new Shares(logger, _this.client, _this.config, _this.configMain);
-
-    // Build Daemon/Stratum Functionality
     _this.handleStratum();
-    _this.stratum.setupPrimaryDaemons(() => {
-    _this.stratum.setupAuxiliaryDaemons(() => {
+
+    await new Promise(resolve => _this.stratum.setupPrimaryDaemons(resolve));
+    await new Promise(resolve => _this.stratum.setupAuxiliaryDaemons(resolve));
     _this.stratum.setupPorts();
-    _this.stratum.setupSettings(() => {
+    await new Promise(resolve => _this.stratum.setupSettings(resolve));
     _this.stratum.setupRecipients();
     _this.stratum.setupManager();
-    _this.stratum.setupPrimaryBlockchain(() => {
-    _this.stratum.setupAuxiliaryBlockchain(() => {
-    _this.stratum.setupFirstJob(() => {
-    _this.stratum.setupBlockPolling(() => {
-    _this.stratum.setupNetwork(() => {
-      _this.outputStratum()
-      callback()
-    })
+    await new Promise(resolve => _this.stratum.setupPrimaryBlockchain(resolve));
+    await new Promise(resolve => _this.stratum.setupAuxiliaryBlockchain(resolve));
+    await new Promise(resolve => _this.stratum.setupFirstJob(resolve));
+    await new Promise(resolve => _this.stratum.setupBlockPolling(resolve));
+    await new Promise(resolve => _this.stratum.setupNetwork(resolve));
 
-    // Too Much Indentation
-    })})})})})})});
+    _this.outputStratum();
   }
 };
 
