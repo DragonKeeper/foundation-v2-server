@@ -1,6 +1,7 @@
 import Text from '../../locales/index.js';
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -110,22 +111,24 @@ const Loader = function(logger, configMain) {
 
   // Load and Validate Configuration Files
   /* istanbul ignore next */
-  this.handleConfigs = function() {
+  this.handleConfigs = async function() {
     const configs = {};
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = path.dirname(__filename);
     const normalizedPath = path.join(__dirname, '../../configs/pools/');
     if (!_this.checkPoolCertificates(_this.configMain)) return;
-    fs.readdirSync(normalizedPath).forEach((file) => {
+    for (const file of fs.readdirSync(normalizedPath)) {
       if (fs.existsSync(normalizedPath + file) && path.extname(normalizedPath + file) === '.js') {
-        const config = require(normalizedPath + file);
-        if (!config.enabled) return;
-        if (!_this.checkPoolDaemons(config)) return;
-        if (!_this.checkPoolNames(configs, config)) return;
-        if (!_this.checkPoolPorts(configs, config)) return;
-        if (!_this.checkPoolRecipients(config)) return;
-        if (!_this.checkPoolTemplate(config)) return;
+        const config = (await import(normalizedPath + file)).default;
+        if (!config.enabled) continue;
+        if (!_this.checkPoolDaemons(config)) continue;
+        if (!_this.checkPoolNames(configs, config)) continue;
+        if (!_this.checkPoolPorts(configs, config)) continue;
+        if (!_this.checkPoolRecipients(config)) continue;
+        if (!_this.checkPoolTemplate(config)) continue;
         configs[config.name] = config;
       }
-    });
+    }
     return configs;
   };
 };

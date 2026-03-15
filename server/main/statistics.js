@@ -1,10 +1,3 @@
-const statistics = {
-  handleStatistics: function(blockType, callback) {
-    // Simulate statistics submission handling for test compatibility
-    callback();
-  }
-};
-module.exports.statistics = statistics;
 import Text from '../../locales/index.js';
 import * as utils from './utils.js';
 

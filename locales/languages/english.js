@@ -1,7 +1,7 @@
 const english = {
-      websiteErrorText1: (error) => `Website error: ${error}`,
-      websiteErrorText2: () => 'The server was unable to handle your request. Verify your input or try again later',
-    websiteStartingText2: (host, port) => `Server started on ${host}:${port}`,
+  websiteErrorText1: (error) => `Website error: ${error}`,
+  websiteErrorText2: () => 'The server was unable to handle your request. Verify your input or try again later',
+  websiteStartingText2: (host, port) => `Server started on ${host}:${port}`,
   builderThreadsText1: (forkId) => `Fork ${ forkId } died, starting replacement worker ...`,
   loaderDaemonsText1: () => 'No valid primary daemons found. Please check your configuration.',
   builderThreadsText2: () => 'No valid pool configs exist or are enabled. Check your configuration files',
@@ -37,13 +37,14 @@ const english = {
   startingMessageText7: (difficulty) => `Current network difficulty: ${ difficulty }`,
   startingMessageText8: (peers) => `Current peer count: ${ peers }`,
   websiteValidationText1: (param, expected) => `Invalid query parameter specified (${param}: ${expected}). Verify your input and try again`,
-    websiteErrorText3: () => 'Requested pool does not exist.',
-    websiteErrorText4: () => 'The requested method is not currently supported. Verify your input and try again',
-    loaderPortsText1: (port) => `Port ${port} is already in use by another pool configuration.`,
-    loaderRecipientsText1: () => 'Recipient percentages exceed 100%. Please adjust your configuration.',
-    loaderDaemonsText2: () => 'Generic loader daemons message.',
-    loaderNamesText1: () => 'Generic loader names message 1.',
-    loaderNamesText2: () => 'Generic loader names message 2.',
-    loaderRecipientsText2: () => 'Generic loader recipients message 2.',
-  };
-  module.exports = english;
+  websiteErrorText3: () => 'Requested pool does not exist.',
+  websiteErrorText4: () => 'The requested method is not currently supported. Verify your input and try again',
+  loaderPortsText1: (port) => `Port ${port} is already in use by another pool configuration.`,
+  loaderRecipientsText1: () => 'Recipient percentages exceed 100%. Please adjust your configuration.',
+  loaderDaemonsText2: () => 'Generic loader daemons message.',
+  loaderNamesText1: () => 'Generic loader names message 1.',
+  loaderNamesText2: () => 'Generic loader names message 2.',
+  loaderRecipientsText2: () => 'Generic loader recipients message 2.',
+};
+
+export default english;
