@@ -1,8 +1,8 @@
-const Builder = require('./builder');
-const Loader = require('./loader');
-const Server = require('./server');
-const Workers = require('./workers');
-const cluster = require('cluster');
+import Builder from './builder.js';
+import Loader from './loader.js';
+import Server from './server.js';
+import Workers from './workers.js';
+import cluster from 'cluster';
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -48,4 +48,4 @@ const Threads = function(logger, client, configMain) {
   };
 };
 
-module.exports = Threads;
+export default Threads;

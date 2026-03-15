@@ -1,6 +1,6 @@
-const HistoricalNetwork = require('../../../main/master/historical/network');
-const Logger = require('../../../../server/main/logger');
-const configMain = require('../../../../configs/main/example.js');
+import HistoricalNetwork from '../../../main/master/historical/network.js';
+import Logger from '../../../../server/main/logger.js';
+import configMain from '../../../../configs/main/example.js';
 const logger = new Logger(configMain);
 
 ////////////////////////////////////////////////////////////////////////////////

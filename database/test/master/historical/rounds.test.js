@@ -1,6 +1,6 @@
-const HistoricalRounds = require('../../../main/master/historical/rounds');
-const Logger = require('../../../../server/main/logger');
-const configMain = require('../../../../configs/main/example.js');
+import HistoricalRounds from '../../../main/master/historical/rounds.js';
+import Logger from '../../../../server/main/logger.js';
+import configMain from '../../../../configs/main/example.js';
 const logger = new Logger(configMain);
 
 ////////////////////////////////////////////////////////////////////////////////

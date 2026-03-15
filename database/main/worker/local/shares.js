@@ -1,4 +1,4 @@
-const Text = require('../../../../locales/index');
+import Text from '../../../../locales/index.js';
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -119,4 +119,4 @@ const LocalShares = function (logger, configMain) {
   };
 };
 
-module.exports = LocalShares;
+export default LocalShares;

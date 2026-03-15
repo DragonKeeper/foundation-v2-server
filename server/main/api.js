@@ -1,6 +1,6 @@
-const Endpoints = require('./endpoints');
-const Text = require('../../locales/index');
-const utils = require('./utils');
+import Endpoints from './endpoints.js';
+import Text from '../../locales/index.js';
+import * as utils from './utils.js';
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -170,4 +170,4 @@ const Api = function (logger, client, configs, configMain) {
   };
 };
 
-module.exports = Api;
+export default Api;

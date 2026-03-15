@@ -1,6 +1,6 @@
-const Text = require('../../locales/index');
-const fs = require('fs');
-const path = require('path');
+import Text from '../../locales/index.js';
+import fs from 'fs';
+import path from 'path';
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -130,4 +130,4 @@ const Loader = function(logger, configMain) {
   };
 };
 
-module.exports = Loader;
+export default Loader;

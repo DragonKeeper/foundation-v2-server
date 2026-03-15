@@ -1,5 +1,5 @@
-const Text = require('../../locales/index');
-const utils = require('./utils');
+import Text from '../../locales/index.js';
+import * as utils from './utils.js';
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -402,4 +402,4 @@ const Checks = function (logger, client, config, configMain) {
   };
 };
 
-module.exports = Checks;
+export default Checks;

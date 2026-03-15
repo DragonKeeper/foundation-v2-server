@@ -1,5 +1,5 @@
-const Text = require('../../locales/index');
-const utils = require('./utils');
+import Text from '../../locales/index.js';
+import * as utils from './utils.js';
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -510,4 +510,4 @@ const Payments = function (logger, client, config, configMain) {
   };
 };
 
-module.exports = Payments;
+export default Payments;

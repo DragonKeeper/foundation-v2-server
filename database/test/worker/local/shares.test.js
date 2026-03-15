@@ -1,6 +1,6 @@
-const LocalShares = require('../../../main/worker/local/shares');
-const Logger = require('../../../../server/main/logger');
-const configMain = require('../../../../configs/main/example.js');
+import LocalShares from '../../../main/worker/local/shares.js';
+import Logger from '../../../../server/main/logger.js';
+import configMain from '../../../../configs/main/example.js';
 const logger = new Logger(configMain);
 
 ////////////////////////////////////////////////////////////////////////////////

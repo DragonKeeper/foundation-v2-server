@@ -1,6 +1,6 @@
-const Schema = require('../../main/worker/schema');
-const Logger = require('../../../server/main/logger');
-const configMain = require('../../../configs/main/example.js');
+import Schema from '../../main/worker/schema.js';
+import Logger from '../../../server/main/logger.js';
+import configMain from '../../../configs/main/example.js';
 const logger = new Logger(configMain);
 
 ////////////////////////////////////////////////////////////////////////////////

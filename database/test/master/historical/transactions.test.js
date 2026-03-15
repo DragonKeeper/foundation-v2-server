@@ -1,6 +1,6 @@
-const HistoricalTransactions = require('../../../main/master/historical/transactions');
-const Logger = require('../../../../server/main/logger');
-const configMain = require('../../../../configs/main/example.js');
+import HistoricalTransactions from '../../../main/master/historical/transactions.js';
+import Logger from '../../../../server/main/logger.js';
+import configMain from '../../../../configs/main/example.js';
 const logger = new Logger(configMain);
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -126,5 +126,4 @@ config.settings.window.inactive = 604800000; // ms
 config.settings.window.rounds = 21600000; // ms
 config.settings.window.updates = 300000; // ms
 
-// Export Configuration
-module.exports = config;
+export default config;

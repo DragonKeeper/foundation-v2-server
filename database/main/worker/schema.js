@@ -1,4 +1,4 @@
-const Text = require('../../../locales/index');
+import Text from '../../../locales/index.js';
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -127,4 +127,4 @@ const Schema = function (logger, executor, configMain) {
   };
 };
 
-module.exports = Schema;
+export default Schema;

@@ -1,4 +1,4 @@
-const Text = require('../../../../locales/index');
+import Text from '../../../../locales/index.js';
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -100,4 +100,4 @@ const HistoricalRounds = function (logger, configMain) {
   };
 };
 
-module.exports = HistoricalRounds;
+export default HistoricalRounds;

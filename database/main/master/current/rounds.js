@@ -1,4 +1,4 @@
-const Text = require('../../../../locales/index');
+import Text from '../../../../locales/index.js';
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -170,4 +170,4 @@ const CurrentRounds = function (logger, configMain) {
   };
 };
 
-module.exports = CurrentRounds;
+export default CurrentRounds;

@@ -1,5 +1,5 @@
-const Text = require('../../locales/index');
-const uuid = require('uuid');
+import Text from '../../locales/index.js';
+import { v4 as uuidv4 } from 'uuid';
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -27,7 +27,7 @@ const Shares = function (logger, client, config, configMain) {
   this.handleLocalShares = function(shareData, shareValid, blockValid) {
 
     // Calculate Features of Shares
-    const identifier = uuid.v4();
+    const identifier = uuidv4();
     const error = shareData.error || '';
     const submitted = shareData.submitTime || Date.now();
     const transaction = shareData.transaction || '';
@@ -92,4 +92,4 @@ const Shares = function (logger, client, config, configMain) {
   };
 };
 
-module.exports = Shares;
+export default Shares;

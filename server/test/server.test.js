@@ -1,9 +1,9 @@
-const Api = require('../main/api');
-const Server = require('../main/server');
-const Logger = require('../main/logger');
-const config = require('../../configs/pools/example');
-const configMain = require('../../configs/main/example.js');
-const events = require('events');
+import Api from '../main/api.js';
+import Server from '../main/server.js';
+import Logger from '../main/logger.js';
+import config from '../../configs/pools/example.js';
+import configMain from '../../configs/main/example.js';
+import events from 'events';
 
 const configs = { 'Pool-Bitcoin': config };
 process.env.configs = JSON.stringify(configs);

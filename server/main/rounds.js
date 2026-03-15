@@ -1,7 +1,7 @@
-const Text = require('../../locales/index');
-const async = require('async');
-const utils = require('./utils');
-const uuid = require('uuid');
+import Text from '../../locales/index.js';
+import async from 'async';
+import * as utils from './utils.js';
+import { v4 as uuidv4 } from 'uuid';
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -105,7 +105,7 @@ const Rounds = function (logger, client, config, configMain) {
       identifier: identifier,
       luck: luck,
       reward: 0,
-      round: uuid.v4(),
+      round: uuidv4(),
       solo: minerType,
       transaction: share.transaction,
       type: blockType,
@@ -722,4 +722,4 @@ const Rounds = function (logger, client, config, configMain) {
   };
 };
 
-module.exports = Rounds;
+export default Rounds;

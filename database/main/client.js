@@ -1,9 +1,9 @@
-const CommandsMaster = require('./master/commands');
-const CommandsWorker = require('./worker/commands');
-const Text = require('../../locales/index');
-const fs = require('fs');
-const path = require('path');
-const postgres = require('pg');
+import CommandsMaster from './master/commands.js';
+import CommandsWorker from './worker/commands.js';
+import Text from '../../locales/index.js';
+import fs from 'fs';
+import path from 'path';
+import postgres from 'pg';
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -139,4 +139,4 @@ const Client = function (logger, configMain) {
   };
 };
 
-module.exports = Client;
+export default Client;

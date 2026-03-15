@@ -1,6 +1,6 @@
-const Loader = require('../main/loader');
-const Logger = require('../main/logger');
-const configMain = require('../../configs/main/example.js');
+import Loader from '../main/loader.js';
+import Logger from '../main/logger.js';
+import configMain from '../../configs/main/example.js';
 const logger = new Logger(configMain);
 
 ////////////////////////////////////////////////////////////////////////////////

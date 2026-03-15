@@ -1,4 +1,4 @@
-const Text = require('../../../../locales/index');
+import Text from '../../../../locales/index.js';
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -147,4 +147,4 @@ const CurrentHashrate = function (logger, configMain) {
   };
 };
 
-module.exports = CurrentHashrate;
+export default CurrentHashrate;

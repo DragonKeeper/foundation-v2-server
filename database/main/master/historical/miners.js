@@ -1,4 +1,4 @@
-const Text = require('../../../../locales/index');
+import Text from '../../../../locales/index.js';
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -100,4 +100,4 @@ const HistoricalMiners = function (logger, configMain) {
   };
 };
 
-module.exports = HistoricalMiners;
+export default HistoricalMiners;

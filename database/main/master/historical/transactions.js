@@ -1,4 +1,4 @@
-const Text = require('../../../../locales/index');
+import Text from '../../../../locales/index.js';
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -89,4 +89,4 @@ const HistoricalTransactions = function (logger, configMain) {
   };
 };
 
-module.exports = HistoricalTransactions;
+export default HistoricalTransactions;

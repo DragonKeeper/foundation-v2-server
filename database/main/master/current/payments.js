@@ -1,4 +1,4 @@
-const Text = require('../../../../locales/index');
+import Text from '../../../../locales/index.js';
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -95,4 +95,4 @@ const CurrentPayments = function (logger, configMain) {
   };
 };
 
-module.exports = CurrentPayments;
+export default CurrentPayments;

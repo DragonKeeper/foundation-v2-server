@@ -1,26 +1,22 @@
-const Schema = require('./schema');
-const Text = require('../../../locales/index');
-
-// Current Table Commands
-const CurrentBlocks = require('./current/blocks');
-const CurrentHashrate = require('./current/hashrate');
-const CurrentMetadata = require('./current/metadata');
-const CurrentMiners = require('./current/miners');
-const CurrentNetwork = require('./current/network');
-const CurrentPayments = require('./current/payments');
-const CurrentRounds = require('./current/rounds');
-const CurrentTransactions = require('./current/transactions');
-const CurrentWorkers = require('./current/workers');
-
-// Historical Table Commands
-const HistoricalBlocks = require('./historical/blocks');
-const HistoricalMetadata = require('./historical/metadata');
-const HistoricalMiners = require('./historical/miners');
-const HistoricalNetwork = require('./historical/network');
-const HistoricalPayments = require('./historical/payments');
-const HistoricalRounds = require('./historical/rounds');
-const HistoricalTransactions = require('./historical/transactions');
-const HistoricalWorkers = require('./historical/workers');
+import Schema from './schema.js';
+import Text from '../../../locales/index.js';
+import CurrentBlocks from './current/blocks.js';
+import CurrentHashrate from './current/hashrate.js';
+import CurrentMetadata from './current/metadata.js';
+import CurrentMiners from './current/miners.js';
+import CurrentNetwork from './current/network.js';
+import CurrentPayments from './current/payments.js';
+import CurrentRounds from './current/rounds.js';
+import CurrentTransactions from './current/transactions.js';
+import CurrentWorkers from './current/workers.js';
+import HistoricalBlocks from './historical/blocks.js';
+import HistoricalMetadata from './historical/metadata.js';
+import HistoricalMiners from './historical/miners.js';
+import HistoricalNetwork from './historical/network.js';
+import HistoricalPayments from './historical/payments.js';
+import HistoricalRounds from './historical/rounds.js';
+import HistoricalTransactions from './historical/transactions.js';
+import HistoricalWorkers from './historical/workers.js';
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -86,4 +82,4 @@ const Commands = function (logger, client, configMain) {
   this.current.workers = new CurrentWorkers(_this.logger, _this.configMain);
 };
 
-module.exports = Commands;
+export default Commands;

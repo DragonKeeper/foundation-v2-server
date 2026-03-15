@@ -16,14 +16,8 @@
   "author": {
     "name": "Nick Sarris"
   },
-  "jest": {
-    "verbose": true,
-    "collectCoverage": true,
-    "coveragePathIgnorePatterns": [
-      "configs/",
-      ".mock.js"
-    ]
-  },
+  "type": "module",
+  
   "scripts": {
     "start": "nodemon ./index.js",
     "prod:start": "pm2 start ./index.js",
@@ -38,28 +32,32 @@
   "contributors": [],
   "repository": {
     "type": "git",
-    "url": "https://github.com/blinkhash/foundation-v2-server.git"
+    "url": "https://github.com/Dragonkeeper/foundation-v2-server-dk"
   },
   "dependencies": {
-    "apicache": "^1.6.3",
-    "async": "^3.2.4",
-    "body-parser": "^1.20.0",
-    "colors": "^1.4.0",
-    "compression": "^1.7.4",
-    "cors": "^2.8.5",
-    "express": "^4.18.1",
-    "express-rate-limit": "^6.6.0",
-    "nodemon": "^2.0.19",
-    "pg": "^8.7.3",
-    "pm2": "^5.2.0",
-    "uuid": "^8.3.2"
+    "apicache": ">=1.6.3",
+    "async": ">=3.2.4",
+    "body-parser": ">=1.20.0",
+    "colors": ">=1.4.0",
+    "compression": ">=1.7.4",
+    "cors": ">=2.8.5",
+    "express": ">=4.18.1",
+    "express-rate-limit": ">=6.6.0",
+    "glob": "^13.0.6",
+    "nodemon": ">=2.0.19",
+    "pg": ">=8.7.3",
+    "pm2": ">=5.2.0",
+    "uuid": ">=8.3.2"
   },
   "devDependencies": {
-    "codecov": "^3.8.1",
-    "eslint": "^7.23.0",
-    "jest": "^26.6.3",
-    "mockdate": "^3.0.5",
-    "nock": "^13.2.4"
+    "@babel/core": "^7.29.0",
+    "@babel/preset-env": "^7.29.0",
+    "babel-jest": "^30.3.0",
+    "codecov": ">=3.6.2",
+    "eslint": ">=7.23.0",
+    "jest": ">=26.6.3",
+    "mockdate": ">=3.0.5",
+    "nock": ">=13.2.4"
   },
   "engines": {
     "node": ">=12.16"

@@ -1,9 +1,7 @@
-const Schema = require('./schema');
-const Text = require('../../../locales/index');
-
-// Local Table Commands
-const LocalShares = require('./local/shares');
-const LocalTransactions = require('./local/transactions');
+import Schema from './schema.js';
+import Text from '../../../locales/index.js';
+import LocalShares from './local/shares.js';
+import LocalTransactions from './local/transactions.js';
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -51,4 +49,4 @@ const Commands = function (logger, client, configMain) {
   this.local.transactions = new LocalTransactions(_this.logger, _this.configMain);
 };
 
-module.exports = Commands;
+export default Commands;

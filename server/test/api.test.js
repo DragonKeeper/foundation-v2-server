@@ -1,9 +1,9 @@
-const Api = require('../main/api');
-const Commands = require('../../database/main/master/commands');
-const Logger = require('../main/logger');
-const config = require('../../configs/pools/example.js');
-const configMain = require('../../configs/main/example.js');
-const events = require('events');
+import Api from '../main/api.js';
+import Commands from '../../database/main/master/commands.js';
+import Logger from '../main/logger.js';
+import config from '../../configs/pools/example.js';
+import configMain from '../../configs/main/example.js';
+import events from 'events';
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -403,7 +403,7 @@ describe('Test API functionality', () => {
     const client = mockClient(configMainCopy, { rows: [] });
     const logger = new Logger(configMainCopy);
     const api = new Api(logger, client, configs, configMainCopy);
-    const expected = 'The requested pool was not found. Verify your input and try again';
+    const expected = 'Requested pool does not exist.';
     api.handleApiV2(request, (code, message) => {
       expect(code).toBe(404);
       expect(message).toStrictEqual(expected);
@@ -416,7 +416,7 @@ describe('Test API functionality', () => {
     const client = mockClient(configMainCopy, { rows: [] });
     const logger = new Logger(configMainCopy);
     const api = new Api(logger, client, configs, configMainCopy);
-    const expected = 'The requested pool was not found. Verify your input and try again';
+    const expected = 'Requested pool does not exist.';
     api.handleApiV2(request, (code, message) => {
       expect(code).toBe(404);
       expect(message).toStrictEqual(expected);
@@ -428,7 +428,7 @@ describe('Test API functionality', () => {
     const client = mockClient(configMainCopy, { rows: [] });
     const logger = new Logger(configMainCopy);
     const api = new Api(logger, client, configs, configMainCopy);
-    const expected = 'The requested pool was not found. Verify your input and try again';
+    const expected = 'Requested pool does not exist.';
     api.handleApiV2({}, (code, message) => {
       expect(code).toBe(404);
       expect(message).toStrictEqual(expected);

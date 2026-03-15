@@ -1,14 +1,14 @@
-const Client = require('./database/main/client');
-const Logger = require('./server/main/logger');
-const Threads = require('./server/main/threads');
-const path = require('path');
+import Client from './database/main/client.js';
+import Logger from './server/main/logger.js';
+import Threads from './server/main/threads.js';
+import path from 'path';
 
 ////////////////////////////////////////////////////////////////////////////////
 
 // Start Main Stratum Server
 /* eslint-disable */
 try {
-  const config = require(path.join(__dirname, './configs/main/config.js'));
+  const config = (await import('./configs/main/example.js')).default;
   const logger = new Logger(config);
 
   // Initialize Local/Remote Databases

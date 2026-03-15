@@ -1,4 +1,4 @@
-const Text = require('../../../../locales/index');
+import Text from '../../../../locales/index.js';
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -153,4 +153,4 @@ const CurrentWorkers = function (logger, configMain) {
   };
 };
 
-module.exports = CurrentWorkers;
+export default CurrentWorkers;

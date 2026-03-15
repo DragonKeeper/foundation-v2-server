@@ -1,5 +1,5 @@
-const english = require('./languages/english');
+import english from './languages/english.js';
 
 ////////////////////////////////////////////////////////////////////////////////
 
-exports.english = english;
+export default { english };

@@ -1,6 +1,6 @@
-const Text = require('../../locales/index');
-const cluster = require('cluster');
-const utils = require('./utils');
+import Text from '../../locales/index.js';
+import cluster from 'cluster';
+import * as utils from './utils.js';
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -86,4 +86,4 @@ const Builder = function(logger, configMain) {
   };
 };
 
-module.exports = Builder;
+export default Builder;

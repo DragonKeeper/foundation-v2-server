@@ -1,21 +1,19 @@
-const Api = require('./api');
-const Text = require('../../locales/index');
-const apicache = require('apicache');
-const bodyParser = require('body-parser');
-const compress = require('compression');
-const cors = require('cors');
-const express = require('express');
-const fs = require('fs');
-const http = require('http');
-const https = require('https');
-const path = require('path');
-const rateLimit = require('express-rate-limit');
+import Api from './api.js';
+import Text from '../../locales/index.js';
+import apicache from 'apicache';
+import bodyParser from 'body-parser';
+import compress from 'compression';
+import cors from 'cors';
+import express from 'express';
+import fs from 'fs';
+import http from 'http';
+import https from 'https';
+import path from 'path';
+import rateLimit from 'express-rate-limit';
 
 ////////////////////////////////////////////////////////////////////////////////
 
-// Main Server Function
-const Server = function (logger, client) {
-
+function Server(logger, client) {
   const _this = this;
   this.logger = logger;
   this.client = client;
@@ -35,7 +33,6 @@ const Server = function (logger, client) {
 
   // Build Server w/ Middleware
   this.buildServer = function() {
-
     // Build Main Server
     const app = express();
     const api = new Api(_this.logger, _this.client, _this.configs, _this.configMain);
@@ -57,7 +54,17 @@ const Server = function (logger, client) {
 
     // Handle API Requests
     /* istanbul ignore next */
-    app.get('/api/v2/:pool/:category?/:endpoint?', (req, res) => {
+    app.get('/api/v2/:pool/:category/:endpoint', (req, res) => {
+      api.handleApiV2(req, (code, message) => {
+        api.buildResponse(code, message, res);
+      });
+    });
+    app.get('/api/v2/:pool/:category', (req, res) => {
+      api.handleApiV2(req, (code, message) => {
+        api.buildResponse(code, message, res);
+      });
+    });
+    app.get('/api/v2/:pool', (req, res) => {
       api.handleApiV2(req, (code, message) => {
         api.buildResponse(code, message, res);
       });
@@ -100,6 +107,6 @@ const Server = function (logger, client) {
       });
     }
   };
-};
+}
 
-module.exports = Server;
+export default Server;

@@ -1,4 +1,4 @@
-const Text = require('../../../../locales/index');
+import Text from '../../../../locales/index.js';
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -214,4 +214,4 @@ const CurrentMiners = function (logger, configMain) {
   };
 };
 
-module.exports = CurrentMiners;
+export default CurrentMiners;

@@ -1,4 +1,4 @@
-const Text = require('../../../../locales/index');
+import Text from '../../../../locales/index.js';
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -186,4 +186,4 @@ const CurrentMetadata = function (logger, configMain) {
   };
 };
 
-module.exports = CurrentMetadata;
+export default CurrentMetadata;

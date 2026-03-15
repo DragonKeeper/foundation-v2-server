@@ -1,6 +1,6 @@
-const Network = require('./network');
-const Shares = require('./shares');
-const Text = require('../../locales/index');
+import Network from './network.js';
+import Shares from './shares.js';
+import Text from '../../locales/index.js';
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -95,4 +95,4 @@ const Stratum = function (logger, client, config, configMain, template) {
   }
 };
 
-module.exports = Stratum;
+export default Stratum;

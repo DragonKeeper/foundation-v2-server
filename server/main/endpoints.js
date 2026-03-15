@@ -1,5 +1,5 @@
-const Text = require('../../locales/index');
-const utils = require('./utils');
+import Text from '../../locales/index.js';
+import * as utils from './utils.js';
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -720,7 +720,8 @@ const Endpoints = function (logger, client, configMain) {
     const parameters = { limit: 'special', offset: 'special', order: 'special',
       direction: 'special', timestamp: 'number', miner: 'string', worker: 'string',
       identifier: 'string', invalid: 'number', round: 'string', solo: 'boolean',
-      stale: 'number', times: 'number', type: 'string', valid: 'number', work: 'number' };
+      stale: 'number', times: 'number', type: 'string', valid: 'number',
+      work: 'number' };
 
     // Accepted Values for Parameters
     const validDirection = ['ascending', 'descending'];
@@ -984,4 +985,4 @@ const Endpoints = function (logger, client, configMain) {
   };
 };
 
-module.exports = Endpoints;
+export default Endpoints;

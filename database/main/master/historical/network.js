@@ -1,4 +1,4 @@
-const Text = require('../../../../locales/index');
+import Text from '../../../../locales/index.js';
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -92,4 +92,4 @@ const HistoricalNetwork = function (logger, configMain) {
   };
 };
 
-module.exports = HistoricalNetwork;
+export default HistoricalNetwork;

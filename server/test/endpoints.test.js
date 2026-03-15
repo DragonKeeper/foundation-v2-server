@@ -1,8 +1,8 @@
-const Commands = require('../../database/main/master/commands');
-const Endpoints = require('../main/endpoints');
-const Logger = require('../main/logger');
-const configMain = require('../../configs/main/example.js');
-const events = require('events');
+import Commands from '../../database/main/master/commands.js';
+import Endpoints from '../main/endpoints.js';
+import Logger from '../main/logger.js';
+import configMain from '../../configs/main/example.js';
+import events from 'events';
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -243,7 +243,7 @@ describe('Test endpoints functionality', () => {
     const client = mockClient(configMainCopy, { rows: [] });
     const logger = new Logger(configMainCopy);
     const endpoints = new Endpoints(logger, client, configMainCopy);
-    const expected = 'Invalid query parameter specified (order: timestamp, miner, worker, solo, type, work). Verify your input and try again';
+      const expected = 'Invalid query parameter specified (order: timestamp, miner, worker, solo, type, work). Verify your input and try again';
     const queries = { order: 'unknown' };
     endpoints.handleCurrentHashrate('Pool1', queries, (code, message) => {
       expect(code).toBe(400);

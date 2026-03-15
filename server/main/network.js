@@ -1,4 +1,4 @@
-const Text = require('../../locales/index');
+import Text from '../../locales/index.js';
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -87,4 +87,4 @@ const Network = function (logger, client, config, configMain) {
   };
 };
 
-module.exports = Network;
+export default Network;

@@ -1,10 +1,10 @@
-const Commands = require('../../database/main/master/commands');
-const Logger = require('../main/logger');
-const MockDate = require('mockdate');
-const Payments = require('../main/payments');
-const config = require('../../configs/pools/example.js');
-const configMain = require('../../configs/main/example.js');
-const events = require('events');
+import Commands from '../../database/main/master/commands.js';
+import Logger from '../main/logger.js';
+import MockDate from 'mockdate';
+import Payments from '../main/payments.js';
+import config from '../../configs/pools/example.js';
+import configMain from '../../configs/main/example.js';
+import events from 'events';
 
 ////////////////////////////////////////////////////////////////////////////////
 

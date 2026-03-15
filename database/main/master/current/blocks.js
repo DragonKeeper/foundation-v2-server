@@ -1,4 +1,4 @@
-const Text = require('../../../../locales/index');
+import Text from '../../../../locales/index.js';
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -130,4 +130,4 @@ const CurrentBlocks = function (logger, configMain) {
   };
 };
 
-module.exports = CurrentBlocks;
+export default CurrentBlocks;

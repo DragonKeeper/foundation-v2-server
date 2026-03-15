@@ -1,4 +1,4 @@
-const Text = require('../../../../locales/index');
+import Text from '../../../../locales/index.js';
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -103,4 +103,4 @@ const LocalTransactions = function (logger, configMain) {
   };
 };
 
-module.exports = LocalTransactions;
+export default LocalTransactions;

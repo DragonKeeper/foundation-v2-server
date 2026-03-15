@@ -1,6 +1,6 @@
-const CurrentMiners = require('../../../main/master/current/miners');
-const Logger = require('../../../../server/main/logger');
-const configMain = require('../../../../configs/main/example.js');
+import CurrentMiners from '../../../main/master/current/miners.js';
+import Logger from '../../../../server/main/logger.js';
+import configMain from '../../../../configs/main/example.js';
 const logger = new Logger(configMain);
 
 ////////////////////////////////////////////////////////////////////////////////

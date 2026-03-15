@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
-const colors = require('colors');
-const utils = require('./utils');
+import colors from 'colors';
+import * as utils from './utils.js';
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -58,4 +58,4 @@ const Logger = function (configMain) {
   });
 };
 
-module.exports = Logger;
+export default Logger;
