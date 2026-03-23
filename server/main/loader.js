@@ -100,7 +100,7 @@ const Loader = function(logger, configMain) {
   /* istanbul ignore next */
   this.checkPoolTemplate = function(config) {
     try {
-      require('foundation-v2-' + config.template);
+      import('foundation-v2-' + config.template);
     } catch(e) {
       const lines = [_this.text.loaderTemplateText1()];
       _this.logger.error('Loader', config.name, lines);
@@ -113,8 +113,7 @@ const Loader = function(logger, configMain) {
   /* istanbul ignore next */
   this.handleConfigs = async function() {
     const configs = {};
-    const __filename = fileURLToPath(import.meta.url);
-    const __dirname = path.dirname(__filename);
+    // Use CommonJS globals for compatibility with Jest
     const normalizedPath = path.join(__dirname, '../../configs/pools/');
     if (!_this.checkPoolCertificates(_this.configMain)) return;
     for (const file of fs.readdirSync(normalizedPath)) {
@@ -126,7 +125,7 @@ const Loader = function(logger, configMain) {
         if (!_this.checkPoolNames(configs, config)) continue;
         if (!_this.checkPoolPorts(configs, config)) continue;
         if (!_this.checkPoolRecipients(config)) continue;
-        //if (!_this.checkPoolTemplate(config)) continue;
+        if (!_this.checkPoolTemplate(config)) continue;
         configs[config.name] = config;
       }
     }

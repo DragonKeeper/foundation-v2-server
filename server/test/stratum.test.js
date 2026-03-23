@@ -1,6 +1,6 @@
 import Logger from '../main/logger.js';
 import Stratum from '../main/stratum.js';
-import config from '../../configs/pools/ravencoin.js';
+import config from '../../configs/pools/example.js';
 import configMain from '../../configs/main/example.js';
 
 config.primary.address = 'ltc1qya20xua0rgq9jdteffkt83xr4aq082gruc2gry';

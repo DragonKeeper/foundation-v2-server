@@ -1,7 +1,7 @@
 import Api from '../main/api.js';
 import Commands from '../../database/main/master/commands.js';
 import Logger from '../main/logger.js';
-import config from '../../configs/pools/ravencoin.js';
+import config from '../../configs/pools/example.js';
 import configMain from '../../configs/main/example.js';
 import events from 'events';
 

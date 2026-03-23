@@ -3,7 +3,7 @@ import CommandsWorker from '../../database/main/worker/commands.js';
 import Logger from '../main/logger.js';
 import MockDate from 'mockdate';
 import Rounds from '../main/rounds.js';
-import config from '../../configs/pools/ravencoin.js';
+import config from '../../configs/pools/example.js';
 import configMain from '../../configs/main/example.js';
 import events from 'events';
 

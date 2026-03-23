@@ -1,6 +1,6 @@
 import Logger from '../main/logger.js';
 import Workers from '../main/workers.js';
-import config from '../../configs/pools/ravencoin.js';
+import config from '../../configs/pools/example.js';
 import configMain from '../../configs/main/example.js';
 
 config.primary.address = 'bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq';
