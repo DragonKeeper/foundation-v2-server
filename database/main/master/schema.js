@@ -604,14 +604,13 @@ const Schema = function (logger, executor, configMain) {
   this.handleSchema = function(configs, callback) {
     const keys = Object.keys(configs);
     if (keys.length < 1) callback();
-    keys.reduce((promise, pool, idx) => {
-      return promise.then(() => {
-        _this.handleDeployment(pool).then(() => {
-          const lastIdx = idx === keys.length - 1;
-          const lines = [_this.text.databaseSchemaText1(pool)];
-          _this.logger.log('Database', 'Database', lines);
-          if (lastIdx) callback();
-        });
+    keys.reduce(async (promise, pool, idx) => {
+      await promise;
+      _this.handleDeployment(pool).then(() => {
+        const lastIdx = idx === keys.length - 1;
+        const lines = [_this.text.databaseSchemaText1(pool)];
+        _this.logger.log('Database', 'Database', lines);
+        if (lastIdx) callback();
       });
     }, Promise.resolve());
   };
