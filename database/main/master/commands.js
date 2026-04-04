@@ -21,65 +21,79 @@ import HistoricalWorkers from './historical/workers.js';
 ////////////////////////////////////////////////////////////////////////////////
 
 // Main Command Function
-const Commands = function (logger, client, configMain) {
+class Commands {
+  constructor(logger, client, configMain) {
 
-  const _this = this;
-  this.logger = logger;
-  this.client = client;
-  this.configMain = configMain;
-  this.text = Text[configMain.language];
-  this.timing = [1000, 5000, 30000];
+    const _this = this;
+    this.logger = logger;
+    this.client = client;
+    this.configMain = configMain;
+    this.text = Text[configMain.language];
+    this.timing = [1000, 5000, 30000];
 
-  // Database Table Structure
-  this.current = {};
-  this.historical = {};
-  this.retries = 0;
+    // Database Table Structure
+    this.current = {};
+    this.historical = {};
+    this.retries = 0;
 
-  // Execute Commands
-   
-  this.executor = function(commands, callback) {
-    const query = commands.join(' ')
-    _this.client.query(query, (error, results) => {
-      if (error) _this.retry(commands, error, callback);
-      else callback(results);
-    });
-  };
+    // Execute Commands (async/await version)
+    this.executor = async function (commands) {
+      const query = commands.join(' ');
+      try {
+        const results = await _this.client.query(query);
+        _this.retries = 0; // Reset retries on success
+        return results;
+      } catch (error) {
+        if (error.message && error.message.includes('current transaction is aborted')) {
+          try {
+            await _this.client.query('ROLLBACK');
+          } catch (rollbackError) {
+            // Optionally log rollback error
+          }
+          return _this.retry(commands, error);
+        } else {
+          return _this.retry(commands, error);
+        }
+      }
+    };
 
-  // Handle Retries
-  this.retry = function(commands, error, callback) {
-    if (_this.retries < 3) {
-      const lines = [_this.text.databaseCommandsText3(_this.retries)];
-      _this.logger.error('Database', 'Master', lines);
-      setTimeout(() => {
-        _this.executor(commands, callback);
+    // Handle Retries (async/await version)
+    this.retry = async function (commands, error) {
+      if (_this.retries < 3) {
+        const lines = [_this.text.databaseCommandsText3(_this.retries)];
+        _this.logger.error('Database', 'Master', lines);
+        await new Promise(resolve => setTimeout(resolve, _this.timing[_this.retries] || 1000));
         _this.retries += 1;
-      }, _this.timing[_this.retries] || 1000);
-    } else throw new Error(error);
-  };
+        return _this.executor(commands);
+      } else {
+        throw error;
+      }
+    };
 
-  // Build Out Schema Generation
-  this.schema = new Schema(_this.logger, _this.executor, _this.configMain);
+    // Build Out Schema Generation
+    this.schema = new Schema(_this.logger, _this.executor, _this.configMain);
 
-  // Initialize Historical Commands
-  this.historical.blocks = new HistoricalBlocks(_this.logger, _this.configMain);
-  this.historical.metadata = new HistoricalMetadata(_this.logger, _this.configMain);
-  this.historical.miners = new HistoricalMiners(_this.logger, _this.configMain);
-  this.historical.network = new HistoricalNetwork(_this.logger, _this.configMain);
-  this.historical.payments = new HistoricalPayments(_this.logger, _this.configMain);
-  this.historical.rounds = new HistoricalRounds(_this.logger, _this.configMain);
-  this.historical.transactions = new HistoricalTransactions(_this.logger, _this.configMain);
-  this.historical.workers = new HistoricalWorkers(_this.logger, _this.configMain);
+    // Initialize Historical Commands
+    this.historical.blocks = new HistoricalBlocks(_this.logger, _this.configMain);
+    this.historical.metadata = new HistoricalMetadata(_this.logger, _this.configMain);
+    this.historical.miners = new HistoricalMiners(_this.logger, _this.configMain);
+    this.historical.network = new HistoricalNetwork(_this.logger, _this.configMain);
+    this.historical.payments = new HistoricalPayments(_this.logger, _this.configMain);
+    this.historical.rounds = new HistoricalRounds(_this.logger, _this.configMain);
+    this.historical.transactions = new HistoricalTransactions(_this.logger, _this.configMain);
+    this.historical.workers = new HistoricalWorkers(_this.logger, _this.configMain);
 
-  // Initialize Current Commands
-  this.current.blocks = new CurrentBlocks(_this.logger, _this.configMain);
-  this.current.hashrate = new CurrentHashrate(_this.logger, _this.configMain);
-  this.current.metadata = new CurrentMetadata(_this.logger, _this.configMain);
-  this.current.miners = new CurrentMiners(_this.logger, _this.configMain);
-  this.current.network = new CurrentNetwork(_this.logger, _this.configMain);
-  this.current.payments = new CurrentPayments(_this.logger, _this.configMain);
-  this.current.rounds = new CurrentRounds(_this.logger, _this.configMain);
-  this.current.transactions = new CurrentTransactions(_this.logger, _this.configMain);
-  this.current.workers = new CurrentWorkers(_this.logger, _this.configMain);
-};
+    // Initialize Current Commands
+    this.current.blocks = new CurrentBlocks(_this.logger, _this.configMain);
+    this.current.hashrate = new CurrentHashrate(_this.logger, _this.configMain);
+    this.current.metadata = new CurrentMetadata(_this.logger, _this.configMain);
+    this.current.miners = new CurrentMiners(_this.logger, _this.configMain);
+    this.current.network = new CurrentNetwork(_this.logger, _this.configMain);
+    this.current.payments = new CurrentPayments(_this.logger, _this.configMain);
+    this.current.rounds = new CurrentRounds(_this.logger, _this.configMain);
+    this.current.transactions = new CurrentTransactions(_this.logger, _this.configMain);
+    this.current.workers = new CurrentWorkers(_this.logger, _this.configMain);
+  }
+}
 
 export default Commands;
