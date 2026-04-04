@@ -16,15 +16,16 @@ class Endpoints {
     // Client Handlers
     this.master = {
       executor: _this.client.master.commands.executor,
+      executorCallback: _this.client.master.commands.executorCallback,
       current: _this.client.master.commands.current,
       historical: _this.client.master.commands.historical
     };
 
     // Handle Blocks Queries
     this.handleCurrentBlocks = function (pool, queries, callback) {
-
-      // Validated Query Types
-      const parameters = {
+  try {
+  // Validated Query Types
+  const parameters = {
         limit: 'special', offset: 'special', order: 'special',
         direction: 'special', timestamp: 'number', submitted: 'number', miner: 'string',
         worker: 'string', category: 'string', confirmations: 'number', difficulty: 'number',
@@ -77,14 +78,22 @@ class Endpoints {
 
       // Make Request and Return Blocks Data
       const transaction = [_this.master.current.blocks.selectCurrentBlocksMain(pool, queries)];
-      _this.master.executor(transaction, (lookups) => callback(200, lookups.rows));
+      _this.master.executorCallback(transaction, (lookups) => {
+        callback(200, lookups.rows);
+      });
+      } catch (err) {
+        if (_this.logger && typeof _this.logger.error === 'function') {
+          _this.logger.error('Endpoints', 'handleCurrentBlocks', err.stack || err.toString());
+        }
+        callback(500, 'Internal server error in handleCurrentBlocks');
+      }
     };
 
     // Handle Hashrate Queries
     this.handleCurrentHashrate = function (pool, queries, callback) {
-
-      // Validated Query Types
-      const parameters = {
+  try {
+  // Validated Query Types
+  const parameters = {
         limit: 'special', offset: 'special', order: 'special',
         direction: 'special', timestamp: 'number', miner: 'string', worker: 'string',
         identifier: 'string', share: 'string', solo: 'boolean', type: 'string'
@@ -129,11 +138,20 @@ class Endpoints {
 
       // Make Request and Return Hashrate Data
       const transaction = [_this.master.current.hashrate.selectCurrentHashrateMain(pool, queries)];
-      _this.master.executor(transaction, (lookups) => callback(200, lookups.rows));
+      _this.master.executorCallback(transaction, (lookups) => {
+        callback(200, lookups.rows);
+      });
+      } catch (err) {
+        if (_this.logger && typeof _this.logger.error === 'function') {
+          _this.logger.error('Endpoints', 'handleCurrentHashrate', err.stack || err.toString());
+        }
+        callback(500, 'Internal server error in handleCurrentHashrate');
+      }
     };
 
     // Handle Metadata Queries
     this.handleCurrentMetadata = function (pool, queries, callback) {
+      try {
 
       // Validated Query Types
       const parameters = {
@@ -180,14 +198,22 @@ class Endpoints {
 
       // Make Request and Return Metadata Data
       const transaction = [_this.master.current.metadata.selectCurrentMetadataMain(pool, queries)];
-      _this.master.executor(transaction, (lookups) => callback(200, lookups.rows));
+      _this.master.executorCallback(transaction, (lookups) => {
+        callback(200, lookups.rows);
+      });
+      } catch (err) {
+        if (_this.logger && typeof _this.logger.error === 'function') {
+          _this.logger.error('Endpoints', 'handleCurrentMetadata', err.stack || err.toString());
+        }
+        callback(500, 'Internal server error in handleCurrentMetadata');
+      }
     };
 
     // Handle Miners Queries
     this.handleCurrentMiners = function (pool, queries, callback) {
-
-      // Validated Query Types
-      const parameters = {
+  try {
+  // Validated Query Types
+  const parameters = {
         limit: 'special', offset: 'special', order: 'special',
         direction: 'special', timestamp: 'number', miner: 'string', balance: 'number',
         efficiency: 'number', effort: 'number', generate: 'number', hashrate: 'number',
@@ -231,14 +257,22 @@ class Endpoints {
 
       // Make Request and Return Miners Data
       const transaction = [_this.master.current.miners.selectCurrentMinersMain(pool, queries)];
-      _this.master.executor(transaction, (lookups) => callback(200, lookups.rows));
+      _this.master.executorCallback(transaction, (lookups) => {
+        callback(200, lookups.rows);
+      });
+      } catch (err) {
+        if (_this.logger && typeof _this.logger.error === 'function') {
+          _this.logger.error('Endpoints', 'handleCurrentMiners', err.stack || err.toString());
+        }
+        callback(500, 'Internal server error in handleCurrentMiners');
+      }
     };
 
     // Handle Network Queries
     this.handleCurrentNetwork = function (pool, queries, callback) {
-
-      // Validated Query Types
-      const parameters = {
+  try {
+  // Validated Query Types
+  const parameters = {
         limit: 'special', offset: 'special', order: 'special',
         direction: 'special', timestamp: 'number', difficulty: 'number', hashrate: 'number',
         height: 'number', type: 'string'
@@ -279,14 +313,22 @@ class Endpoints {
 
       // Make Request and Return Network Data
       const transaction = [_this.master.current.network.selectCurrentNetworkMain(pool, queries)];
-      _this.master.executor(transaction, (lookups) => callback(200, lookups.rows));
+      _this.master.executorCallback(transaction, (lookups) => {
+        callback(200, lookups.rows);
+      });
+      } catch (err) {
+        if (_this.logger && typeof _this.logger.error === 'function') {
+          _this.logger.error('Endpoints', 'handleCurrentNetwork', err.stack || err.toString());
+        }
+        callback(500, 'Internal server error in handleCurrentNetwork');
+      }
     };
 
     // Handle Payments Queries
     this.handleCurrentPayments = function (pool, queries, callback) {
-
-      // Validated Query Types
-      const parameters = {
+  try {
+  // Validated Query Types
+  const parameters = {
         limit: 'special', offset: 'special', order: 'special',
         direction: 'special', timestamp: 'number', round: 'string', type: 'string'
       };
@@ -330,14 +372,22 @@ class Endpoints {
 
       // Make Request and Return Payments Data
       const transaction = [_this.master.current.payments.selectCurrentPaymentsMain(pool, queries)];
-      _this.master.executor(transaction, (lookups) => callback(200, lookups.rows));
+      _this.master.executorCallback(transaction, (lookups) => {
+        callback(200, lookups.rows);
+      });
+      } catch (err) {
+        if (_this.logger && typeof _this.logger.error === 'function') {
+          _this.logger.error('Endpoints', 'handleCurrentPayments', err.stack || err.toString());
+        }
+        callback(500, 'Internal server error in handleCurrentPayments');
+      }
     };
 
     // Handle Rounds Queries
     this.handleCurrentRounds = function (pool, queries, callback) {
-
-      // Validated Query Types
-      const parameters = {
+  try {
+  // Validated Query Types
+  const parameters = {
         limit: 'special', offset: 'special', order: 'special',
         direction: 'special', timestamp: 'number', miner: 'string', worker: 'string',
         identifier: 'string', invalid: 'number', round: 'string', solo: 'boolean',
@@ -385,14 +435,22 @@ class Endpoints {
 
       // Make Request and Return Rounds Data
       const transaction = [_this.master.current.rounds.selectCurrentRoundsMain(pool, queries)];
-      _this.master.executor(transaction, (lookups) => callback(200, lookups.rows));
+      _this.master.executorCallback(transaction, (lookups) => {
+        callback(200, lookups.rows);
+      });
+      } catch (err) {
+        if (_this.logger && typeof _this.logger.error === 'function') {
+          _this.logger.error('Endpoints', 'handleCurrentRounds', err.stack || err.toString());
+        }
+        callback(500, 'Internal server error in handleCurrentRounds');
+      }
     };
 
     // Handle Transactions Queries
     this.handleCurrentTransactions = function (pool, queries, callback) {
-
-      // Validated Query Types
-      const parameters = {
+  try {
+  // Validated Query Types
+  const parameters = {
         limit: 'special', offset: 'special', order: 'special',
         direction: 'special', timestamp: 'number', round: 'string', type: 'string'
       };
@@ -436,14 +494,22 @@ class Endpoints {
 
       // Make Request and Return Transactions Data
       const transaction = [_this.master.current.transactions.selectCurrentTransactionsMain(pool, queries)];
-      _this.master.executor(transaction, (lookups) => callback(200, lookups.rows));
+      _this.master.executorCallback(transaction, (lookups) => {
+        callback(200, lookups.rows);
+      });
+      } catch (err) {
+        if (_this.logger && typeof _this.logger.error === 'function') {
+          _this.logger.error('Endpoints', 'handleCurrentTransactions', err.stack || err.toString());
+        }
+        callback(500, 'Internal server error in handleCurrentTransactions');
+      }
     };
 
     // Handle Workers Queries
     this.handleCurrentWorkers = function (pool, queries, callback) {
-
-      // Validated Query Types
-      const parameters = {
+  try {
+  // Validated Query Types
+  const parameters = {
         limit: 'special', offset: 'special', order: 'special',
         direction: 'special', timestamp: 'number', miner: 'string', worker: 'string',
         efficiency: 'number', effort: 'number', hashrate: 'number', invalid: 'number',
@@ -485,14 +551,22 @@ class Endpoints {
 
       // Make Request and Return Workers Data
       const transaction = [_this.master.current.workers.selectCurrentWorkersMain(pool, queries)];
-      _this.master.executor(transaction, (lookups) => callback(200, lookups.rows));
+      _this.master.executorCallback(transaction, (lookups) => {
+        callback(200, lookups.rows);
+      });
+      } catch (err) {
+        if (_this.logger && typeof _this.logger.error === 'function') {
+          _this.logger.error('Endpoints', 'handleCurrentWorkers', err.stack || err.toString());
+        }
+        callback(500, 'Internal server error in handleCurrentWorkers');
+      }
     };
 
     // Handle Blocks Queries
     this.handleHistoricalBlocks = function (pool, queries, callback) {
-
-      // Validated Query Types
-      const parameters = {
+  try {
+  // Validated Query Types
+  const parameters = {
         limit: 'special', offset: 'special', order: 'special',
         direction: 'special', submitted: 'number', timestamp: 'number', miner: 'string',
         worker: 'string', category: 'string', confirmations: 'number', difficulty: 'number',
@@ -545,11 +619,20 @@ class Endpoints {
 
       // Make Request and Return Blocks Data
       const transaction = [_this.master.historical.blocks.selectHistoricalBlocksMain(pool, queries)];
-      _this.master.executor(transaction, (lookups) => callback(200, lookups.rows));
+      _this.master.executorCallback(transaction, (lookups) => {
+        callback(200, lookups.rows);
+      });
+      } catch (err) {
+        if (_this.logger && typeof _this.logger.error === 'function') {
+          _this.logger.error('Endpoints', 'handleHistoricalBlocks', err.stack || err.toString());
+        }
+        callback(500, 'Internal server error in handleHistoricalBlocks');
+      }
     };
 
     // Handle Metadata Queries
     this.handleHistoricalMetadata = function (pool, queries, callback) {
+      try {
 
       // Validated Query Types
       const parameters = {
@@ -595,14 +678,28 @@ class Endpoints {
 
       // Make Request and Return Metadata Data
       const transaction = [_this.master.historical.metadata.selectHistoricalMetadataMain(pool, queries)];
-      _this.master.executor(transaction, (lookups) => callback(200, lookups.rows));
+      if (_this.logger && typeof _this.logger.debug === 'function') {
+        _this.logger.debug('Endpoints', 'handleHistoricalMetadata', ['Calling executor with transaction:', transaction]);
+      }
+      _this.master.executorCallback(transaction, (lookups) => {
+        if (_this.logger && typeof _this.logger.debug === 'function') {
+          _this.logger.debug('Endpoints', 'handleHistoricalMetadata', ['Executor callback called, lookups:', lookups]);
+        }
+        callback(200, lookups.rows);
+      });
+      } catch (err) {
+        if (_this.logger && typeof _this.logger.error === 'function') {
+          _this.logger.error('Endpoints', 'handleHistoricalMetadata', err.stack || err.toString());
+        }
+        callback(500, 'Internal server error in handleHistoricalMetadata');
+      }
     };
 
     // Handle Miners Queries
     this.handleHistoricalMiners = function (pool, queries, callback) {
-
-      // Validated Query Types
-      const parameters = {
+  try {
+  // Validated Query Types
+  const parameters = {
         limit: 'special', offset: 'special', order: 'special',
         direction: 'special', timestamp: 'number', miner: 'string', efficiency: 'number',
         effort: 'number', hashrate: 'number', invalid: 'number', stale: 'number',
@@ -644,14 +741,22 @@ class Endpoints {
 
       // Make Request and Return Miners Data
       const transaction = [_this.master.historical.miners.selectHistoricalMinersMain(pool, queries)];
-      _this.master.executor(transaction, (lookups) => callback(200, lookups.rows));
+      _this.master.executorCallback(transaction, (lookups) => {
+        callback(200, lookups.rows);
+      });
+      } catch (err) {
+        if (_this.logger && typeof _this.logger.error === 'function') {
+          _this.logger.error('Endpoints', 'handleHistoricalMiners', err.stack || err.toString());
+        }
+        callback(500, 'Internal server error in handleHistoricalMiners');
+      }
     };
 
     // Handle Network Queries
     this.handleHistoricalNetwork = function (pool, queries, callback) {
-
-      // Validated Query Types
-      const parameters = {
+  try {
+  // Validated Query Types
+  const parameters = {
         limit: 'special', offset: 'special', order: 'special',
         direction: 'special', timestamp: 'number', difficulty: 'number', hashrate: 'number',
         height: 'number', type: 'string'
@@ -692,14 +797,22 @@ class Endpoints {
 
       // Make Request and Return Network Data
       const transaction = [_this.master.historical.network.selectHistoricalNetworkMain(pool, queries)];
-      _this.master.executor(transaction, (lookups) => callback(200, lookups.rows));
+      _this.master.executorCallback(transaction, (lookups) => {
+        callback(200, lookups.rows);
+      });
+      } catch (err) {
+        if (_this.logger && typeof _this.logger.error === 'function') {
+          _this.logger.error('Endpoints', 'handleHistoricalNetwork', err.stack || err.toString());
+        }
+        callback(500, 'Internal server error in handleHistoricalNetwork');
+      }
     };
 
     // Handle Payments Queries
     this.handleHistoricalPayments = function (pool, queries, callback) {
-
-      // Validated Query Types
-      const parameters = {
+  try {
+  // Validated Query Types
+  const parameters = {
         limit: 'special', offset: 'special', order: 'special',
         direction: 'special', timestamp: 'number', miner: 'string', amount: 'number',
         transaction: 'string', type: 'string'
@@ -740,14 +853,22 @@ class Endpoints {
 
       // Make Request and Return Payments Data
       const transaction = [_this.master.historical.payments.selectHistoricalPaymentsMain(pool, queries)];
-      _this.master.executor(transaction, (lookups) => callback(200, lookups.rows));
+      _this.master.executorCallback(transaction, (lookups) => {
+        callback(200, lookups.rows);
+      });
+      } catch (err) {
+        if (_this.logger && typeof _this.logger.error === 'function') {
+          _this.logger.error('Endpoints', 'handleHistoricalPayments', err.stack || err.toString());
+        }
+        callback(500, 'Internal server error in handleHistoricalPayments');
+      }
     };
 
     // Handle Rounds Queries
     this.handleHistoricalRounds = function (pool, queries, callback) {
-
-      // Validated Query Types
-      const parameters = {
+  try {
+  // Validated Query Types
+  const parameters = {
         limit: 'special', offset: 'special', order: 'special',
         direction: 'special', timestamp: 'number', miner: 'string', worker: 'string',
         identifier: 'string', invalid: 'number', round: 'string', solo: 'boolean',
@@ -795,14 +916,22 @@ class Endpoints {
 
       // Make Request and Return Rounds Data
       const transaction = [_this.master.historical.rounds.selectHistoricalRoundsMain(pool, queries)];
-      _this.master.executor(transaction, (lookups) => callback(200, lookups.rows));
+      _this.master.executorCallback(transaction, (lookups) => {
+        callback(200, lookups.rows);
+      });
+      } catch (err) {
+        if (_this.logger && typeof _this.logger.error === 'function') {
+          _this.logger.error('Endpoints', 'handleHistoricalRounds', err.stack || err.toString());
+        }
+        callback(500, 'Internal server error in handleHistoricalRounds');
+      }
     };
 
     // Handle Transactions Queries
     this.handleHistoricalTransactions = function (pool, queries, callback) {
-
-      // Validated Query Types
-      const parameters = {
+  try {
+  // Validated Query Types
+  const parameters = {
         limit: 'special', offset: 'special', order: 'special',
         direction: 'special', timestamp: 'number', amount: 'number', transaction: 'string',
         type: 'string'
@@ -843,14 +972,22 @@ class Endpoints {
 
       // Make Request and Return Transactions Data
       const transaction = [_this.master.historical.transactions.selectHistoricalTransactionsMain(pool, queries)];
-      _this.master.executor(transaction, (lookups) => callback(200, lookups.rows));
+      _this.master.executorCallback(transaction, (lookups) => {
+        callback(200, lookups.rows);
+      });
+      } catch (err) {
+        if (_this.logger && typeof _this.logger.error === 'function') {
+          _this.logger.error('Endpoints', 'handleHistoricalTransactions', err.stack || err.toString());
+        }
+        callback(500, 'Internal server error in handleHistoricalTransactions');
+      }
     };
 
     // Handle Workers Queries
     this.handleHistoricalWorkers = function (pool, queries, callback) {
-
-      // Validated Query Types
-      const parameters = {
+  try {
+  // Validated Query Types
+  const parameters = {
         limit: 'special', offset: 'special', order: 'special',
         direction: 'special', timestamp: 'number', miner: 'string', worker: 'string',
         efficiency: 'number', effort: 'number', hashrate: 'number', invalid: 'number',
@@ -892,14 +1029,22 @@ class Endpoints {
 
       // Make Request and Return Workers Data
       const transaction = [_this.master.historical.workers.selectHistoricalWorkersMain(pool, queries)];
-      _this.master.executor(transaction, (lookups) => callback(200, lookups.rows));
+      _this.master.executorCallback(transaction, (lookups) => {
+        callback(200, lookups.rows);
+      });
+      } catch (err) {
+        if (_this.logger && typeof _this.logger.error === 'function') {
+          _this.logger.error('Endpoints', 'handleHistoricalWorkers', err.stack || err.toString());
+        }
+        callback(500, 'Internal server error in handleHistoricalWorkers');
+      }
     };
 
     // Handle Blocks Queries
     this.handleCombinedBlocks = function (pool, queries, callback) {
-
-      // Validated Query Types
-      const parameters = {
+  try {
+  // Validated Query Types
+  const parameters = {
         limit: 'special', offset: 'special', order: 'special',
         direction: 'special', timestamp: 'number', submitted: 'number', miner: 'string',
         worker: 'string', category: 'string', confirmations: 'number', difficulty: 'number',
@@ -955,19 +1100,25 @@ class Endpoints {
         _this.master.current.blocks.selectCurrentBlocksMain(pool, queries),
         _this.master.historical.blocks.selectHistoricalBlocksMain(pool, queries)
       ];
-      _this.master.executor(transaction, (lookups) => {
+      _this.master.executorCallback(transaction, (lookups) => {
         callback(200, lookups.map((data, idx) => {
           const partition = idx === 0 ? 'current' : 'historical';
           return data.rows.map((obj) => ({ ...obj, partition: partition }));
         }).flat(1));
       });
+      } catch (err) {
+        if (_this.logger && typeof _this.logger.error === 'function') {
+          _this.logger.error('Endpoints', 'handleCombinedBlocks', err.stack || err.toString());
+        }
+        callback(500, 'Internal server error in handleCombinedBlocks');
+      }
     };
 
     // Handle Rounds Queries
     this.handleCombinedRounds = function (pool, queries, callback) {
-
-      // Validated Query Types
-      const parameters = {
+  try {
+  // Validated Query Types
+  const parameters = {
         limit: 'special', offset: 'special', order: 'special',
         direction: 'special', timestamp: 'number', miner: 'string', worker: 'string',
         identifier: 'string', invalid: 'number', round: 'string', solo: 'boolean',
@@ -1018,12 +1169,18 @@ class Endpoints {
         _this.master.current.rounds.selectCurrentRoundsMain(pool, queries),
         _this.master.historical.rounds.selectHistoricalRoundsMain(pool, queries)
       ];
-      _this.master.executor(transaction, (lookups) => {
+      _this.master.executorCallback(transaction, (lookups) => {
         callback(200, lookups.map((data, idx) => {
           const partition = idx === 0 ? 'current' : 'historical';
           return data.rows.map((obj) => ({ ...obj, partition: partition }));
         }).flat(1));
       });
+      } catch (err) {
+        if (_this.logger && typeof _this.logger.error === 'function') {
+          _this.logger.error('Endpoints', 'handleCombinedRounds', err.stack || err.toString());
+        }
+        callback(500, 'Internal server error in handleCombinedRounds');
+      }
     };
   }
 }
