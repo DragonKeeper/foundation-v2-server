@@ -21,18 +21,20 @@ class Logger {
 
       // Structure Log Message
       let logString = '';
-      lines.forEach((text, idx) => {
+      [].concat(lines).forEach((text, idx) => {
+        // Stringify non-string log lines for better debug output
+        const safeText = (typeof text === 'string') ? text : JSON.stringify(text, null, 2);
         if (_this.logColors) {
           logString += utils.loggerColors(severity, `[${new Date().toLocaleString()}] `);
           if (severity) logString += utils.loggerColors(severity, `[${severity.toUpperCase()}] `).bold;
-          if (component) logString += utils.loggerColors(severity, `(${component}) `);
-          if (system) logString += (`foundation:${system.toLowerCase()} - `).bold.grey + text.grey;
+          if (typeof component === 'string' && component) logString += utils.loggerColors(severity, `(${component}) `);
+          if (system) logString += (`foundation:${system.toLowerCase()} - `).bold.grey + safeText.grey;
           if (idx + 1 !== lines.length) logString += '\n';
         } else {
           logString += `${new Date().toLocaleString()} `;
           if (severity) logString += `[${severity.toUpperCase()}] `;
-          if (component) logString += `(${component}) `;
-          if (system) logString += `foundation:${system.toLowerCase()} - ${text}`;
+          if (typeof component === 'string' && component) logString += `(${component}) `;
+          if (system) logString += `foundation:${system.toLowerCase()} - ${safeText}`;
           if (idx + 1 !== lines.length) logString += '\n';
         }
       });
