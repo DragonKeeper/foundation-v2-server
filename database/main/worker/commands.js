@@ -28,7 +28,16 @@ class Commands {
         _this.retries = 0; // Reset retries on success
         return results;
       } catch (error) {
-        return _this.retry(commands, error);
+        if (error.message && error.message.includes('current transaction is aborted')) {
+          try {
+            await this.client.query('ROLLBACK');
+          } catch (rollbackError) {
+            // Optionally log rollback error
+          }
+          return this.retry(commands, error);
+        } else {
+          return this.retry(commands, error);
+        }
       }
     };
 
