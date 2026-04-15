@@ -61,6 +61,7 @@ class Shares {
 
     // Handle Share/Block Updates
     this.handleShares = function (shareData, shareValid, blockValid, callback) {
+      _this.logger.debug('Shares', _this.config?.name || _this.pool, `handleShares ENTRY: shareValid=${shareValid}, blockValid=${blockValid}, addrPrimary=${shareData.addrPrimary}, addrAuxiliary=${shareData.addrAuxiliary}, diff=${shareData.difficulty}, error=${shareData.error}`);
 
       // Build Combined Transaction
       const shares = _this.handleLocalShares(shareData, shareValid, blockValid);
@@ -69,9 +70,15 @@ class Shares {
         _this.worker.local.shares.insertLocalSharesMain(_this.pool, [shares]),
         'COMMIT;'
       ];
-
       // Insert Work into Database
-      _this.worker.executor(transaction, () => callback());
+      try {
+        _this.worker.executor(transaction, (result) => {
+          callback();
+        });
+      } catch (err) {
+        _this.logger.error('Shares', _this.config?.name || _this.pool, `handleShares DB executor ERROR: ${err && err.stack ? err.stack : err}`);
+        callback();
+      }
     };
 
     // Handle Share/Block Submissions
@@ -84,12 +91,17 @@ class Shares {
 
       // Add Share/Block Data to Local Table
       _this.handleShares(shareData, shareValid, blockValid, () => {
-        const type = (shareType === 'valid') ? 'log' : 'error';
         const lines = [(shareType === 'valid') ?
           _this.text.sharesSubmissionsText1(
             shareData.difficulty, shareData.shareDiff, shareData.addrPrimary, shareData.ip) :
           _this.text.sharesSubmissionsText2(shareData.error, shareData.addrPrimary, shareData.ip)];
-        _this.logger[type]('Shares', _this.configs[this.pool].name, lines);
+        if (shareType === 'valid') {
+            _this.logger.log('Shares', _this.config?.name || _this.pool, lines);
+        } else {
+          if (typeof _this.logger.error === 'function') {
+            _this.logger.error('Shares', _this.config?.name || _this.pool, lines);
+          }
+        }
         callback();
       });
     };

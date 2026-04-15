@@ -40,6 +40,7 @@ class Stratum {
 
       // Handle Stratum Submission Events
       _this.stratum.on('pool.share', (shareData, shareValid, blockValid) => {
+        _this.logger.debug('Stratum', _this.config.name, `pool.share event: addrPrimary=${shareData.addrPrimary}, addrAuxiliary=${shareData.addrAuxiliary}, diff=${shareData.difficulty}, shareValid=${shareValid}, blockValid=${blockValid}, error=${shareData.error}`);
         _this.shares.handleSubmissions(shareData, shareValid, blockValid, () => { });
       });
     };

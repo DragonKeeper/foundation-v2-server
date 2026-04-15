@@ -16,7 +16,6 @@ class Endpoints {
     // Client Handlers
     this.master = {
       executor: _this.client.master.commands.executor,
-      executorCallback: _this.client.master.commands.executorCallback,
       current: _this.client.master.commands.current,
       historical: _this.client.master.commands.historical
     };
@@ -24,8 +23,8 @@ class Endpoints {
     // Handle Blocks Queries
     this.handleCurrentBlocks = function (pool, queries, callback) {
   try {
-  // Validated Query Types
-  const parameters = {
+      // Validated Query Types
+      const parameters = {
         limit: 'special', offset: 'special', order: 'special',
         direction: 'special', timestamp: 'number', submitted: 'number', miner: 'string',
         worker: 'string', category: 'string', confirmations: 'number', difficulty: 'number',
@@ -78,9 +77,16 @@ class Endpoints {
 
       // Make Request and Return Blocks Data
       const transaction = [_this.master.current.blocks.selectCurrentBlocksMain(pool, queries)];
-      _this.master.executorCallback(transaction, (lookups) => {
-        callback(200, lookups.rows);
-      });
+      _this.master.executor(transaction)
+        .then((lookups) => {
+          callback(200, lookups.rows);
+        })
+        .catch((err) => {
+          if (_this.logger && typeof _this.logger.error === 'function') {
+            _this.logger.error('Endpoints', 'handleCurrentBlocks', err.stack || err.toString());
+          }
+          callback(500, 'Internal server error in handleCurrentBlocks');
+        });
       } catch (err) {
         if (_this.logger && typeof _this.logger.error === 'function') {
           _this.logger.error('Endpoints', 'handleCurrentBlocks', err.stack || err.toString());
@@ -91,6 +97,8 @@ class Endpoints {
 
     // Handle Hashrate Queries
     this.handleCurrentHashrate = function (pool, queries, callback) {
+      if (_this.logger && typeof _this.logger.debug === 'function') {
+      }
   try {
   // Validated Query Types
   const parameters = {
@@ -138,9 +146,16 @@ class Endpoints {
 
       // Make Request and Return Hashrate Data
       const transaction = [_this.master.current.hashrate.selectCurrentHashrateMain(pool, queries)];
-      _this.master.executorCallback(transaction, (lookups) => {
-        callback(200, lookups.rows);
-      });
+      _this.master.executor(transaction)
+        .then((lookups) => {
+          callback(200, lookups.rows);
+        })
+        .catch((err) => {
+          if (_this.logger && typeof _this.logger.error === 'function') {
+            _this.logger.error('Endpoints', 'handleCurrentHashrate', err.stack || err.toString());
+          }
+          callback(500, 'Internal server error in handleCurrentHashrate');
+        });
       } catch (err) {
         if (_this.logger && typeof _this.logger.error === 'function') {
           _this.logger.error('Endpoints', 'handleCurrentHashrate', err.stack || err.toString());
@@ -198,9 +213,16 @@ class Endpoints {
 
       // Make Request and Return Metadata Data
       const transaction = [_this.master.current.metadata.selectCurrentMetadataMain(pool, queries)];
-      _this.master.executorCallback(transaction, (lookups) => {
-        callback(200, lookups.rows);
-      });
+      _this.master.executor(transaction)
+        .then((lookups) => {
+          callback(200, lookups.rows);
+        })
+        .catch((err) => {
+          if (_this.logger && typeof _this.logger.error === 'function') {
+            _this.logger.error('Endpoints', 'handleCurrentMetadata', err.stack || err.toString());
+          }
+          callback(500, 'Internal server error in handleCurrentMetadata');
+        });
       } catch (err) {
         if (_this.logger && typeof _this.logger.error === 'function') {
           _this.logger.error('Endpoints', 'handleCurrentMetadata', err.stack || err.toString());
@@ -211,6 +233,13 @@ class Endpoints {
 
     // Handle Miners Queries
     this.handleCurrentMiners = function (pool, queries, callback) {
+      if (_this.logger && typeof _this.logger.debug === 'function') {
+        _this.logger.debug('Endpoints', 'handleCurrentMiners', 'Logger check', {
+          loggerType: typeof _this.logger,
+          loggerHasError: typeof _this.logger.error === 'function',
+          loggerHasDebug: typeof _this.logger.debug === 'function',
+        });
+      }
   try {
   // Validated Query Types
   const parameters = {
@@ -257,9 +286,16 @@ class Endpoints {
 
       // Make Request and Return Miners Data
       const transaction = [_this.master.current.miners.selectCurrentMinersMain(pool, queries)];
-      _this.master.executorCallback(transaction, (lookups) => {
-        callback(200, lookups.rows);
-      });
+      _this.master.executor(transaction)
+        .then((lookups) => {
+          callback(200, lookups.rows);
+        })
+        .catch((err) => {
+          if (_this.logger && typeof _this.logger.error === 'function') {
+            _this.logger.error('Endpoints', 'handleCurrentMiners', err.stack || err.toString());
+          }
+          callback(500, 'Internal server error in handleCurrentMiners');
+        });
       } catch (err) {
         if (_this.logger && typeof _this.logger.error === 'function') {
           _this.logger.error('Endpoints', 'handleCurrentMiners', err.stack || err.toString());
@@ -270,6 +306,13 @@ class Endpoints {
 
     // Handle Network Queries
     this.handleCurrentNetwork = function (pool, queries, callback) {
+      if (_this.logger && typeof _this.logger.debug === 'function') {
+        _this.logger.debug('Endpoints', 'handleCurrentNetwork', 'Logger check', {
+          loggerType: typeof _this.logger,
+          loggerHasError: typeof _this.logger.error === 'function',
+          loggerHasDebug: typeof _this.logger.debug === 'function',
+        });
+      }
   try {
   // Validated Query Types
   const parameters = {
@@ -313,9 +356,16 @@ class Endpoints {
 
       // Make Request and Return Network Data
       const transaction = [_this.master.current.network.selectCurrentNetworkMain(pool, queries)];
-      _this.master.executorCallback(transaction, (lookups) => {
-        callback(200, lookups.rows);
-      });
+      _this.master.executor(transaction)
+        .then((lookups) => {
+          callback(200, lookups.rows);
+        })
+        .catch((err) => {
+          if (_this.logger && typeof _this.logger.error === 'function') {
+            _this.logger.error('Endpoints', 'handleCurrentNetwork', err.stack || err.toString());
+          }
+          callback(500, 'Internal server error in handleCurrentNetwork');
+        });
       } catch (err) {
         if (_this.logger && typeof _this.logger.error === 'function') {
           _this.logger.error('Endpoints', 'handleCurrentNetwork', err.stack || err.toString());
@@ -326,6 +376,13 @@ class Endpoints {
 
     // Handle Payments Queries
     this.handleCurrentPayments = function (pool, queries, callback) {
+      if (_this.logger && typeof _this.logger.debug === 'function') {
+        _this.logger.debug('Endpoints', 'handleCurrentPayments', 'Logger check', {
+          loggerType: typeof _this.logger,
+          loggerHasError: typeof _this.logger.error === 'function',
+          loggerHasDebug: typeof _this.logger.debug === 'function',
+        });
+      }
   try {
   // Validated Query Types
   const parameters = {
@@ -372,9 +429,16 @@ class Endpoints {
 
       // Make Request and Return Payments Data
       const transaction = [_this.master.current.payments.selectCurrentPaymentsMain(pool, queries)];
-      _this.master.executorCallback(transaction, (lookups) => {
-        callback(200, lookups.rows);
-      });
+      _this.master.executor(transaction)
+        .then((lookups) => {
+          callback(200, lookups.rows);
+        })
+        .catch((err) => {
+          if (_this.logger && typeof _this.logger.error === 'function') {
+            _this.logger.error('Endpoints', 'handleCurrentPayments', err.stack || err.toString());
+          }
+          callback(500, 'Internal server error in handleCurrentPayments');
+        });
       } catch (err) {
         if (_this.logger && typeof _this.logger.error === 'function') {
           _this.logger.error('Endpoints', 'handleCurrentPayments', err.stack || err.toString());
@@ -385,6 +449,13 @@ class Endpoints {
 
     // Handle Rounds Queries
     this.handleCurrentRounds = function (pool, queries, callback) {
+      if (_this.logger && typeof _this.logger.debug === 'function') {
+        _this.logger.debug('Endpoints', 'handleCurrentRounds', 'Logger check', {
+          loggerType: typeof _this.logger,
+          loggerHasError: typeof _this.logger.error === 'function',
+          loggerHasDebug: typeof _this.logger.debug === 'function',
+        });
+      }
   try {
   // Validated Query Types
   const parameters = {
@@ -435,9 +506,16 @@ class Endpoints {
 
       // Make Request and Return Rounds Data
       const transaction = [_this.master.current.rounds.selectCurrentRoundsMain(pool, queries)];
-      _this.master.executorCallback(transaction, (lookups) => {
-        callback(200, lookups.rows);
-      });
+      _this.master.executor(transaction)
+        .then((lookups) => {
+          callback(200, lookups.rows);
+        })
+        .catch((err) => {
+          if (_this.logger && typeof _this.logger.error === 'function') {
+            _this.logger.error('Endpoints', 'handleCurrentRounds', err.stack || err.toString());
+          }
+          callback(500, 'Internal server error in handleCurrentRounds');
+        });
       } catch (err) {
         if (_this.logger && typeof _this.logger.error === 'function') {
           _this.logger.error('Endpoints', 'handleCurrentRounds', err.stack || err.toString());
@@ -448,6 +526,13 @@ class Endpoints {
 
     // Handle Transactions Queries
     this.handleCurrentTransactions = function (pool, queries, callback) {
+      if (_this.logger && typeof _this.logger.debug === 'function') {
+        _this.logger.debug('Endpoints', 'handleCurrentTransactions', 'Logger check', {
+          loggerType: typeof _this.logger,
+          loggerHasError: typeof _this.logger.error === 'function',
+          loggerHasDebug: typeof _this.logger.debug === 'function',
+        });
+      }
   try {
   // Validated Query Types
   const parameters = {
@@ -494,9 +579,16 @@ class Endpoints {
 
       // Make Request and Return Transactions Data
       const transaction = [_this.master.current.transactions.selectCurrentTransactionsMain(pool, queries)];
-      _this.master.executorCallback(transaction, (lookups) => {
-        callback(200, lookups.rows);
-      });
+      _this.master.executor(transaction)
+        .then((lookups) => {
+          callback(200, lookups.rows);
+        })
+        .catch((err) => {
+          if (_this.logger && typeof _this.logger.error === 'function') {
+            _this.logger.error('Endpoints', 'handleCurrentTransactions', err.stack || err.toString());
+          }
+          callback(500, 'Internal server error in handleCurrentTransactions');
+        });
       } catch (err) {
         if (_this.logger && typeof _this.logger.error === 'function') {
           _this.logger.error('Endpoints', 'handleCurrentTransactions', err.stack || err.toString());
@@ -551,9 +643,16 @@ class Endpoints {
 
       // Make Request and Return Workers Data
       const transaction = [_this.master.current.workers.selectCurrentWorkersMain(pool, queries)];
-      _this.master.executorCallback(transaction, (lookups) => {
-        callback(200, lookups.rows);
-      });
+      _this.master.executor(transaction)
+        .then((lookups) => {
+          callback(200, lookups.rows);
+        })
+        .catch((err) => {
+          if (_this.logger && typeof _this.logger.error === 'function') {
+            _this.logger.error('Endpoints', 'handleCurrentWorkers', err.stack || err.toString());
+          }
+          callback(500, 'Internal server error in handleCurrentWorkers');
+        });
       } catch (err) {
         if (_this.logger && typeof _this.logger.error === 'function') {
           _this.logger.error('Endpoints', 'handleCurrentWorkers', err.stack || err.toString());
@@ -619,9 +718,16 @@ class Endpoints {
 
       // Make Request and Return Blocks Data
       const transaction = [_this.master.historical.blocks.selectHistoricalBlocksMain(pool, queries)];
-      _this.master.executorCallback(transaction, (lookups) => {
-        callback(200, lookups.rows);
-      });
+      _this.master.executor(transaction)
+        .then((lookups) => {
+          callback(200, lookups.rows);
+        })
+        .catch((err) => {
+          if (_this.logger && typeof _this.logger.error === 'function') {
+            _this.logger.error('Endpoints', 'handleHistoricalBlocks', err.stack || err.toString());
+          }
+          callback(500, 'Internal server error in handleHistoricalBlocks');
+        });
       } catch (err) {
         if (_this.logger && typeof _this.logger.error === 'function') {
           _this.logger.error('Endpoints', 'handleHistoricalBlocks', err.stack || err.toString());
@@ -681,12 +787,19 @@ class Endpoints {
       if (_this.logger && typeof _this.logger.debug === 'function') {
         _this.logger.debug('Endpoints', 'handleHistoricalMetadata', ['Calling executor with transaction:', transaction]);
       }
-      _this.master.executorCallback(transaction, (lookups) => {
-        if (_this.logger && typeof _this.logger.debug === 'function') {
-          _this.logger.debug('Endpoints', 'handleHistoricalMetadata', ['Executor callback called, lookups:', lookups]);
-        }
-        callback(200, lookups.rows);
-      });
+      _this.master.executor(transaction)
+        .then((lookups) => {
+          if (_this.logger && typeof _this.logger.debug === 'function') {
+            _this.logger.debug('Endpoints', 'handleHistoricalMetadata', ['Executor called, lookups:', lookups]);
+          }
+          callback(200, lookups.rows);
+        })
+        .catch((err) => {
+          if (_this.logger && typeof _this.logger.error === 'function') {
+            _this.logger.error('Endpoints', 'handleHistoricalMetadata', err.stack || err.toString());
+          }
+          callback(500, 'Internal server error in handleHistoricalMetadata');
+        });
       } catch (err) {
         if (_this.logger && typeof _this.logger.error === 'function') {
           _this.logger.error('Endpoints', 'handleHistoricalMetadata', err.stack || err.toString());
@@ -741,9 +854,16 @@ class Endpoints {
 
       // Make Request and Return Miners Data
       const transaction = [_this.master.historical.miners.selectHistoricalMinersMain(pool, queries)];
-      _this.master.executorCallback(transaction, (lookups) => {
-        callback(200, lookups.rows);
-      });
+      _this.master.executor(transaction)
+        .then((lookups) => {
+          callback(200, lookups[0]?.rows ?? []);
+        })
+        .catch((err) => {
+          if (_this.logger && typeof _this.logger.error === 'function') {
+            _this.logger.error('Endpoints', 'handleHistoricalMiners', err.stack || err.toString());
+          }
+          callback(500, 'Internal server error in handleHistoricalMiners');
+        });
       } catch (err) {
         if (_this.logger && typeof _this.logger.error === 'function') {
           _this.logger.error('Endpoints', 'handleHistoricalMiners', err.stack || err.toString());
@@ -797,9 +917,16 @@ class Endpoints {
 
       // Make Request and Return Network Data
       const transaction = [_this.master.historical.network.selectHistoricalNetworkMain(pool, queries)];
-      _this.master.executorCallback(transaction, (lookups) => {
-        callback(200, lookups.rows);
-      });
+      _this.master.executor(transaction)
+        .then((lookups) => {
+          callback(200, lookups[0]?.rows ?? []);
+        })
+        .catch((err) => {
+          if (_this.logger && typeof _this.logger.error === 'function') {
+            _this.logger.error('Endpoints', 'handleHistoricalNetwork', err.stack || err.toString());
+          }
+          callback(500, 'Internal server error in handleHistoricalNetwork');
+        });
       } catch (err) {
         if (_this.logger && typeof _this.logger.error === 'function') {
           _this.logger.error('Endpoints', 'handleHistoricalNetwork', err.stack || err.toString());
@@ -853,9 +980,16 @@ class Endpoints {
 
       // Make Request and Return Payments Data
       const transaction = [_this.master.historical.payments.selectHistoricalPaymentsMain(pool, queries)];
-      _this.master.executorCallback(transaction, (lookups) => {
-        callback(200, lookups.rows);
-      });
+      _this.master.executor(transaction)
+        .then((lookups) => {
+          callback(200, lookups[0]?.rows ?? []);
+        })
+        .catch((err) => {
+          if (_this.logger && typeof _this.logger.error === 'function') {
+            _this.logger.error('Endpoints', 'handleHistoricalPayments', err.stack || err.toString());
+          }
+          callback(500, 'Internal server error in handleHistoricalPayments');
+        });
       } catch (err) {
         if (_this.logger && typeof _this.logger.error === 'function') {
           _this.logger.error('Endpoints', 'handleHistoricalPayments', err.stack || err.toString());
@@ -916,9 +1050,16 @@ class Endpoints {
 
       // Make Request and Return Rounds Data
       const transaction = [_this.master.historical.rounds.selectHistoricalRoundsMain(pool, queries)];
-      _this.master.executorCallback(transaction, (lookups) => {
-        callback(200, lookups.rows);
-      });
+      _this.master.executor(transaction)
+        .then((lookups) => {
+          callback(200, lookups[0]?.rows ?? []);
+        })
+        .catch((err) => {
+          if (_this.logger && typeof _this.logger.error === 'function') {
+            _this.logger.error('Endpoints', 'handleHistoricalRounds', err.stack || err.toString());
+          }
+          callback(500, 'Internal server error in handleHistoricalRounds');
+        });
       } catch (err) {
         if (_this.logger && typeof _this.logger.error === 'function') {
           _this.logger.error('Endpoints', 'handleHistoricalRounds', err.stack || err.toString());
@@ -972,9 +1113,16 @@ class Endpoints {
 
       // Make Request and Return Transactions Data
       const transaction = [_this.master.historical.transactions.selectHistoricalTransactionsMain(pool, queries)];
-      _this.master.executorCallback(transaction, (lookups) => {
-        callback(200, lookups.rows);
-      });
+      _this.master.executor(transaction)
+        .then((lookups) => {
+          callback(200, lookups[0]?.rows ?? []);
+        })
+        .catch((err) => {
+          if (_this.logger && typeof _this.logger.error === 'function') {
+            _this.logger.error('Endpoints', 'handleHistoricalTransactions', err.stack || err.toString());
+          }
+          callback(500, 'Internal server error in handleHistoricalTransactions');
+        });
       } catch (err) {
         if (_this.logger && typeof _this.logger.error === 'function') {
           _this.logger.error('Endpoints', 'handleHistoricalTransactions', err.stack || err.toString());
@@ -1029,9 +1177,16 @@ class Endpoints {
 
       // Make Request and Return Workers Data
       const transaction = [_this.master.historical.workers.selectHistoricalWorkersMain(pool, queries)];
-      _this.master.executorCallback(transaction, (lookups) => {
-        callback(200, lookups.rows);
-      });
+      _this.master.executor(transaction)
+        .then((lookups) => {
+          callback(200, lookups[0]?.rows ?? []);
+        })
+        .catch((err) => {
+          if (_this.logger && typeof _this.logger.error === 'function') {
+            _this.logger.error('Endpoints', 'handleHistoricalWorkers', err.stack || err.toString());
+          }
+          callback(500, 'Internal server error in handleHistoricalWorkers');
+        });
       } catch (err) {
         if (_this.logger && typeof _this.logger.error === 'function') {
           _this.logger.error('Endpoints', 'handleHistoricalWorkers', err.stack || err.toString());
@@ -1100,12 +1255,19 @@ class Endpoints {
         _this.master.current.blocks.selectCurrentBlocksMain(pool, queries),
         _this.master.historical.blocks.selectHistoricalBlocksMain(pool, queries)
       ];
-      _this.master.executorCallback(transaction, (lookups) => {
-        callback(200, lookups.map((data, idx) => {
-          const partition = idx === 0 ? 'current' : 'historical';
-          return data.rows.map((obj) => ({ ...obj, partition: partition }));
-        }).flat(1));
-      });
+      _this.master.executor(transaction)
+        .then((lookups) => {
+          callback(200, lookups.map((data, idx) => {
+            const partition = idx === 0 ? 'current' : 'historical';
+            return (data?.rows ?? []).map((obj) => ({ ...obj, partition: partition }));
+          }).flat(1));
+        })
+        .catch((err) => {
+          if (_this.logger && typeof _this.logger.error === 'function') {
+            _this.logger.error('Endpoints', 'handleCombinedBlocks', err.stack || err.toString());
+          }
+          callback(500, 'Internal server error in handleCombinedBlocks');
+        });
       } catch (err) {
         if (_this.logger && typeof _this.logger.error === 'function') {
           _this.logger.error('Endpoints', 'handleCombinedBlocks', err.stack || err.toString());
@@ -1169,12 +1331,19 @@ class Endpoints {
         _this.master.current.rounds.selectCurrentRoundsMain(pool, queries),
         _this.master.historical.rounds.selectHistoricalRoundsMain(pool, queries)
       ];
-      _this.master.executorCallback(transaction, (lookups) => {
-        callback(200, lookups.map((data, idx) => {
-          const partition = idx === 0 ? 'current' : 'historical';
-          return data.rows.map((obj) => ({ ...obj, partition: partition }));
-        }).flat(1));
-      });
+      _this.master.executor(transaction)
+        .then((lookups) => {
+          callback(200, lookups.map((data, idx) => {
+            const partition = idx === 0 ? 'current' : 'historical';
+            return (data?.rows ?? []).map((obj) => ({ ...obj, partition: partition }));
+          }).flat(1));
+        })
+        .catch((err) => {
+          if (_this.logger && typeof _this.logger.error === 'function') {
+            _this.logger.error('Endpoints', 'handleCombinedRounds', err.stack || err.toString());
+          }
+          callback(500, 'Internal server error in handleCombinedRounds');
+        });
       } catch (err) {
         if (_this.logger && typeof _this.logger.error === 'function') {
           _this.logger.error('Endpoints', 'handleCombinedRounds', err.stack || err.toString());

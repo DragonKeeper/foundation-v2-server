@@ -286,68 +286,70 @@ class Checks {
 
         // Primary Behavior
         case 'primary':
-          _this.master.executor(transaction, (results) => {
-            if (results.length > 2) {
-              results = results[1].rows.map((block) => block.round);
-              const blocks = lookups[1].rows.filter((block) => results.includes((block || {}).round));
-
-              // Blocks Exist to Validate
-              if (blocks.length >= 1) {
-                _this.handlePrimary(blocks, (error) => {
-                  const updates = [(error) ?
-                    _this.text.databaseCommandsText2(JSON.stringify(error)) :
-                    _this.text.databaseUpdatesText2(blockType, blocks.length)];
+          _this.master.executor(transaction)
+            .then((results) => {
+              if (results.length > 2) {
+                results = results[1].rows.map((block) => block.round);
+                const blocks = lookups[1].rows.filter((block) => results.includes((block || {}).round));
+                if (blocks.length >= 1) {
+                  _this.handlePrimary(blocks, (error) => {
+                    const updates = [(error) ?
+                      _this.text.databaseCommandsText2(JSON.stringify(error)) :
+                      _this.text.databaseUpdatesText2(blockType, blocks.length)];
+                    _this.logger.debug('Checks', _this.config.name, updates);
+                    callback();
+                  });
+                } else {
+                  const updates = [_this.text.databaseUpdatesText3(blockType)];
                   _this.logger.debug('Checks', _this.config.name, updates);
                   callback();
-                });
-
-                // No Blocks Exist to Validate
+                }
               } else {
                 const updates = [_this.text.databaseUpdatesText3(blockType)];
                 _this.logger.debug('Checks', _this.config.name, updates);
                 callback();
               }
-
-              // No Blocks Exist to Validate
-            } else {
-              const updates = [_this.text.databaseUpdatesText3(blockType)];
-              _this.logger.debug('Checks', _this.config.name, updates);
-              callback();
-            }
-          });
+            })
+            .catch((err) => {
+              if (_this.logger && typeof _this.logger.error === 'function') {
+                _this.logger.error('Checks', 'executor', err.stack || err.toString());
+              }
+              callback(err);
+            });
           break;
 
         // Auxiliary Behavior
         case 'auxiliary':
-          _this.master.executor(transaction, (results) => {
-            if (results.length > 2) {
-              results = results[1].rows.map((block) => block.round);
-              const blocks = lookups[1].rows.filter((block) => results.includes((block || {}).round));
-
-              // Blocks Exist to Validate
-              if (blocks.length >= 1) {
-                _this.handleAuxiliary(blocks, (error) => {
-                  const updates = [(error) ?
-                    _this.text.databaseCommandsText2(JSON.stringify(error)) :
-                    _this.text.databaseUpdatesText2(blockType, blocks.length)];
+          _this.master.executor(transaction)
+            .then((results) => {
+              if (results.length > 2) {
+                results = results[1].rows.map((block) => block.round);
+                const blocks = lookups[1].rows.filter((block) => results.includes((block || {}).round));
+                if (blocks.length >= 1) {
+                  _this.handleAuxiliary(blocks, (error) => {
+                    const updates = [(error) ?
+                      _this.text.databaseCommandsText2(JSON.stringify(error)) :
+                      _this.text.databaseUpdatesText2(blockType, blocks.length)];
+                    _this.logger.debug('Checks', _this.config.name, updates);
+                    callback();
+                  });
+                } else {
+                  const updates = [_this.text.databaseUpdatesText3(blockType)];
                   _this.logger.debug('Checks', _this.config.name, updates);
                   callback();
-                });
-
-                // No Blocks Exist to Validate
+                }
               } else {
                 const updates = [_this.text.databaseUpdatesText3(blockType)];
                 _this.logger.debug('Checks', _this.config.name, updates);
                 callback();
               }
-
-              // No Blocks Exist to Validate
-            } else {
-              const updates = [_this.text.databaseUpdatesText3(blockType)];
-              _this.logger.debug('Checks', _this.config.name, updates);
-              callback();
-            }
-          });
+            })
+            .catch((err) => {
+              if (_this.logger && typeof _this.logger.error === 'function') {
+                _this.logger.error('Checks', 'executor', err.stack || err.toString());
+              }
+              callback(err);
+            });
           break;
 
         // Default Behavior
@@ -369,7 +371,7 @@ class Checks {
       const roundsWindow = Date.now() - _this.config.settings.window.rounds;
 
       // Build Combined Transaction
-      const transaction = [
+      let transaction = [
         'BEGIN;',
         _this.master.current.blocks.selectCurrentBlocksMain(_this.pool, { type: blockType }),
         _this.master.current.rounds.deleteCurrentRoundsInactive(_this.pool, roundsWindow),

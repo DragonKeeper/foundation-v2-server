@@ -12,6 +12,10 @@ class Rounds {
     const _this = this;
     this.logger = logger;
     this.client = client;
+    // Pass logger down to client for consistent logging
+    if (this.client && typeof this.client.setLogger === 'function') {
+      this.client.setLogger(this.logger);
+    }
     this.config = config;
     this.configMain = configMain;
     this.pool = config.name;
@@ -268,22 +272,34 @@ class Rounds {
     // Handle Hashrate Updates
     this.handleHashrate = function (shares, blockType) {
 
+      const now = Date.now();
+      const windowCutoff = now - _this.config.settings.window.hashrate;
+      const filtered = shares.filter(share => share.timestamp >= windowCutoff);
+
       // Handle Individual Shares
       const updates = [];
-      shares.forEach((share) => {
-
+      shares.forEach((share, idx) => {
         // Calculate Share Features
         let shareType = 'valid';
         const minerType = utils.checkSoloMining(_this.config, share);
         if (share.error && share.error === 'job not found') shareType = 'stale';
         else if (!share.sharevalid || share.error) shareType = 'invalid';
 
+        // Debug: Log timestamp info for each share
+        const passes = windowCutoff <= share.timestamp;
+        _this.logger.debug('Hashrate', _this.config.name, `Share[${idx}] ts=${share.timestamp} windowCutoff=${windowCutoff} now=${now} passes=${passes} clientdiff=${share.clientdiff} shareType=${shareType}`);
+
         // Check If Share is Still Valid
-        if (Date.now() - _this.config.settings.window.hashrate <= share.timestamp) {
-          updates.push(_this.handleCurrentHashrate(share, shareType, minerType, blockType));
+        if (passes) {
+          const update = _this.handleCurrentHashrate(share, shareType, minerType, blockType);
+          _this.logger.debug('Hashrate', _this.config.name, `  Update for Share[${idx}]:`, JSON.stringify(update));
+          updates.push(update);
+        } else {
+          _this.logger.debug('Hashrate', _this.config.name, `  Share[${idx}] filtered out (too old)`);
         }
       });
 
+      _this.logger.debug('Hashrate', _this.config.name, `Returning ${updates.length} hashrate updates`);
       // Return Hashrate Updates
       return updates;
     };
@@ -392,8 +408,7 @@ class Rounds {
 
     // Handle Local Share/Transactions Cleanup
     this.handleCleanup = function (segment, callback) {
-
-      // Build Combined Transaction
+      // Restore pruning: delete processed shares/transactions by UUID
       const segmentDelete = segment.map((share) => `'${share.uuid}'`);
       const transaction = [
         'BEGIN;',
@@ -403,7 +418,14 @@ class Rounds {
       ];
 
       // Insert Work into Database
-      _this.master.executor(transaction, () => callback());
+      _this.worker.executor(transaction)
+        .then(() => callback())
+        .catch((err) => {
+          if (_this.logger && typeof _this.logger.error === 'function') {
+            _this.logger.error('Rounds', 'worker.executor', err.stack || err.toString());
+          }
+          callback(err);
+        });
     };
 
     // Handle Round Updates
@@ -476,7 +498,14 @@ class Rounds {
 
       // Insert Work into Database
       transaction.push('COMMIT;');
-      _this.master.executor(transaction, () => callback());
+      _this.master.executor(transaction)
+        .then(() => callback())
+        .catch((err) => {
+          if (_this.logger && typeof _this.logger.error === 'function') {
+            _this.logger.error('Rounds', 'master.executor', err.stack || err.toString());
+          }
+          callback(err);
+        });
     };
 
     // Handle Primary Blocks
@@ -511,7 +540,14 @@ class Rounds {
       ];
 
       // Insert Work into Database
-      _this.master.executor(transaction, () => callback());
+      _this.master.executor(transaction)
+        .then(() => callback())
+        .catch((err) => {
+          if (_this.logger && typeof _this.logger.error === 'function') {
+            _this.logger.error('Rounds', 'master.executor', err.stack || err.toString());
+          }
+          callback(err);
+        });
     };
 
     // Handle Auxiliary Blocks
@@ -546,17 +582,28 @@ class Rounds {
       ];
 
       // Insert Work into Database
-      _this.master.executor(transaction, () => callback());
+      _this.master.executor(transaction)
+        .then(() => callback())
+        .catch((err) => {
+          if (_this.logger && typeof _this.logger.error === 'function') {
+            _this.logger.error('Rounds', 'master.executor', err.stack || err.toString());
+          }
+          callback(err);
+        });
     };
 
     // Handle Segment Batches
     this.handleSegments = function (segment, callback) {
+      const blocktype = (segment[0] || {}).blocktype;
+      // ...existing code...
 
       // Initialize Designators
       const addrPrimaryMiners = [];
       const addrAuxiliaryMiners = [];
       const addrPrimaryWorkers = [];
       const addrAuxiliaryWorkers = [];
+
+      // ...existing code...
 
       // Handle Individual Shares
       segment.forEach((share) => {
@@ -587,39 +634,85 @@ class Rounds {
       ];
 
       // Establish Separate Behavior
-      switch ((segment[0] || {}).blocktype) {
+      switch (blocktype) {
 
         // Primary Behavior
         case 'primary':
-          _this.master.executor(transaction, (lookups) => {
-            _this.handleUpdates(lookups, segment, () => {
-              if (segment[0].blockvalid) _this.handlePrimary(lookups, segment, () => {
-                _this.handleCleanup(segment, () => callback());
+          _this.master.executor(transaction)
+            .then((lookups) => {
+              _this.handleUpdates(lookups, segment, () => {
+                if (segment[0].blockvalid) {
+                  _this.handlePrimary(lookups, segment, () => {
+                    _this.handleCleanup(segment, () => callback());
+                  });
+                } else {
+                  _this.handleCleanup(segment, () => callback());
+                }
               });
-              else _this.handleCleanup(segment, () => callback());
+            })
+            .catch((err) => {
+              if (_this.logger && typeof _this.logger.error === 'function') {
+                _this.logger.error('Rounds', 'master.executor', err.stack || err.toString());
+              }
+              callback(err);
             });
-          });
           break;
 
         // Auxiliary Behavior
         case 'auxiliary':
-          _this.master.executor(transaction, (lookups) => {
-            _this.handleUpdates(lookups, segment, () => {
-              if (segment[0].blockvalid) _this.handleAuxiliary(lookups, segment, () => {
-                _this.handleCleanup(segment, () => callback());
+          _this.master.executor(transaction)
+            .then((lookups) => {
+              _this.handleUpdates(lookups, segment, () => {
+                if (segment[0].blockvalid) {
+                  _this.handleAuxiliary(lookups, segment, () => {
+                    _this.handleCleanup(segment, () => callback());
+                  });
+                } else {
+                  _this.handleCleanup(segment, () => callback());
+                }
               });
-              else _this.handleCleanup(segment, () => callback());
+            })
+            .catch((err) => {
+              if (_this.logger && typeof _this.logger.error === 'function') {
+                _this.logger.error('Rounds', 'master.executor', err.stack || err.toString());
+              }
+              callback(err);
             });
-          });
           break;
 
         // Share Behavior
         case 'share':
-          _this.master.executor(transaction, (lookups) => {
-            _this.handleUpdates(lookups, segment, () => {
-              _this.handleCleanup(segment, () => callback());
+          // Pass a unique contextTag for log tracing
+          _this.master.executor(transaction)
+            .then((lookups) => {
+              try {
+                _this.handleUpdates(lookups, segment, () => {
+                  try {
+                    let cbCalled = false;
+                    _this.handleCleanup(segment, (...cbArgs) => {
+                      cbCalled = true;
+                      if (typeof callback === 'function') {
+                        callback();
+                      }
+                    });
+                    setTimeout(() => {
+                      if (!cbCalled) {
+                      }
+                    }, 5000);
+                  } catch (err) {
+                    if (typeof callback === 'function') callback(err);
+                  }
+                });
+              } catch (err) {
+                if (typeof callback === 'function') callback(err);
+              }
+            })
+            .catch((err) => {
+              if (_this.logger && typeof _this.logger.error === 'function') {
+                _this.logger.error('Rounds', 'master.executor', err.stack || err.toString());
+              }
+              callback(err);
             });
-          });
           break;
 
         // Default Behavior
@@ -645,50 +738,57 @@ class Rounds {
       }
 
       // Add Checks to Transactions Table
+      let insertSql = '';
       if (checks.length >= 1) {
-        transaction.push(_this.worker.local.transactions.insertLocalTransactionsMain(_this.pool, checks));
+        insertSql = _this.worker.local.transactions.insertLocalTransactionsMain(_this.pool, checks);
+        transaction.push(insertSql);
       }
 
       // Determine Specific Shares for Each Thread
       transaction.push('COMMIT;');
-      _this.worker.executor(transaction, (results) => {
-        results = results[1].rows.map((share) => share.uuid);
-        const shares = lookups[1].rows.filter((share) => results.includes((share || {}).uuid));
-        const segments = _this.processSegments(shares);
+      _this.worker.executor(transaction)
+        .then((results) => {
+          const shareUuids = lookups[1] && lookups[1].rows ? lookups[1].rows.map((share) => share.uuid) : [];
+          const resultUuids = results[1] && results[1].rows ? results[1].rows.map((share) => share.uuid) : [];
+          let shares = lookups[1].rows.filter((share) => resultUuids.includes((share || {}).uuid));
+          const segments = _this.processSegments(shares);
+          const segLen = segments.length;
+          const firstSegLen = segments[0] ? segments[0].length : 0;
+          const firstSegSample = segments[0] ? JSON.stringify(segments[0].slice(0, 3)) : '[]';
 
-        // Determine Number of Shares Being Processed
-        const capacity = Math.round(shares.length / _this.config.settings.batch.limit * 1000) / 10;
-        const lines = [_this.text.roundsHandlingText1(capacity)];
-        _this.logger.debug('Rounds', _this.config.name, lines);
+          // Determine Number of Shares Being Processed
+          const capacity = Math.round(shares.length / _this.config.settings.batch.limit * 1000) / 10;
+          const lines = [_this.text.roundsHandlingText1(capacity)];
+          _this.logger.debug('Rounds', _this.config.name, lines);
 
-        // Segments Exist to Validate
-        if (segments.length >= 1) {
-          async.series(segments.map((segment) => {
-            return (cb) => _this.handleSegments(segment, cb);
-          }), (error) => {
-            const updates = [(error) ?
-              _this.text.databaseCommandsText2(JSON.stringify(error)) :
-              _this.text.databaseUpdatesText6(shares.length)];
+          // Segments Exist to Validate
+          if (segments.length >= 1) {
+            async.series(segments.map((segment) => {
+              return (cb) => _this.handleSegments(segment, cb);
+            }), (error) => {
+              const updates = [(error) ?
+                _this.text.databaseCommandsText2(JSON.stringify(error)) :
+                _this.text.databaseUpdatesText6(shares.length)];
+              _this.logger.debug('Rounds', _this.config.name, updates);
+              callback();
+            });
+          } else {
+            const updates = [_this.text.databaseUpdatesText7()];
             _this.logger.debug('Rounds', _this.config.name, updates);
             callback();
-          });
-
-          // No Blocks Exist to Validate
-        } else {
-          const updates = [_this.text.databaseUpdatesText7()];
-          _this.logger.debug('Rounds', _this.config.name, updates);
-          callback();
-        }
-      });
+          }
+        })
+        .catch((err) => {
+          if (_this.logger && typeof _this.logger.error === 'function') {
+            _this.logger.error('Rounds', 'worker.executor', err.stack || err.toString());
+          }
+          callback(err);
+        });
     };
 
     // Handle Rounds Updates
     /* istanbul ignore next */
     this.handleRounds = function (callback) {
-
-      // Handle Initial Logging
-      const starting = [_this.text.databaseStartingText4()];
-      _this.logger.debug('Rounds', _this.config.name, starting);
 
       // Calculate Rounds Features
       const limit = _this.config.settings.batch.limit;
@@ -696,23 +796,34 @@ class Rounds {
 
       // Build Combined Transaction
       const parameters = { order: 'submitted', direction: 'ascending', limit: limit };
-      const transaction = [
+      let transaction = [
         'BEGIN;',
         _this.worker.local.shares.selectLocalSharesMain(_this.pool, parameters),
         _this.worker.local.transactions.deleteLocalTransactionsInactive(_this.pool, updateWindow),
         'COMMIT;'
       ];
-
-      // Establish Separate Behavior
-      _this.worker.executor(transaction, (lookups) => {
-        _this.handleBatches(lookups, callback);
-      });
+      // Remove mapping to objects, keep as SQL strings
+      _this.worker.executor(transaction)
+        .then((lookups) => {
+          try {
+            _this.handleBatches(lookups, callback);
+          } catch (callbackException) {
+            if (callback) callback(callbackException);
+          }
+        })
+        .catch((err) => {
+          if (_this.logger && typeof _this.logger.error === 'function') {
+            _this.logger.error('Rounds', 'worker.executor', err.stack || err.toString());
+          }
+          if (callback) callback(err);
+        });
     };
 
     // Start Rounds Interval Management
     /* istanbul ignore next */
     this.handleInterval = function () {
       const interval = _this.config.settings.interval.rounds;
+      _this.logger.debug('ROUNDS_TRACE', _this.config.name, '[handleInterval] running', { interval, timestamp: Date.now() });
       setTimeout(() => {
         _this.handleInterval();
         _this.handleRounds(() => { });
@@ -724,7 +835,13 @@ class Rounds {
     this.setupRounds = function (callback) {
       const interval = _this.config.settings.interval.rounds;
       const numForks = utils.countProcessForks(_this.configMain);
-      const timing = parseFloat(_this.forkId) * interval / numForks;
+      const forkId = parseFloat(_this.forkId);
+      let timing = forkId * interval / numForks;
+      if (_this.logger && typeof _this.logger.debug === 'function') {
+        _this.logger.debug('ROUNDS_DEBUG', _this.config.name, '[setupRounds] forkId:', forkId, 'interval:', interval, 'numForks:', numForks, 'timing:', timing);
+      } else {
+        console.debug('[ROUNDS_DEBUG]', _this.config.name, '[setupRounds] forkId:', forkId, 'interval:', interval, 'numForks:', numForks, 'timing:', timing);
+      }
       setTimeout(() => _this.handleInterval(), timing);
       callback();
     };

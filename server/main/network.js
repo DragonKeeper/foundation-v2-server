@@ -38,33 +38,43 @@ class Network {
     };
 
     // Handle Primary Updates
-    this.handlePrimary = function (network, callback) {
-
+    this.handlePrimary = async function (network, callback) {
       // Build Combined Transaction
       const networkUpdates = _this.handleCurrentNetwork(network, 'primary');
-      const transaction = [
+      let transaction = [
         'BEGIN;',
         _this.master.current.network.insertCurrentNetworkMain(_this.pool, [networkUpdates]),
-        'COMMIT'
+        'COMMIT;'
       ];
-
-      // Insert Work into Database
-      _this.master.executor(transaction, () => callback());
+      try {
+        await _this.master.executor(transaction);
+        callback();
+      } catch (err) {
+        if (_this.logger && typeof _this.logger.error === 'function') {
+          _this.logger.error('Network', 'handlePrimary', err.stack || err.toString());
+        }
+        callback(err);
+      }
     };
 
-    // Handle Primary Updates
-    this.handleAuxiliary = function (network, callback) {
-
+    // Handle Auxiliary Updates
+    this.handleAuxiliary = async function (network, callback) {
       // Build Combined Transaction
       const networkUpdates = _this.handleCurrentNetwork(network, 'auxiliary');
       const transaction = [
         'BEGIN;',
         _this.master.current.network.insertCurrentNetworkMain(_this.pool, [networkUpdates]),
-        'COMMIT'
+        'COMMIT;'
       ];
-
-      // Insert Work into Database
-      _this.master.executor(transaction, () => callback());
+      try {
+        await _this.master.executor(transaction);
+        callback();
+      } catch (err) {
+        if (_this.logger && typeof _this.logger.error === 'function') {
+          _this.logger.error('Network', 'handleAuxiliary', err.stack || err.toString());
+        }
+        callback(err);
+      }
     };
 
     // Handle Network Data Submissions
