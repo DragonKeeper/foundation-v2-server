@@ -70,17 +70,17 @@ class HistoricalMiners {
     this.buildHistoricalMinersMain = function (updates) {
       let values = '';
       updates.forEach((miner, idx) => {
-        values += `(
-        ${miner.timestamp},
-        ${miner.recent},
-        '${miner.miner}',
-        ${miner.efficiency},
-        ${miner.effort},
-        ${miner.hashrate},
-        ${miner.invalid},
-        ${miner.stale},
-        '${miner.type}',
-        ${miner.valid},
+        values += `(\
+        ${miner.timestamp},\
+        ${miner.recent},\
+        '${miner.miner}',\
+        ${miner.efficiency},\
+        ${miner.effort},\
+        ${miner.hashrate},\
+        ${miner.invalid},\
+        ${miner.stale},\
+        '${miner.type}',\
+        ${miner.valid},\
         ${miner.work})`;
         if (idx < updates.length - 1) values += ', ';
       });
@@ -89,14 +89,14 @@ class HistoricalMiners {
 
     // Insert Rows Using Historical Data
     this.insertHistoricalMinersMain = function (pool, updates) {
-      return `
-      INSERT INTO "${pool}".historical_miners (
-        timestamp, recent, miner,
-        efficiency, effort, hashrate,
-        invalid, stale, type, valid,
-        work)
-      VALUES ${_this.buildHistoricalMinersMain(updates)}
-      ON CONFLICT ON CONSTRAINT historical_miners_recent
+      return `\
+      INSERT INTO "${pool}".historical_miners (\
+        timestamp, recent, miner,\
+        efficiency, effort, hashrate,\
+        invalid, stale, type, valid,\
+        work)\
+      VALUES ${_this.buildHistoricalMinersMain(updates)}\
+      ON CONFLICT ON CONSTRAINT historical_miners_recent\
       DO NOTHING;`;
     };
   }

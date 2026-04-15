@@ -71,19 +71,19 @@ class HistoricalMetadata {
     this.buildHistoricalMetadataMain = function (updates) {
       let values = '';
       updates.forEach((metadata, idx) => {
-        values += `(
-        ${metadata.timestamp},
-        ${metadata.recent},
-        ${metadata.blocks},
-        ${metadata.efficiency},
-        ${metadata.effort},
-        ${metadata.hashrate},
-        ${metadata.invalid},
-        ${metadata.miners},
-        ${metadata.stale},
-        '${metadata.type}',
-        ${metadata.valid},
-        ${metadata.work},
+        values += `(\
+        ${metadata.timestamp},\
+        ${metadata.recent},\
+        ${metadata.blocks},\
+        ${metadata.efficiency},\
+        ${metadata.effort},\
+        ${metadata.hashrate},\
+        ${metadata.invalid},\
+        ${metadata.miners},\
+        ${metadata.stale},\
+        '${metadata.type}',\
+        ${metadata.valid},\
+        ${metadata.work},\
         ${metadata.workers})`;
         if (idx < updates.length - 1) values += ', ';
       });
@@ -92,14 +92,14 @@ class HistoricalMetadata {
 
     // Insert Rows Using Historical Data
     this.insertHistoricalMetadataMain = function (pool, updates) {
-      return `
-      INSERT INTO "${pool}".historical_metadata (
-        timestamp, recent, blocks,
-        efficiency, effort, hashrate,
-        invalid, miners, stale,
-        type, valid, work, workers)
-      VALUES ${_this.buildHistoricalMetadataMain(updates)}
-      ON CONFLICT ON CONSTRAINT historical_metadata_recent
+      return `\
+      INSERT INTO "${pool}".historical_metadata (\
+        timestamp, recent, blocks,\
+        efficiency, effort, hashrate,\
+        invalid, miners, stale,\
+        type, valid, work, workers)\
+      VALUES ${_this.buildHistoricalMetadataMain(updates)}\
+      ON CONFLICT ON CONSTRAINT historical_metadata_recent\
       DO NOTHING;`;
     };
   }

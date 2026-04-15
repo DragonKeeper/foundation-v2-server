@@ -68,29 +68,29 @@ class CurrentRounds {
 
     // Select Current Rounds for Batching
     this.selectCurrentRoundsBatchAddresses = function (pool, addresses, type) {
-      return addresses.length >= 1 ? `
-      SELECT DISTINCT ON (worker) * FROM "${pool}".current_rounds
-      WHERE worker IN (${addresses.join(', ')}) AND type = '${type}'
-      ORDER BY worker, timestamp DESC;` : `
+      return addresses.length >= 1 ? `\
+      SELECT DISTINCT ON (worker) * FROM "${pool}".current_rounds\
+      WHERE worker IN (${addresses.join(', ')}) AND type = '${type}'\
+      ORDER BY worker, timestamp DESC;` : `\
       SELECT * FROM "${pool}".current_rounds LIMIT 0;`;
     };
 
     // Select Current Rounds for Payments
     this.selectCurrentRoundsPayments = function (pool, round, solo, type) {
-      return `
-      SELECT DISTINCT ON (m.worker, m.round, m.solo, m.type)
-        t.timestamp, t.submitted, t.recent, m.miner, m.worker,
-        m.identifier, t.invalid, m.round, m.solo, t.stale, t.times, m.type,
-        t.valid, t.work FROM (
-      SELECT worker, round, solo, type, MAX(timestamp) as timestamp,
-        MAX(submitted) as submitted, MAX(recent) as recent,
-        SUM(invalid) as invalid, SUM(stale) as stale, SUM(times) as times,
-        SUM(valid) as valid, SUM(work) as work
-      FROM "${pool}".current_rounds
-      GROUP BY worker, round, solo, type
-        ) t JOIN "${pool}".current_rounds m ON m.worker = t.worker
-        AND m.round = t.round AND m.solo = t.solo AND m.type = t.type
-      WHERE m.round = '${round}' AND m.solo = ${solo}
+      return `\
+      SELECT DISTINCT ON (m.worker, m.round, m.solo, m.type)\
+        t.timestamp, t.submitted, t.recent, m.miner, m.worker,\
+        m.identifier, t.invalid, m.round, m.solo, t.stale, t.times, m.type,\
+        t.valid, t.work FROM (\
+      SELECT worker, round, solo, type, MAX(timestamp) as timestamp,\
+        MAX(submitted) as submitted, MAX(recent) as recent,\
+        SUM(invalid) as invalid, SUM(stale) as stale, SUM(times) as times,\
+        SUM(valid) as valid, SUM(work) as work\
+      FROM "${pool}".current_rounds\
+      GROUP BY worker, round, solo, type\
+        ) t JOIN "${pool}".current_rounds m ON m.worker = t.worker\
+        AND m.round = t.round AND m.solo = t.solo AND m.type = t.type\
+      WHERE m.round = '${round}' AND m.solo = ${solo}\
       AND m.type = '${type}';`;
     };
 
@@ -98,20 +98,20 @@ class CurrentRounds {
     this.buildCurrentRoundsMain = function (updates) {
       let values = '';
       updates.forEach((round, idx) => {
-        values += `(
-        ${round.timestamp},
-        ${round.submitted},
-        ${round.recent},
-        '${round.miner}',
-        '${round.worker}',
-        '${round.identifier}',
-        ${round.invalid},
-        '${round.round}',
-        ${round.solo},
-        ${round.stale},
-        ${round.times},
-        '${round.type}',
-        ${round.valid},
+        values += `(\
+        ${round.timestamp},\
+        ${round.submitted},\
+        ${round.recent},\
+        '${round.miner}',\
+        '${round.worker}',\
+        '${round.identifier}',\
+        ${round.invalid},\
+        '${round.round}',\
+        ${round.solo},\
+        ${round.stale},\
+        ${round.times},\
+        '${round.type}',\
+        ${round.valid},\
         ${round.work})`;
         if (idx < updates.length - 1) values += ', ';
       });
@@ -120,53 +120,53 @@ class CurrentRounds {
 
     // Insert Rows Using Round Data
     this.insertCurrentRoundsMain = function (pool, updates) {
-      return `
-      INSERT INTO "${pool}".current_rounds (
-        timestamp, submitted, recent,
-        miner, worker, identifier, invalid,
-        round, solo, stale, times, type,
-        valid, work)
-      VALUES ${_this.buildCurrentRoundsMain(updates)}
-      ON CONFLICT ON CONSTRAINT current_rounds_unique
-      DO UPDATE SET
-        timestamp = EXCLUDED.timestamp,
-        submitted = EXCLUDED.submitted,
-        invalid = "${pool}".current_rounds.invalid + EXCLUDED.invalid,
-        stale = "${pool}".current_rounds.stale + EXCLUDED.stale,
-        times = GREATEST("${pool}".current_rounds.times, EXCLUDED.times),
-        valid = "${pool}".current_rounds.valid + EXCLUDED.valid,
+      return `\
+      INSERT INTO "${pool}".current_rounds (\
+        timestamp, submitted, recent,\
+        miner, worker, identifier, invalid,\
+        round, solo, stale, times, type,\
+        valid, work)\
+      VALUES ${_this.buildCurrentRoundsMain(updates)}\
+      ON CONFLICT ON CONSTRAINT current_rounds_unique\
+      DO UPDATE SET\
+        timestamp = EXCLUDED.timestamp,\
+        submitted = EXCLUDED.submitted,\
+        invalid = "${pool}".current_rounds.invalid + EXCLUDED.invalid,\
+        stale = "${pool}".current_rounds.stale + EXCLUDED.stale,\
+        times = GREATEST("${pool}".current_rounds.times, EXCLUDED.times),\
+        valid = "${pool}".current_rounds.valid + EXCLUDED.valid,\
         work = "${pool}".current_rounds.work + EXCLUDED.work;`;
     };
 
     // Update Rows Using Round
     this.updateCurrentRoundsMainSolo = function (pool, miner, round, type) {
-      return `
-      UPDATE "${pool}".current_rounds
-      SET round = '${round}'
-      WHERE round = 'current' AND miner = '${miner}'
+      return `\
+      UPDATE "${pool}".current_rounds\
+      SET round = '${round}'\
+      WHERE round = 'current' AND miner = '${miner}'\
       AND solo = true AND type = '${type}';`;
     };
 
     // Update Rows Using Round
     this.updateCurrentRoundsMainShared = function (pool, round, type) {
-      return `
-      UPDATE "${pool}".current_rounds
-      SET round = '${round}'
-      WHERE round = 'current' AND solo = false
+      return `\
+      UPDATE "${pool}".current_rounds\
+      SET round = '${round}'\
+      WHERE round = 'current' AND solo = false\
       AND type = '${type}';`;
     };
 
     // Delete Rows From Current Round
     this.deleteCurrentRoundsInactive = function (pool, submitted) {
-      return `
-      DELETE FROM "${pool}".current_rounds
+      return `\
+      DELETE FROM "${pool}".current_rounds\
       WHERE round = 'current' AND submitted < ${submitted};`;
     };
 
     // Delete Rows From Current Round
     this.deleteCurrentRoundsMain = function (pool, rounds) {
-      return `
-      DELETE FROM "${pool}".current_rounds
+      return `\
+      DELETE FROM "${pool}".current_rounds\
       WHERE round IN (${rounds.join(', ')});`;
     };
   }

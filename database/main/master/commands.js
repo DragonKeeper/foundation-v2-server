@@ -21,16 +21,17 @@ import HistoricalWorkers from './historical/workers.js';
 ////////////////////////////////////////////////////////////////////////////////
 
 // Main Command Function
+
 class Commands {
-  // Callback-based executor for legacy API (class method, always available)
-  executorCallback(commands, callback) {
-    this.executor(commands)
-      .then(results => callback(results))
-      .catch(error => callback({ error }));
-  }
 
   constructor(logger, client, configMain) {
-    this.logger = logger;
+    // Defensive fallback logger to prevent TypeError
+    this.logger = logger || {
+      debug: () => {},
+      info: () => {},
+      error: () => {},
+      log: () => {}
+    };
     this.client = client;
     this.configMain = configMain;
     this.text = Text[configMain.language];
@@ -41,32 +42,41 @@ class Commands {
     this.historical = {};
     this.retries = 0;
 
-    // Execute Commands (async/await version)
-    this.executor = async (commands) => {
-      const query = commands.join(' ');
+    // Simpler async executor: joins commands and executes as a single query
+    this.executor = async (commands, callback) => {
+      // Check for objects in commands and log them
+      let foundObject = false;
+      commands.forEach((cmd, idx) => {
+        if (typeof cmd === 'object' && cmd !== null) {
+          foundObject = true;
+          //console.log(`executor: Detected object at index ${idx}:`, JSON.stringify(cmd, null, 2));
+        }
+      });
+      // Join commands, trim, and replace all whitespace (indentation, newlines) with a single space
+      // Removing any indentation and newlines to prevent any potential issues with the query execution.
+      // To ensure that the commands are properly formatted for logging and debugging purposes.
+      // All current queries in backticks have been formatted with backslashes to prevent newlines, but this will ensure that any
+      // future queries that are not properly formatted will still be executed correctly.
+      const query = commands.join(' ').trim().replace(/\s+/g, ' ');
+      if (foundObject) {
+        //console.log('executor: Final joined query (may contain [object Object]):', query);
+      } else {
+        //console.log('Query:', query);
+      }
       try {
         const results = await this.client.query(query);
-        this.retries = 0; // Reset retries on success
+        if (callback) callback(results);
+        this.retries = 0;
         return results;
       } catch (error) {
-        if (error.message && error.message.includes('current transaction is aborted')) {
-          try {
-            await this.client.query('ROLLBACK');
-          } catch (rollbackError) {
-            // Optionally log rollback error
-          }
-          return this.retry(commands, error);
-        } else {
-          return this.retry(commands, error);
-        }
+        if (callback) this.retry(commands, error, callback);
+        else return this.retry(commands, error);
       }
     };
 
     // Handle Retries (async/await version)
     this.retry = async (commands, error) => {
       if (this.retries < 3) {
-        const lines = [this.text.databaseCommandsText3(this.retries)];
-        this.logger.error('Database', 'Master', lines);
         await new Promise(resolve => setTimeout(resolve, this.timing[this.retries] || 1000));
         this.retries += 1;
         return this.executor(commands);

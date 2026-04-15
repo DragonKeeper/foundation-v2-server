@@ -71,22 +71,22 @@ class CurrentBlocks {
     this.buildCurrentBlocksMain = function (updates) {
       let values = '';
       updates.forEach((block, idx) => {
-        values += `(
-        ${block.timestamp},
-        ${block.submitted},
-        '${block.miner}',
-        '${block.worker}',
-        '${block.category}',
-        ${block.confirmations},
-        ${block.difficulty},
-        '${block.hash}',
-        ${block.height},
-        '${block.identifier}',
-        ${block.luck},
-        ${block.reward},
-        '${block.round}',
-        ${block.solo},
-        '${block.transaction}',
+        values += `(\
+        ${block.timestamp},\
+        ${block.submitted},\
+        '${block.miner}',\
+        '${block.worker}',\
+        '${block.category}',\
+        ${block.confirmations},\
+        ${block.difficulty},\
+        '${block.hash}',\
+        ${block.height},\
+        '${block.identifier}',\
+        ${block.luck},\
+        ${block.reward},\
+        '${block.round}',\
+        ${block.solo},\
+        '${block.transaction}',\
         '${block.type}')`;
         if (idx < updates.length - 1) values += ', ';
       });
@@ -95,38 +95,38 @@ class CurrentBlocks {
 
     // Insert Rows Using Blocks Data
     this.insertCurrentBlocksMain = function (pool, updates) {
-      return `
-      INSERT INTO "${pool}".current_blocks (
-        timestamp, submitted, miner,
-        worker, category, confirmations,
-        difficulty, hash, height,
-        identifier, luck, reward,
-        round, solo, transaction,
-        type)
-      VALUES ${_this.buildCurrentBlocksMain(updates)}
-      ON CONFLICT ON CONSTRAINT current_blocks_unique
-      DO UPDATE SET
-        timestamp = EXCLUDED.timestamp,
-        submitted = EXCLUDED.submitted,
-        miner = EXCLUDED.miner,
-        worker = EXCLUDED.worker,
-        category = EXCLUDED.category,
-        confirmations = EXCLUDED.confirmations,
-        difficulty = EXCLUDED.difficulty,
-        hash = EXCLUDED.hash,
-        height = EXCLUDED.height,
-        identifier = EXCLUDED.identifier,
-        luck = EXCLUDED.luck,
-        reward = EXCLUDED.reward,
-        solo = EXCLUDED.solo,
-        transaction = EXCLUDED.transaction,
+      return `\
+      INSERT INTO "${pool}".current_blocks (\
+        timestamp, submitted, miner,\
+        worker, category, confirmations,\
+        difficulty, hash, height,\
+        identifier, luck, reward,\
+        round, solo, transaction,\
+        type)\
+      VALUES ${_this.buildCurrentBlocksMain(updates)}\
+      ON CONFLICT ON CONSTRAINT current_blocks_unique\
+      DO UPDATE SET\
+        timestamp = EXCLUDED.timestamp,\
+        submitted = EXCLUDED.submitted,\
+        miner = EXCLUDED.miner,\
+        worker = EXCLUDED.worker,\
+        category = EXCLUDED.category,\
+        confirmations = EXCLUDED.confirmations,\
+        difficulty = EXCLUDED.difficulty,\
+        hash = EXCLUDED.hash,\
+        height = EXCLUDED.height,\
+        identifier = EXCLUDED.identifier,\
+        luck = EXCLUDED.luck,\
+        reward = EXCLUDED.reward,\
+        solo = EXCLUDED.solo,\
+        transaction = EXCLUDED.transaction,\
         type = EXCLUDED.type;`;
     };
 
     // Delete Rows From Current Round
     this.deleteCurrentBlocksMain = function (pool, rounds) {
-      return `
-      DELETE FROM "${pool}".current_blocks
+      return `\
+      DELETE FROM "${pool}".current_blocks\
       WHERE round IN (${rounds.join(', ')});`;
     };
   }

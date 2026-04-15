@@ -69,9 +69,9 @@ class CurrentTransactions {
     this.buildCurrentTransactionsMain = function (updates) {
       let values = '';
       updates.forEach((transaction, idx) => {
-        values += `(
-        ${transaction.timestamp},
-        '${transaction.round}',
+        values += `(\
+        ${transaction.timestamp},\
+        '${transaction.round}',\
         '${transaction.type}')`;
         if (idx < updates.length - 1) values += ', ';
       });
@@ -80,25 +80,25 @@ class CurrentTransactions {
 
     // Insert Rows Using Transactions Data
     this.insertCurrentTransactionsMain = function (pool, updates) {
-      return `
-      INSERT INTO "${pool}".current_transactions (
-        timestamp, round, type)
-      VALUES ${_this.buildCurrentTransactionsMain(updates)}
-      ON CONFLICT ON CONSTRAINT current_transactions_unique
+      return `\
+      INSERT INTO "${pool}".current_transactions (\
+        timestamp, round, type)\
+      VALUES ${_this.buildCurrentTransactionsMain(updates)}\
+      ON CONFLICT ON CONSTRAINT current_transactions_unique\
       DO NOTHING RETURNING round;`;
     };
 
     // Delete Rows From Current Rounds
     this.deleteCurrentTransactionsMain = function (pool, rounds) {
-      return `
-      DELETE FROM "${pool}".current_transactions
+      return `\
+      DELETE FROM "${pool}".current_transactions\
       WHERE round IN (${rounds.join(', ')});`;
     };
 
     // Delete Rows From Current Round
     this.deleteCurrentTransactionsInactive = function (pool, timestamp) {
-      return `
-      DELETE FROM "${pool}".current_transactions
+      return `\
+      DELETE FROM "${pool}".current_transactions\
       WHERE timestamp < ${timestamp};`;
     };
   }

@@ -69,10 +69,10 @@ class CurrentMiners {
 
     // Select Current Rounds for Batching
     this.selectCurrentMinersBatchAddresses = function (pool, addresses, type) {
-      return addresses.length >= 1 ? `
-      SELECT DISTINCT ON (miner) * FROM "${pool}".current_miners
-      WHERE miner IN (${addresses.join(', ')}) AND type = '${type}'
-      ORDER BY miner, timestamp DESC;` : `
+      return addresses.length >= 1 ? `\
+      SELECT DISTINCT ON (miner) * FROM "${pool}".current_miners\
+      WHERE miner IN (${addresses.join(', ')}) AND type = '${type}'\
+      ORDER BY miner, timestamp DESC;` : `\
       SELECT * FROM "${pool}".current_miners LIMIT 0;`;
     };
 
@@ -80,10 +80,10 @@ class CurrentMiners {
     this.buildCurrentMinersHashrate = function (updates) {
       let values = '';
       updates.forEach((miner, idx) => {
-        values += `(
-        ${miner.timestamp},
-        '${miner.miner}',
-        ${miner.hashrate},
+        values += `(\
+        ${miner.timestamp},\
+        '${miner.miner}',\
+        ${miner.hashrate},\
         '${miner.type}')`;
         if (idx < updates.length - 1) values += ', ';
       });
@@ -92,14 +92,14 @@ class CurrentMiners {
 
     // Insert Rows Using Hashrate Data
     this.insertCurrentMinersHashrate = function (pool, updates) {
-      return `
-      INSERT INTO "${pool}".current_miners (
-        timestamp, miner, hashrate,
-        type)
-      VALUES ${_this.buildCurrentMinersHashrate(updates)}
-      ON CONFLICT ON CONSTRAINT current_miners_unique
-      DO UPDATE SET
-        timestamp = EXCLUDED.timestamp,
+      return `\
+      INSERT INTO "${pool}".current_miners (\
+        timestamp, miner, hashrate,\
+        type)\
+      VALUES ${_this.buildCurrentMinersHashrate(updates)}\
+      ON CONFLICT ON CONSTRAINT current_miners_unique\
+      DO UPDATE SET\
+        timestamp = EXCLUDED.timestamp,\
         hashrate = EXCLUDED.hashrate;`;
     };
 
@@ -107,15 +107,15 @@ class CurrentMiners {
     this.buildCurrentMinersRounds = function (updates) {
       let values = '';
       updates.forEach((miner, idx) => {
-        values += `(
-        ${miner.timestamp},
-        '${miner.miner}',
-        ${miner.efficiency},
-        ${miner.effort},
-        ${miner.invalid},
-        ${miner.stale},
-        '${miner.type}',
-        ${miner.valid},
+        values += `(\
+        ${miner.timestamp},\
+        '${miner.miner}',\
+        ${miner.efficiency},\
+        ${miner.effort},\
+        ${miner.invalid},\
+        ${miner.stale},\
+        '${miner.type}',\
+        ${miner.valid},\
         ${miner.work})`;
         if (idx < updates.length - 1) values += ', ';
       });
@@ -124,20 +124,20 @@ class CurrentMiners {
 
     // Insert Rows Using Round Data
     this.insertCurrentMinersRounds = function (pool, updates) {
-      return `
-      INSERT INTO "${pool}".current_miners (
-        timestamp, miner, efficiency,
-        effort, invalid, stale, type,
-        valid, work)
-      VALUES ${_this.buildCurrentMinersRounds(updates)}
-      ON CONFLICT ON CONSTRAINT current_miners_unique
-      DO UPDATE SET
-        timestamp = EXCLUDED.timestamp,
-        efficiency = EXCLUDED.efficiency,
-        effort = EXCLUDED.effort,
-        invalid = "${pool}".current_miners.invalid + EXCLUDED.invalid,
-        stale = "${pool}".current_miners.stale + EXCLUDED.stale,
-        valid = "${pool}".current_miners.valid + EXCLUDED.valid,
+      return `\
+      INSERT INTO "${pool}".current_miners (\
+        timestamp, miner, efficiency,\
+        effort, invalid, stale, type,\
+        valid, work)\
+      VALUES ${_this.buildCurrentMinersRounds(updates)}\
+      ON CONFLICT ON CONSTRAINT current_miners_unique\
+      DO UPDATE SET\
+        timestamp = EXCLUDED.timestamp,\
+        efficiency = EXCLUDED.efficiency,\
+        effort = EXCLUDED.effort,\
+        invalid = "${pool}".current_miners.invalid + EXCLUDED.invalid,\
+        stale = "${pool}".current_miners.stale + EXCLUDED.stale,\
+        valid = "${pool}".current_miners.valid + EXCLUDED.valid,\
         work = "${pool}".current_miners.work + EXCLUDED.work;`;
     };
 
@@ -145,11 +145,11 @@ class CurrentMiners {
     this.buildCurrentMinersPayments = function (updates) {
       let values = '';
       updates.forEach((miner, idx) => {
-        values += `(
-        ${miner.timestamp},
-        '${miner.miner}',
-        ${miner.balance},
-        ${miner.paid},
+        values += `(\
+        ${miner.timestamp},\
+        '${miner.miner}',\
+        ${miner.balance},\
+        ${miner.paid},\
         '${miner.type}')`;
         if (idx < updates.length - 1) values += ', ';
       });
@@ -158,15 +158,15 @@ class CurrentMiners {
 
     // Insert Rows Using Payment Data
     this.insertCurrentMinersPayments = function (pool, updates) {
-      return `
-      INSERT INTO "${pool}".current_miners (
-        timestamp, miner, balance,
-        paid, type)
-      VALUES ${_this.buildCurrentMinersPayments(updates)}
-      ON CONFLICT ON CONSTRAINT current_miners_unique
-      DO UPDATE SET
-        timestamp = EXCLUDED.timestamp,
-        balance = EXCLUDED.balance,
+      return `\
+      INSERT INTO "${pool}".current_miners (\
+        timestamp, miner, balance,\
+        paid, type)\
+      VALUES ${_this.buildCurrentMinersPayments(updates)}\
+      ON CONFLICT ON CONSTRAINT current_miners_unique\
+      DO UPDATE SET\
+        timestamp = EXCLUDED.timestamp,\
+        balance = EXCLUDED.balance,\
         paid = "${pool}".current_miners.paid + EXCLUDED.paid;`;
     };
 
@@ -174,11 +174,11 @@ class CurrentMiners {
     this.buildCurrentMinersUpdates = function (updates) {
       let values = '';
       updates.forEach((miner, idx) => {
-        values += `(
-        ${miner.timestamp},
-        '${miner.miner}',
-        ${miner.generate},
-        ${miner.immature},
+        values += `(\
+        ${miner.timestamp},\
+        '${miner.miner}',\
+        ${miner.generate},\
+        ${miner.immature},\
         '${miner.type}')`;
         if (idx < updates.length - 1) values += ', ';
       });
@@ -187,30 +187,30 @@ class CurrentMiners {
 
     // Insert Rows Using Payment Data
     this.insertCurrentMinersUpdates = function (pool, updates) {
-      return `
-      INSERT INTO "${pool}".current_miners (
-        timestamp, miner, generate,
-        immature, type)
-      VALUES ${_this.buildCurrentMinersUpdates(updates)}
-      ON CONFLICT ON CONSTRAINT current_miners_unique
-      DO UPDATE SET
-        timestamp = EXCLUDED.timestamp,
-        generate = "${pool}".current_miners.generate + EXCLUDED.generate,
+      return `\
+      INSERT INTO "${pool}".current_miners (\
+        timestamp, miner, generate,\
+        immature, type)\
+      VALUES ${_this.buildCurrentMinersUpdates(updates)}\
+      ON CONFLICT ON CONSTRAINT current_miners_unique\
+      DO UPDATE SET\
+        timestamp = EXCLUDED.timestamp,\
+        generate = "${pool}".current_miners.generate + EXCLUDED.generate,\
         immature = "${pool}".current_miners.immature + EXCLUDED.immature;`;
     };
 
     // Insert Rows Using Reset
     this.insertCurrentMinersReset = function (pool, type) {
-      return `
-      UPDATE "${pool}".current_miners
+      return `\
+      UPDATE "${pool}".current_miners\
       SET generate = 0 WHERE type = '${type}';`;
     };
 
     // Delete Rows From Current Round
     this.deleteCurrentMinersInactive = function (pool, timestamp) {
-      return `
-      DELETE FROM "${pool}".current_miners
-      WHERE timestamp < ${timestamp} AND balance = 0
+      return `\
+      DELETE FROM "${pool}".current_miners\
+      WHERE timestamp < ${timestamp} AND balance = 0\
       AND generate = 0 AND immature = 0 AND paid = 0;`;
     };
   }

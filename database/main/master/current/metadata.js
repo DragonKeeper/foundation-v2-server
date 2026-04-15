@@ -71,9 +71,9 @@ class CurrentMetadata {
     this.buildCurrentMetadataBlocks = function (updates) {
       let values = '';
       updates.forEach((metadata, idx) => {
-        values += `(
-        ${metadata.timestamp},
-        ${metadata.blocks},
+        values += `(\
+        ${metadata.timestamp},\
+        ${metadata.blocks},\
         '${metadata.type}')`;
         if (idx < updates.length - 1) values += ', ';
       });
@@ -82,13 +82,13 @@ class CurrentMetadata {
 
     // Insert Rows Using Blocks Data
     this.insertCurrentMetadataBlocks = function (pool, updates) {
-      return `
-      INSERT INTO "${pool}".current_metadata (
-        timestamp, blocks, type)
-      VALUES ${_this.buildCurrentMetadataBlocks(updates)}
-      ON CONFLICT ON CONSTRAINT current_metadata_unique
-      DO UPDATE SET
-        timestamp = EXCLUDED.timestamp,
+      return `\
+      INSERT INTO "${pool}".current_metadata (\
+        timestamp, blocks, type)\
+      VALUES ${_this.buildCurrentMetadataBlocks(updates)}\
+      ON CONFLICT ON CONSTRAINT current_metadata_unique\
+      DO UPDATE SET\
+        timestamp = EXCLUDED.timestamp,\
         blocks = "${pool}".current_metadata.blocks + EXCLUDED.blocks;`;
     };
 
@@ -96,11 +96,11 @@ class CurrentMetadata {
     this.buildCurrentMetadataHashrate = function (updates) {
       let values = '';
       updates.forEach((metadata, idx) => {
-        values += `(
-        ${metadata.timestamp},
-        ${metadata.hashrate},
-        ${metadata.miners},
-        '${metadata.type}',
+        values += `(\
+        ${metadata.timestamp},\
+        ${metadata.hashrate},\
+        ${metadata.miners},\
+        '${metadata.type}',\
         ${metadata.workers})`;
         if (idx < updates.length - 1) values += ', ';
       });
@@ -109,16 +109,16 @@ class CurrentMetadata {
 
     // Insert Rows Using Hashrate Data
     this.insertCurrentMetadataHashrate = function (pool, updates) {
-      return `
-      INSERT INTO "${pool}".current_metadata (
-        timestamp, hashrate, miners,
-        type, workers)
-      VALUES ${_this.buildCurrentMetadataHashrate(updates)}
-      ON CONFLICT ON CONSTRAINT current_metadata_unique
-      DO UPDATE SET
-        timestamp = EXCLUDED.timestamp,
-        hashrate = EXCLUDED.hashrate,
-        miners = EXCLUDED.miners,
+      return `\
+      INSERT INTO "${pool}".current_metadata (\
+        timestamp, hashrate, miners,\
+        type, workers)\
+      VALUES ${_this.buildCurrentMetadataHashrate(updates)}\
+      ON CONFLICT ON CONSTRAINT current_metadata_unique\
+      DO UPDATE SET\
+        timestamp = EXCLUDED.timestamp,\
+        hashrate = EXCLUDED.hashrate,\
+        miners = EXCLUDED.miners,\
         workers = EXCLUDED.workers;`;
     };
 
@@ -126,8 +126,8 @@ class CurrentMetadata {
     this.buildCurrentMetadataRoundsReset = function (updates) {
       let values = '';
       updates.forEach((metadata, idx) => {
-        values += `(
-        ${metadata.timestamp},
+        values += `(\
+        ${metadata.timestamp},\
         0, 0, 0, 0, '${metadata.type}', 0, 0)`;
         if (idx < updates.length - 1) values += ', ';
       });
@@ -136,16 +136,16 @@ class CurrentMetadata {
 
     // Insert Rows Using Reset
     this.insertCurrentMetadataRoundsReset = function (pool, updates) {
-      return `
-      INSERT INTO "${pool}".current_metadata (
-        timestamp, efficiency, effort,
-        invalid, stale, type, valid,
-        work)
-      VALUES ${_this.buildCurrentMetadataRoundsReset(updates)}
-      ON CONFLICT ON CONSTRAINT current_metadata_unique
-      DO UPDATE SET
-        timestamp = EXCLUDED.timestamp,
-        efficiency = 0, effort = 0, invalid = 0,
+      return `\
+      INSERT INTO "${pool}".current_metadata (\
+        timestamp, efficiency, effort,\
+        invalid, stale, type, valid,\
+        work)\
+      VALUES ${_this.buildCurrentMetadataRoundsReset(updates)}\
+      ON CONFLICT ON CONSTRAINT current_metadata_unique\
+      DO UPDATE SET\
+        timestamp = EXCLUDED.timestamp,\
+        efficiency = 0, effort = 0, invalid = 0,\
         stale = 0, valid = 0, work = 0;`;
     };
 
@@ -153,14 +153,14 @@ class CurrentMetadata {
     this.buildCurrentMetadataRounds = function (updates) {
       let values = '';
       updates.forEach((metadata, idx) => {
-        values += `(
-        ${metadata.timestamp},
-        ${metadata.efficiency},
-        ${metadata.effort},
-        ${metadata.invalid},
-        ${metadata.stale},
-        '${metadata.type}',
-        ${metadata.valid},
+        values += `(\
+        ${metadata.timestamp},\
+        ${metadata.efficiency},\
+        ${metadata.effort},\
+        ${metadata.invalid},\
+        ${metadata.stale},\
+        '${metadata.type}',\
+        ${metadata.valid},\
         ${metadata.work})`;
         if (idx < updates.length - 1) values += ', ';
       });
@@ -169,20 +169,20 @@ class CurrentMetadata {
 
     // Insert Rows Using Round Data
     this.insertCurrentMetadataRounds = function (pool, updates) {
-      return `
-      INSERT INTO "${pool}".current_metadata (
-        timestamp, efficiency, effort,
-        invalid, stale, type, valid,
-        work)
-      VALUES ${_this.buildCurrentMetadataRounds(updates)}
-      ON CONFLICT ON CONSTRAINT current_metadata_unique
-      DO UPDATE SET
-        timestamp = EXCLUDED.timestamp,
-        efficiency = EXCLUDED.efficiency,
-        effort = EXCLUDED.effort,
-        invalid = "${pool}".current_metadata.invalid + EXCLUDED.invalid,
-        stale = "${pool}".current_metadata.stale + EXCLUDED.stale,
-        valid = "${pool}".current_metadata.valid + EXCLUDED.valid,
+      return `\
+      INSERT INTO "${pool}".current_metadata (\
+        timestamp, efficiency, effort,\
+        invalid, stale, type, valid,\
+        work)\
+      VALUES ${_this.buildCurrentMetadataRounds(updates)}\
+      ON CONFLICT ON CONSTRAINT current_metadata_unique\
+      DO UPDATE SET\
+        timestamp = EXCLUDED.timestamp,\
+        efficiency = EXCLUDED.efficiency,\
+        effort = EXCLUDED.effort,\
+        invalid = "${pool}".current_metadata.invalid + EXCLUDED.invalid,\
+        stale = "${pool}".current_metadata.stale + EXCLUDED.stale,\
+        valid = "${pool}".current_metadata.valid + EXCLUDED.valid,\
         work = "${pool}".current_metadata.work + EXCLUDED.work;`;
     };
   }

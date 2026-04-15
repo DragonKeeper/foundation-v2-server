@@ -69,11 +69,11 @@ class HistoricalPayments {
     this.buildHistoricalPaymentsMain = function (updates) {
       let values = '';
       updates.forEach((payment, idx) => {
-        values += `(
-        ${payment.timestamp},
-        '${payment.miner}',
-        ${payment.amount},
-        '${payment.transaction}',
+        values += `(\
+        ${payment.timestamp},\
+        '${payment.miner}',\
+        ${payment.amount},\
+        '${payment.transaction}',\
         '${payment.type}')`;
         if (idx < updates.length - 1) values += ', ';
       });
@@ -82,11 +82,11 @@ class HistoricalPayments {
 
     // Insert Rows Using Historical Data
     this.insertHistoricalPaymentsMain = function (pool, updates) {
-      return `
-      INSERT INTO "${pool}".historical_payments (
-        timestamp, miner, amount,
-        transaction, type)
-      VALUES ${_this.buildHistoricalPaymentsMain(updates)}
+      return `\
+      INSERT INTO "${pool}".historical_payments (\
+        timestamp, miner, amount,\
+        transaction, type)\
+      VALUES ${_this.buildHistoricalPaymentsMain(updates)}\
       ON CONFLICT DO NOTHING;`;
     };
   }

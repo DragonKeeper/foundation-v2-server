@@ -68,62 +68,62 @@ class CurrentHashrate {
 
     // Select Count of Distinct Miners
     this.countCurrentHashrateMiner = function (pool, timestamp, type) {
-      return `
-      SELECT CAST(COUNT(DISTINCT miner) AS INT)
-      FROM "${pool}".current_hashrate
-      WHERE timestamp >= ${timestamp}
+      return `\
+      SELECT CAST(COUNT(DISTINCT miner) AS INT)\
+      FROM "${pool}".current_hashrate\
+      WHERE timestamp >= ${timestamp}\
       AND type = '${type}';`;
     };
 
     // Select Sum of Rows Using Miners
     this.sumCurrentHashrateMiner = function (pool, timestamp, type) {
-      return `
-      SELECT miner, SUM(work) as current_work
-      FROM "${pool}".current_hashrate
-      WHERE timestamp >= ${timestamp}
+      return `\
+      SELECT miner, SUM(work) as current_work\
+      FROM "${pool}".current_hashrate\
+      WHERE timestamp >= ${timestamp}\
       AND type = '${type}' GROUP BY miner;`;
     };
 
     // Select Count of Distinct Workers
     this.countCurrentHashrateWorker = function (pool, timestamp, solo, type) {
-      return `
-      SELECT CAST(COUNT(DISTINCT worker) AS INT)
-      FROM "${pool}".current_hashrate
-      WHERE timestamp >= ${timestamp}
+      return `\
+      SELECT CAST(COUNT(DISTINCT worker) AS INT)\
+      FROM "${pool}".current_hashrate\
+      WHERE timestamp >= ${timestamp}\
       AND solo = ${solo} AND type = '${type}';`;
     };
 
     // Select Sum of Rows Using Workers
     this.sumCurrentHashrateWorker = function (pool, timestamp, solo, type) {
-      return `
-      SELECT worker, SUM(work) as current_work
-      FROM "${pool}".current_hashrate
-      WHERE timestamp >= ${timestamp}
-      AND solo = ${solo} AND type = '${type}'
+      return `\
+      SELECT worker, SUM(work) as current_work\
+      FROM "${pool}".current_hashrate\
+      WHERE timestamp >= ${timestamp}\
+      AND solo IS FALSE AND type = '${type}'\
       GROUP BY worker;`;
     };
 
     // Select Sum of Rows Using Types
     this.sumCurrentHashrateType = function (pool, timestamp, solo, type) {
-      return `
-      SELECT SUM(work) as current_work
-      FROM "${pool}".current_hashrate
-      WHERE timestamp >= ${timestamp}
-      AND solo = ${solo} AND type = '${type}';`;
+      return `\
+      SELECT SUM(work) as current_work\
+      FROM "${pool}".current_hashrate\
+      WHERE timestamp >= ${timestamp}\
+      AND solo IS FALSE AND type = '${type}';`;
     };
 
     // Build Hashrate Values String
     this.buildCurrentHashrateMain = function (updates) {
       let values = '';
       updates.forEach((hashrate, idx) => {
-        values += `(
-        ${hashrate.timestamp},
-        '${hashrate.miner}',
-        '${hashrate.worker}',
-        '${hashrate.identifier}',
-        '${hashrate.share}',
-        ${hashrate.solo},
-        '${hashrate.type}',
+        values += `(\
+        ${hashrate.timestamp},\
+        '${hashrate.miner}',\
+        '${hashrate.worker}',\
+        '${hashrate.identifier}',\
+        '${hashrate.share}',\
+        ${hashrate.solo},\
+        '${hashrate.type}',\
         ${hashrate.work})`;
         if (idx < updates.length - 1) values += ', ';
       });
@@ -132,18 +132,18 @@ class CurrentHashrate {
 
     // Insert Rows Using Current Round
     this.insertCurrentHashrateMain = function (pool, updates) {
-      return `
-      INSERT INTO "${pool}".current_hashrate (
-        timestamp, miner, worker,
-        identifier, share, solo,
-        type, work)
+      return `\
+      INSERT INTO "${pool}".current_hashrate (\
+        timestamp, miner, worker,\
+        identifier, share, solo,\
+        type, work)\
       VALUES ${_this.buildCurrentHashrateMain(updates)};`;
     };
 
     // Delete Rows From Current Round
     this.deleteCurrentHashrateInactive = function (pool, timestamp) {
-      return `
-      DELETE FROM "${pool}".current_hashrate
+      return `\
+      DELETE FROM "${pool}".current_hashrate\
       WHERE timestamp < ${timestamp};`;
     };
   }

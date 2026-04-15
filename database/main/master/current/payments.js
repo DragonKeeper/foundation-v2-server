@@ -69,9 +69,9 @@ class CurrentPayments {
     this.buildCurrentPaymentsMain = function (updates) {
       let values = '';
       updates.forEach((transaction, idx) => {
-        values += `(
-        ${transaction.timestamp},
-        '${transaction.round}',
+        values += `(\
+        ${transaction.timestamp},\
+        '${transaction.round}',\
         '${transaction.type}')`;
         if (idx < updates.length - 1) values += ', ';
       });
@@ -80,18 +80,18 @@ class CurrentPayments {
 
     // Insert Rows Using Current Data
     this.insertCurrentPaymentsMain = function (pool, updates) {
-      return `
-      INSERT INTO "${pool}".current_payments (
-        timestamp, round, type)
-      VALUES ${_this.buildCurrentPaymentsMain(updates)}
-      ON CONFLICT ON CONSTRAINT current_payments_unique
+      return `\
+      INSERT INTO "${pool}".current_payments (\
+        timestamp, round, type)\
+      VALUES ${_this.buildCurrentPaymentsMain(updates)}\
+      ON CONFLICT ON CONSTRAINT current_payments_unique\
       DO NOTHING RETURNING round;`;
     };
 
     // Delete Rows From Current Rounds
     this.deleteCurrentPaymentsMain = function (pool, rounds) {
-      return `
-      DELETE FROM "${pool}".current_payments
+      return `\
+      DELETE FROM "${pool}".current_payments\
       WHERE round IN (${rounds.join(', ')});`;
     };
   }

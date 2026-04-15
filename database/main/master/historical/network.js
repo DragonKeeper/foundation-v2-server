@@ -69,12 +69,12 @@ class HistoricalNetwork {
     this.buildHistoricalNetworkMain = function (updates) {
       let values = '';
       updates.forEach((network, idx) => {
-        values += `(
-        ${network.timestamp},
-        ${network.recent},
-        ${network.difficulty},
-        ${network.hashrate},
-        ${network.height},
+        values += `(\
+        ${network.timestamp},\
+        ${network.recent},\
+        ${network.difficulty},\
+        ${network.hashrate},\
+        ${network.height},\
         '${network.type}')`;
         if (idx < updates.length - 1) values += ', ';
       });
@@ -83,12 +83,12 @@ class HistoricalNetwork {
 
     // Insert Rows Using Historical Data
     this.insertHistoricalNetworkMain = function (pool, updates) {
-      return `
-      INSERT INTO "${pool}".historical_network (
-        timestamp, recent, difficulty,
-        hashrate, height, type)
-      VALUES ${_this.buildHistoricalNetworkMain(updates)}
-      ON CONFLICT ON CONSTRAINT historical_network_recent
+      return `\
+      INSERT INTO "${pool}".historical_network (\
+        timestamp, recent, difficulty,\
+        hashrate, height, type)\
+      VALUES ${_this.buildHistoricalNetworkMain(updates)}\
+      ON CONFLICT ON CONSTRAINT historical_network_recent\
       DO NOTHING;`;
     };
   }

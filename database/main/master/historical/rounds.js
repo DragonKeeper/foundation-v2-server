@@ -70,18 +70,18 @@ class HistoricalRounds {
     this.buildHistoricalRoundsMain = function (updates) {
       let values = '';
       updates.forEach((round, idx) => {
-        values += `(
-        ${round.timestamp},
-        '${round.miner}',
-        '${round.worker}',
-        '${round.identifier}',
-        ${round.invalid},
-        '${round.round}',
-        ${round.solo},
-        ${round.stale},
-        ${round.times},
-        '${round.type}',
-        ${round.valid},
+        values += `(\
+        ${round.timestamp},\
+        '${round.miner}',\
+        '${round.worker}',\
+        '${round.identifier}',\
+        ${round.invalid},\
+        '${round.round}',\
+        ${round.solo},\
+        ${round.stale},\
+        ${round.times},\
+        '${round.type}',\
+        ${round.valid},\
         ${round.work})`;
         if (idx < updates.length - 1) values += ', ';
       });
@@ -90,13 +90,13 @@ class HistoricalRounds {
 
     // Insert Rows Using Historical Data
     this.insertHistoricalRoundsMain = function (pool, updates) {
-      return `
-      INSERT INTO "${pool}".historical_rounds (
-        timestamp, miner, worker,
-        identifier, invalid, round,
-        solo, stale, times, type,
-        valid, work)
-      VALUES ${_this.buildHistoricalRoundsMain(updates)}
+      return `\
+      INSERT INTO "${pool}".historical_rounds (\
+        timestamp, miner, worker,\
+        identifier, invalid, round,\
+        solo, stale, times, type,\
+        valid, work)\
+      VALUES ${_this.buildHistoricalRoundsMain(updates)}\
       ON CONFLICT DO NOTHING;`;
     };
   }

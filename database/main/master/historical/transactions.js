@@ -69,10 +69,10 @@ class HistoricalTransactions {
     this.buildHistoricalTransactionsMain = function (updates) {
       let values = '';
       updates.forEach((transaction, idx) => {
-        values += `(
-        ${transaction.timestamp},
-        ${transaction.amount},
-        '${transaction.transaction}',
+        values += `(\
+        ${transaction.timestamp},\
+        ${transaction.amount},\
+        '${transaction.transaction}',\
         '${transaction.type}')`;
         if (idx < updates.length - 1) values += ', ';
       });
@@ -81,11 +81,11 @@ class HistoricalTransactions {
 
     // Insert Rows Using Historical Data
     this.insertHistoricalTransactionsMain = function (pool, updates) {
-      return `
-      INSERT INTO "${pool}".historical_transactions (
-        timestamp, amount,
-        transaction, type)
-      VALUES ${_this.buildHistoricalTransactionsMain(updates)}
+      return `\
+      INSERT INTO "${pool}".historical_transactions (\
+        timestamp, amount,\
+        transaction, type)\
+      VALUES ${_this.buildHistoricalTransactionsMain(updates)}\
       ON CONFLICT DO NOTHING;`;
     };
   }

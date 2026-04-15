@@ -71,22 +71,22 @@ class HistoricalBlocks {
     this.buildHistoricalBlocksMain = function (updates) {
       let values = '';
       updates.forEach((block, idx) => {
-        values += `(
-        ${block.timestamp},
-        ${block.submitted},
-        '${block.miner}',
-        '${block.worker}',
-        '${block.category}',
-        ${block.confirmations},
-        ${block.difficulty},
-        '${block.hash}',
-        ${block.height},
-        '${block.identifier}',
-        ${block.luck},
-        ${block.reward},
-        '${block.round}',
-        ${block.solo},
-        '${block.transaction}',
+        values += `(\
+        ${block.timestamp},\
+        ${block.submitted},\
+        '${block.miner}',\
+        '${block.worker}',\
+        '${block.category}',\
+        ${block.confirmations},\
+        ${block.difficulty},\
+        '${block.hash}',\
+        ${block.height},\
+        '${block.identifier}',\
+        ${block.luck},\
+        ${block.reward},\
+        '${block.round}',\
+        ${block.solo},\
+        '${block.transaction}',\
         '${block.type}')`;
         if (idx < updates.length - 1) values += ', ';
       });
@@ -95,15 +95,15 @@ class HistoricalBlocks {
 
     // Insert Rows Using Blocks Data
     this.insertHistoricalBlocksMain = function (pool, updates) {
-      return `
-      INSERT INTO "${pool}".historical_blocks (
-        timestamp, submitted, miner,
-        worker, category, confirmations,
-        difficulty, hash, height,
-        identifier, luck, reward,
-        round, solo, transaction,
-        type)
-      VALUES ${_this.buildHistoricalBlocksMain(updates)}
+      return `\
+      INSERT INTO "${pool}".historical_blocks (\
+        timestamp, submitted, miner,\
+        worker, category, confirmations,\
+        difficulty, hash, height,\
+        identifier, luck, reward,\
+        round, solo, transaction,\
+        type)\
+      VALUES ${_this.buildHistoricalBlocksMain(updates)}\
       ON CONFLICT DO NOTHING;`;
     };
   }

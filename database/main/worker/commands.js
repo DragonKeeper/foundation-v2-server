@@ -7,6 +7,7 @@ import LocalTransactions from './local/transactions.js';
 
 // Main Command Function
 class Commands {
+
   constructor(logger, client, configMain) {
 
     const _this = this;
@@ -20,26 +21,25 @@ class Commands {
     this.local = {};
     this.retries = 0;
 
-    // Execute Commands (async/await version)
-    this.executor = async function (commands) {
-      const query = commands.join(' ');
+   // Simpler async executor: joins commands and executes as a single query
+    this.executor = async (commands, callback) => {
+      // Join commands, trim, and replace all whitespace (indentation, newlines) with a single space
+      // Removing any indentation and newlines to prevent any potential issues with the query execution.
+      // To ensure that the commands are properly formatted for logging and debugging purposes.
+      // All current queries in backticks have been formatted with backslashes to prevent newlines, but this will ensure that any
+      // future queries that are not properly formatted will still be executed correctly.
+      const query = commands.join(' ').trim().replace(/\s+/g, ' ');
       try {
-        const results = await _this.client.query(query);
-        _this.retries = 0; // Reset retries on success
+        const results = await this.client.query(query);
+        if (callback) callback(results);
+        this.retries = 0;
         return results;
       } catch (error) {
-        if (error.message && error.message.includes('current transaction is aborted')) {
-          try {
-            await this.client.query('ROLLBACK');
-          } catch (rollbackError) {
-            // Optionally log rollback error
-          }
-          return this.retry(commands, error);
-        } else {
-          return this.retry(commands, error);
-        }
+        if (callback) this.retry(commands, error, callback);
+        else return this.retry(commands, error);
       }
     };
+
 
     // Handle Retries (async/await version)
     this.retry = async function (commands, error) {

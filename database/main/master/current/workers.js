@@ -68,10 +68,10 @@ class CurrentWorkers {
 
     // Select Current Rounds for Batching
     this.selectCurrentWorkersBatchAddresses = function (pool, addresses, type) {
-      return addresses.length >= 1 ? `
-      SELECT DISTINCT ON (worker) * FROM "${pool}".current_workers
-      WHERE worker IN (${addresses.join(', ')}) AND type = '${type}'
-      ORDER BY worker, timestamp DESC;` : `
+      return addresses.length >= 1 ? `\
+      SELECT DISTINCT ON (worker) * FROM "${pool}".current_workers\
+      WHERE worker IN (${addresses.join(', ')}) AND type = '${type}'\
+      ORDER BY worker, timestamp DESC;` : `\
       SELECT * FROM "${pool}".current_workers LIMIT 0;`;
     };
 
@@ -79,12 +79,12 @@ class CurrentWorkers {
     this.buildCurrentWorkersHashrate = function (updates) {
       let values = '';
       updates.forEach((worker, idx) => {
-        values += `(
-        ${worker.timestamp},
-        '${worker.miner}',
-        '${worker.worker}',
-        ${worker.hashrate},
-        ${worker.solo},
+        values += `(\
+        ${worker.timestamp},\
+        '${worker.miner}',\
+        '${worker.worker}',\
+        ${worker.hashrate},\
+        ${worker.solo},\
         '${worker.type}')`;
         if (idx < updates.length - 1) values += ', ';
       });
@@ -93,14 +93,14 @@ class CurrentWorkers {
 
     // Insert Rows Using Hashrate Data
     this.insertCurrentWorkersHashrate = function (pool, updates) {
-      return `
-      INSERT INTO "${pool}".current_workers (
-        timestamp, miner, worker,
-        hashrate, solo, type)
-      VALUES ${_this.buildCurrentWorkersHashrate(updates)}
-      ON CONFLICT ON CONSTRAINT current_workers_unique
-      DO UPDATE SET
-        timestamp = EXCLUDED.timestamp,
+      return `\
+      INSERT INTO "${pool}".current_workers (\
+        timestamp, miner, worker,\
+        hashrate, solo, type)\
+      VALUES ${_this.buildCurrentWorkersHashrate(updates)}\
+      ON CONFLICT ON CONSTRAINT current_workers_unique\
+      DO UPDATE SET\
+        timestamp = EXCLUDED.timestamp,\
         hashrate = EXCLUDED.hashrate;`;
     };
 
@@ -108,17 +108,17 @@ class CurrentWorkers {
     this.buildCurrentWorkersRounds = function (updates) {
       let values = '';
       updates.forEach((worker, idx) => {
-        values += `(
-        ${worker.timestamp},
-        '${worker.miner}',
-        '${worker.worker}',
-        ${worker.efficiency},
-        ${worker.effort},
-        ${worker.invalid},
-        ${worker.solo},
-        ${worker.stale},
-        '${worker.type}',
-        ${worker.valid},
+        values += `(\
+        ${worker.timestamp},\
+        '${worker.miner}',\
+        '${worker.worker}',\
+        ${worker.efficiency},\
+        ${worker.effort},\
+        ${worker.invalid},\
+        ${worker.solo},\
+        ${worker.stale},\
+        '${worker.type}',\
+        ${worker.valid},\
         ${worker.work})`;
         if (idx < updates.length - 1) values += ', ';
       });
@@ -127,29 +127,29 @@ class CurrentWorkers {
 
     // Insert Rows Using Round Data
     this.insertCurrentWorkersRounds = function (pool, updates) {
-      return `
-      INSERT INTO "${pool}".current_workers (
-        timestamp, miner, worker,
-        efficiency, effort, invalid,
-        solo, stale, type, valid,
-        work)
-      VALUES ${_this.buildCurrentWorkersRounds(updates)}
-      ON CONFLICT ON CONSTRAINT current_workers_unique
-      DO UPDATE SET
-        timestamp = EXCLUDED.timestamp,
-        efficiency = EXCLUDED.efficiency,
-        effort = EXCLUDED.effort,
-        invalid = "${pool}".current_workers.invalid + EXCLUDED.invalid,
-        solo = EXCLUDED.solo,
-        stale = "${pool}".current_workers.stale + EXCLUDED.stale,
-        valid = "${pool}".current_workers.valid + EXCLUDED.valid,
+      return `\
+      INSERT INTO "${pool}".current_workers (\
+        timestamp, miner, worker,\
+        efficiency, effort, invalid,\
+        solo, stale, type, valid,\
+        work)\
+      VALUES ${_this.buildCurrentWorkersRounds(updates)}\
+      ON CONFLICT ON CONSTRAINT current_workers_unique\
+      DO UPDATE SET\
+        timestamp = EXCLUDED.timestamp,\
+        efficiency = EXCLUDED.efficiency,\
+        effort = EXCLUDED.effort,\
+        invalid = "${pool}".current_workers.invalid + EXCLUDED.invalid,\
+        solo = EXCLUDED.solo,\
+        stale = "${pool}".current_workers.stale + EXCLUDED.stale,\
+        valid = "${pool}".current_workers.valid + EXCLUDED.valid,\
         work = "${pool}".current_workers.work + EXCLUDED.work;`;
     };
 
     // Delete Rows From Current Round
     this.deleteCurrentWorkersInactive = function (pool, timestamp) {
-      return `
-      DELETE FROM "${pool}".current_workers
+      return `\
+      DELETE FROM "${pool}".current_workers\
       WHERE timestamp < ${timestamp};`;
     };
   }

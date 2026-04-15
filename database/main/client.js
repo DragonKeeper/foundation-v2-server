@@ -10,12 +10,18 @@ import postgres from 'pg';
 // Main Shares Function
 class Client {
   constructor(logger, configMain) {
-
     const _this = this;
     this.logger = logger;
     this.configMain = configMain;
     this.text = Text[configMain.language];
     this.timing = [1000, 5000, 30000];
+
+    // Allow logger to be updated after construction
+    this.setLogger = function(newLogger) {
+      if (newLogger) {
+        this.logger = newLogger;
+      }
+    };
 
     // Client-Specific Variables
     this.master = { reconnecting: false, retries: 0 };

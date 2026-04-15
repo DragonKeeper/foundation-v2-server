@@ -69,11 +69,11 @@ class CurrentNetwork {
     this.buildCurrentNetworkMain = function (updates) {
       let values = '';
       updates.forEach((network, idx) => {
-        values += `(
-        ${network.timestamp},
-        ${network.difficulty},
-        ${network.hashrate},
-        ${network.height},
+        values += `(\
+        ${network.timestamp},\
+        ${network.difficulty},\
+        ${network.hashrate},\
+        ${network.height},\
         '${network.type}')`;
         if (idx < updates.length - 1) values += ', ';
       });
@@ -82,16 +82,16 @@ class CurrentNetwork {
 
     // Insert Rows Using Current Data
     this.insertCurrentNetworkMain = function (pool, updates) {
-      const sql = `
-      INSERT INTO "${pool}".current_network (
-        timestamp, difficulty,
-        hashrate, height, type)
-      VALUES ${_this.buildCurrentNetworkMain(updates)}
-      ON CONFLICT ON CONSTRAINT current_network_unique
-      DO UPDATE SET
-        timestamp = EXCLUDED.timestamp,
-        difficulty = EXCLUDED.difficulty,
-        hashrate = EXCLUDED.hashrate,
+      const sql = `\
+      INSERT INTO "${pool}".current_network (\
+        timestamp, difficulty,\
+        hashrate, height, type)\
+      VALUES ${_this.buildCurrentNetworkMain(updates)}\
+      ON CONFLICT ON CONSTRAINT current_network_unique\
+      DO UPDATE SET\
+        timestamp = EXCLUDED.timestamp,\
+        difficulty = EXCLUDED.difficulty,\
+        hashrate = EXCLUDED.hashrate,\
         height = EXCLUDED.height;`;
       return sql;
     };
