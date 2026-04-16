@@ -125,6 +125,9 @@ class Api {
         case (category === 'current' && endpoint === 'workers'):
           _this.endpoints.handleCurrentWorkers(pool, queries, output);
           break;
+        case (category === 'current' && endpoint === 'poolsolometadata'):
+        _this.endpoints.handleCurrentPoolSoloMetadata(pool, queries, output);
+        break;
 
         // Historical Endpoints
         case (category === 'historical' && endpoint === 'blocks'):

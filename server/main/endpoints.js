@@ -231,6 +231,50 @@ class Endpoints {
       }
     };
 
+    // Handle Pool/Solo Metadata Queries
+    this.handleCurrentPoolSoloMetadata = function (pool, queries, callback) {
+      try {
+
+        // Validated Query Types
+        const parameters = {
+        };
+
+        // General Parameter Validation.  Here just to catch any unexpected parameters and prevent them from being used in the query
+        for (let i = 0; i < Object.keys(queries).length; i++) {
+          const query = Object.keys(queries)[i];
+          if (!utils.handleValidation(queries[query], parameters[query])) {
+            const expected = parameters[query] || 'unknown';
+            callback(400, _this.text.websiteValidationText1(query, `<${expected}>`));
+            return;
+          }
+        }
+
+        // Specific Parameter Validation
+        if (queries.solo && !validType.includes(queries.solo)) {
+          callback(400, _this.text.websiteValidationText1('solo', validSolo.join(', ')));
+          return;
+        }
+
+        // Make Request and Return Data
+        const transaction = [_this.master.current.metadata.selectCurrentPoolSoloMetadataMain(pool)];
+        _this.master.executor(transaction)
+          .then((lookups) => {
+            callback(200, lookups.rows);
+          })
+          .catch((err) => {
+            if (_this.logger && typeof _this.logger.error === 'function') {
+              _this.logger.error('Endpoints', 'handleCurrentPoolSoloMetadata', err.stack || err.toString());
+            }
+            callback(500, 'Internal server error in handleCurrentPoolSoloMetadata');
+          });
+      } catch (err) {
+        if (_this.logger && typeof _this.logger.error === 'function') {
+          _this.logger.error('Endpoints', 'handleCurrentPoolSoloMetadata', err.stack || err.toString());
+        }
+        callback(500, 'Internal server error in handleCurrentPoolSoloMetadata');
+      }
+    };
+
     // Handle Miners Queries
     this.handleCurrentMiners = function (pool, queries, callback) {
       if (_this.logger && typeof _this.logger.debug === 'function') {

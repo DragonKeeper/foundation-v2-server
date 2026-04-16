@@ -67,6 +67,13 @@ class CurrentMetadata {
       return output + ';';
     };
 
+    // Select Current Pool/Solo Metadata to get a count of workers and miners and also get a sum of  hashrate for each pool type
+    this.selectCurrentPoolSoloMetadataMain = function (pool, parameters) {
+      let output = `SELECT cw.solo, COUNT(DISTINCT cw.miner) AS distinct_miners, COUNT(DISTINCT cw.worker) AS distinct_workers,\
+      SUM(cw.hashrate) AS total_hashrate FROM "${pool}".current_workers cw GROUP BY cw.solo;`;
+      return output;
+    };
+
     // Build Metadata Values String
     this.buildCurrentMetadataBlocks = function (updates) {
       let values = '';
