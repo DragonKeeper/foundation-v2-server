@@ -242,7 +242,7 @@ class Payments {
 
       // Insert Work into Database
       transaction.push('COMMIT;');
-      _this.master.executorSafe(transaction, () => callback());
+      _this.master.executor(transaction, () => callback());
     };
 
     // Handle Primary Updates
@@ -350,7 +350,7 @@ class Payments {
 
         // Primary Behavior
         case 'primary':
-          _this.master.executorSafe(transaction, (results) => {
+          _this.master.executor(transaction, (results) => {
             if (results.length > 2) {
               results = results[1].rows.map((block) => block.round);
               const validated = blocks.filter((block) => results.includes((block || {}).round));
@@ -383,7 +383,7 @@ class Payments {
 
         // Auxiliary Behavior
         case 'auxiliary':
-          _this.master.executorSafe(transaction, (results) => {
+          _this.master.executor(transaction, (results) => {
             if (results.length > 2) {
               results = results[1].rows.map((block) => block.round);
               const validated = blocks.filter((block) => results.includes((block || {}).round));
