@@ -93,6 +93,15 @@ class CurrentBlocks {
       return values;
     };
 
+    //select the latest block (all fields) for each solo value (true/false)
+    this.selectLatestPoolSoloBlocksMain = function (pool) {
+      return `\
+      SELECT DISTINCT ON (solo) *\
+      FROM "${pool}".current_blocks\
+      ORDER BY solo, timestamp DESC\
+      LIMIT 2;`;
+    }
+
     // Insert Rows Using Blocks Data
     this.insertCurrentBlocksMain = function (pool, updates) {
       return `\
