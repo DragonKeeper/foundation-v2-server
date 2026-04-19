@@ -13,12 +13,14 @@ class Schema {
     this.text = Text[configMain.language];
 
     // Check if Schema Exists in Database
-    this.selectSchema = async function (pool) {
+    this.selectSchema = async function (pool, callback) {
       const command = `\
       SELECT EXISTS (\
         SELECT 1 FROM pg_namespace\
         WHERE nspname = '${pool}');`;
-      _this.executor([command], (results) => callback(results.rows[0].exists));
+      _this.executor([command], (results) => {
+        if (typeof callback === 'function') callback(results.rows[0].exists);
+      });
     };
 
     // Deploy Schema to Database
@@ -32,13 +34,15 @@ class Schema {
     };
 
     // Check if Current Blocks Table Exists in Database
-    this.selectCurrentBlocks = async function (pool) {
+    this.selectCurrentBlocks = async function (pool, callback) {
       const command = `\
       SELECT EXISTS (\
         SELECT FROM information_schema.tables\
         WHERE table_schema = '${pool}'\
         AND table_name = 'current_blocks');`;
-      _this.executor([command], (results) => callback(results.rows[0].exists));
+      _this.executor([command], (results) => {
+        if (typeof callback === 'function') callback(results.rows[0].exists);
+      });
     };
 
     // Deploy Current Blocks Table to Database
@@ -70,6 +74,7 @@ class Schema {
       await _this.executor([`CREATE INDEX IF NOT EXISTS current_blocks_worker ON "${pool}".current_blocks(worker, type);`]);
       await _this.executor([`CREATE INDEX IF NOT EXISTS current_blocks_category ON "${pool}".current_blocks(category, type);`]);
       await _this.executor([`CREATE INDEX IF NOT EXISTS current_blocks_identifier ON "${pool}".current_blocks(identifier, type);`]);
+      await _this.executor([`CREATE INDEX IF NOT EXISTS current_blocks_solo_timestamp ON "${pool}".current_blocks(solo, timestamp);`]);
       await _this.executor([`CREATE INDEX IF NOT EXISTS current_blocks_type ON "${pool}".current_blocks(type);`]);
     };
 
@@ -80,7 +85,7 @@ class Schema {
         SELECT FROM information_schema.tables\
         WHERE table_schema = '${pool}'\
         AND table_name = 'current_hashrate');`;
-      _this.executor([command], (results) => callback(results[0].rows[0].exists));
+      _this.executor([command], (results) => callback(results.rows[0].exists));
     };
 
     // Deploy Current Hashrate Table to Database
@@ -111,7 +116,7 @@ class Schema {
         SELECT FROM information_schema.tables\
         WHERE table_schema = '${pool}'\
         AND table_name = 'current_metadata');`;
-      _this.executor([command], (results) => callback(results[0].rows[0].exists));
+      _this.executor([command], (results) => callback(results.rows[0].exists));
     };
 
     // Deploy Current Metadata Table to Database
@@ -145,7 +150,7 @@ class Schema {
         SELECT FROM information_schema.tables
         WHERE table_schema = '${pool}'
         AND table_name = 'current_miners');`;
-      _this.executor([command], (results) => callback(results[0].rows[0].exists));
+      _this.executor([command], (results) => callback(results.rows[0].exists));
     };
 
     // Deploy Current Miners Table to Database
@@ -183,7 +188,7 @@ class Schema {
         SELECT FROM information_schema.tables\
         WHERE table_schema = '${pool}'\
         AND table_name = 'current_network');`;
-      _this.executor([command], (results) => callback(results[0].rows[0].exists));
+      _this.executor([command], (results) => callback(results.rows[0].exists));
     };
 
     // Deploy Historical Network Table to Database
@@ -210,7 +215,7 @@ class Schema {
         SELECT FROM information_schema.tables\
         WHERE table_schema = '${pool}'\
         AND table_name = 'current_payments');`;
-      _this.executor([command], (results) => callback(results[0].rows[0].exists));
+      _this.executor([command], (results) => callback(results.rows[0].exists));
     };
 
     // Deploy Current Payments Table to Database
@@ -235,7 +240,7 @@ class Schema {
         SELECT FROM information_schema.tables\
         WHERE table_schema = '${pool}'\
         AND table_name = 'current_rounds');`;
-      _this.executor([command], (results) => callback(results[0].rows[0].exists));
+      _this.executor([command], (results) => callback(results.rows[0].exists));
     };
 
     // Deploy Current Rounds Table to Database
@@ -276,7 +281,7 @@ class Schema {
         SELECT FROM information_schema.tables\
         WHERE table_schema = '${pool}'\
         AND table_name = 'current_transactions');`;
-      _this.executor([command], (results) => callback(results[0].rows[0].exists));
+      _this.executor([command], (results) => callback(results.rows[0].exists));
     };
 
     // Deploy Current Transactions Table to Database
@@ -301,7 +306,7 @@ class Schema {
         SELECT FROM information_schema.tables\
         WHERE table_schema = '${pool}'\
         AND table_name = 'current_workers');`;
-      _this.executor([command], (results) => callback(results[0].rows[0].exists));
+      _this.executor([command], (results) => callback(results.rows[0].exists));
     };
 
     // Deploy Current Workers Table to Database
@@ -338,7 +343,7 @@ class Schema {
         SELECT FROM information_schema.tables\
         WHERE table_schema = '${pool}'\
         AND table_name = 'historical_blocks');`;
-      _this.executor([command], (results) => callback(results[0].rows[0].exists));
+      _this.executor([command], (results) => callback(results.rows[0].exists));
     };
 
     // Deploy Historical Blocks Table to Database
@@ -370,7 +375,33 @@ class Schema {
       await _this.executor([`CREATE INDEX IF NOT EXISTS historical_blocks_worker ON "${pool}".historical_blocks(worker, type);`]);
       await _this.executor([`CREATE INDEX IF NOT EXISTS historical_blocks_category ON "${pool}".historical_blocks(category, type);`]);
       await _this.executor([`CREATE INDEX IF NOT EXISTS historical_blocks_identifier ON "${pool}".historical_blocks(identifier, type);`]);
+      await _this.executor([`CREATE INDEX IF NOT EXISTS historical_blocks_solo_timestamp ON "${pool}".historical_blocks(solo, timestamp);`]);
       await _this.executor([`CREATE INDEX IF NOT EXISTS historical_blocks_type ON "${pool}".historical_blocks(type);`]);
+    };
+
+    // Check if Block Time Summary Table Exists in Database
+    this.selectBlockTimeSummary = function (pool, callback) {
+      const command = `\
+      SELECT EXISTS (\
+        SELECT FROM information_schema.tables\
+        WHERE table_schema = '${pool}'\
+        AND table_name = 'block_time_summary');`;
+      _this.executor([command], (results) => callback(results.rows[0].exists));
+    };
+
+    // Deploy Block Time Summary Table to Database
+    this.createBlockTimeSummary = async function (pool) {
+      const tableCommand = `\
+        CREATE TABLE IF NOT EXISTS "${pool}".block_time_summary(\
+          id BIGSERIAL PRIMARY KEY,\
+          label VARCHAR NOT NULL,\
+          avg_gap_seconds FLOAT NOT NULL DEFAULT 0,\
+          updated_at BIGINT NOT NULL DEFAULT -1,\
+          CONSTRAINT block_time_summary_unique UNIQUE (label)\
+        );\
+      `;
+      await _this.executor([tableCommand]);
+      await _this.executor([`CREATE INDEX IF NOT EXISTS block_time_summary_label ON "${pool}".block_time_summary(label);`]);
     };
 
     // Check if Historical Metadata Table Exists in Database
@@ -630,6 +661,7 @@ class Schema {
       await _this.handlePromises(pool, _this.selectHistoricalRounds, _this.createHistoricalRounds);
       await _this.handlePromises(pool, _this.selectHistoricalTransactions, _this.createHistoricalTransactions);
       await _this.handlePromises(pool, _this.selectHistoricalWorkers, _this.createHistoricalWorkers);
+      await _this.handlePromises(pool, _this.selectBlockTimeSummary, _this.createBlockTimeSummary);
     };
 
     // Handle Updating Database Schema

@@ -165,6 +165,9 @@ class Api {
         case (category === 'combined' && endpoint === 'rounds'):
           _this.endpoints.handleCombinedRounds(pool, queries, output);
           break;
+        case (category === 'combined' && endpoint === 'blocktimesummary'):
+          _this.endpoints.handleCombinedBlockTimeSummary(pool, queries, output);
+          break;
 
         // Miscellaneous Endpoints
         case (Object.keys(_this.configs).includes(pool) && category === '' && endpoint === ''):

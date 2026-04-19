@@ -15,7 +15,8 @@ class Endpoints {
 
     // Client Handlers
     this.master = {
-      executor: _this.client.master.commands.executor,
+      executor: utils.createPromiseExecutor(_this.client.master.commands.executor),
+      blockTimeSummary: _this.client.master.commands.blockTimeSummary,
       current: _this.client.master.commands.current,
       historical: _this.client.master.commands.historical
     };
@@ -1435,6 +1436,39 @@ class Endpoints {
           _this.logger.error('Endpoints', 'handleCombinedRounds', err.stack || err.toString());
         }
         callback(500, 'Internal server error in handleCombinedRounds');
+      }
+    };
+
+    // Handle Block Time Summary Queries
+    this.handleCombinedBlockTimeSummary = function (pool, queries, callback) {
+      try {
+        const parameters = {};
+
+        for (let i = 0; i < Object.keys(queries).length; i++) {
+          const query = Object.keys(queries)[i];
+          if (!utils.handleValidation(queries[query], parameters[query])) {
+            const expected = parameters[query] || 'unknown';
+            callback(400, _this.text.websiteValidationText1(query, `<${expected}>`));
+            return;
+          }
+        }
+
+        const transaction = [_this.master.blockTimeSummary.selectBlockTimeSummaryMain(pool)];
+        _this.master.executor(transaction)
+          .then((lookups) => {
+            callback(200, lookups.rows);
+          })
+          .catch((err) => {
+            if (_this.logger && typeof _this.logger.error === 'function') {
+              _this.logger.error('Endpoints', 'handleCombinedBlockTimeSummary', err.stack || err.toString());
+            }
+            callback(500, 'Internal server error in handleCombinedBlockTimeSummary');
+          });
+      } catch (err) {
+        if (_this.logger && typeof _this.logger.error === 'function') {
+          _this.logger.error('Endpoints', 'handleCombinedBlockTimeSummary', err.stack || err.toString());
+        }
+        callback(500, 'Internal server error in handleCombinedBlockTimeSummary');
       }
     };
   }

@@ -27,25 +27,23 @@ class Statistics {
     // Client Handlers
     this.master = {
       executor: _this.client.master.commands.executor,
+      blockTimeSummary: _this.client.master.commands.blockTimeSummary,
       current: _this.client.master.commands.current,
       historical: _this.client.master.commands.historical
     };
 
     // Handle Current Metadata Updates
     this.handleCurrentMetadata = function (miners, workers, total, blockType) {
-      // Use map for consistency, even if only one element
-      return [null].map(() => {
-        const algorithm = _this.config.primary.coin.algorithm || 'sha256d';
-        const multiplier = Math.pow(2, 32) / _this.template.algorithms[algorithm].multiplier;
-        const section = _this.config.settings.window.hashrate;
-        return {
-          timestamp: Date.now(),
-          hashrate: (multiplier * total * 1000) / section,
-          miners: miners,
-          type: blockType,
-          workers: workers,
-        };
-      });
+      const algorithm = _this.config.primary.coin.algorithm || 'sha256d';
+      const multiplier = Math.pow(2, 32) / _this.template.algorithms[algorithm].multiplier;
+      const section = _this.config.settings.window.hashrate;
+      return {
+        timestamp: Date.now(),
+        hashrate: (multiplier * total * 1000) / section,
+        miners: miners,
+        type: blockType,
+        workers: workers,
+      };
     };
 
     // Handle Current Miners Updates
@@ -98,27 +96,24 @@ class Statistics {
 
     // Handle Historical Metadata Updates
     this.handleHistoricalMetadata = function (metadata) {
-      // Use map for consistency, even if only one element
-      return [null].map(() => {
-        const timestamp = Date.now();
-        const interval = _this.config.settings.interval.historical;
-        const recent = Math.round(timestamp / interval) * interval;
-        return {
-          timestamp: timestamp,
-          recent: recent,
-          blocks: metadata.blocks,
-          efficiency: metadata.efficiency,
-          effort: metadata.effort,
-          hashrate: metadata.hashrate,
-          invalid: metadata.invalid,
-          miners: metadata.miners,
-          stale: metadata.stale,
-          type: metadata.type,
-          valid: metadata.valid,
-          work: metadata.work,
-          workers: metadata.workers,
-        };
-      });
+      const timestamp = Date.now();
+      const interval = _this.config.settings.interval.historical;
+      const recent = Math.round(timestamp / interval) * interval;
+      return {
+        timestamp: timestamp,
+        recent: recent,
+        blocks: metadata.blocks,
+        efficiency: metadata.efficiency,
+        effort: metadata.effort,
+        hashrate: metadata.hashrate,
+        invalid: metadata.invalid,
+        miners: metadata.miners,
+        stale: metadata.stale,
+        type: metadata.type,
+        valid: metadata.valid,
+        work: metadata.work,
+        workers: metadata.workers,
+      };
     };
 
     // Handle Historical Miners Updates
@@ -192,6 +187,11 @@ class Statistics {
           work: worker.work,
         };
       });
+    };
+
+    this.refreshBlockTimeSummary = function (transaction) {
+      transaction.push(_this.master.blockTimeSummary.refreshBlockTimeSummaryMain(
+        _this.pool, Date.now()));
     };
 
     // Handle Primary Updates
@@ -280,9 +280,13 @@ class Statistics {
           _this.pool, historicalSharedWorkersUpdates));
       }
 
+      _this.refreshBlockTimeSummary(transaction);
+
       // Insert Work into Database
       transaction.push('COMMIT;');
-      _this.master.executor(transaction);
+      _this.master.executor(transaction, () => {
+        if (typeof callback === 'function') callback();
+      });
     };
 
     // Handle Auxiliary Updates
@@ -300,7 +304,6 @@ class Statistics {
         const currentMetadata = lookups[8].rows[0].current_work || 0;
         const metadataUpdates = _this.handleCurrentMetadata(
           minersMetadata, workersMetadata, currentMetadata, 'auxiliary');
-        // handleCurrentMetadata returns an array, but insertCurrentMetadataHashrate expects an array of objects
         transaction.push(_this.master.current.metadata.insertCurrentMetadataHashrate(
           _this.pool, metadataUpdates));
       }
@@ -337,7 +340,7 @@ class Statistics {
         const historicalMetadata = lookups[9].rows[0];
         const historicalMetadataUpdates = _this.handleHistoricalMetadata(historicalMetadata);
         transaction.push(_this.master.historical.metadata.insertHistoricalMetadataMain(
-          _this.pool, [historicalMetadataUpdates]));
+          _this.pool, historicalMetadataUpdates));
       }
 
       // Handle Historical Miners Updates
@@ -372,9 +375,13 @@ class Statistics {
           _this.pool, historicalSharedWorkersUpdates));
       }
 
+      _this.refreshBlockTimeSummary(transaction);
+
       // Insert Work into Database
       transaction.push('COMMIT;');
-      _this.master.executor(transaction);
+      _this.master.executor(transaction, () => {
+        if (typeof callback === 'function') callback();
+      });
     };
 
     // Handle Statistics Updates
@@ -388,64 +395,83 @@ class Statistics {
       const inactiveWindow = Date.now() - _this.config.settings.window.inactive;
       const updateWindow = Date.now() - _this.config.settings.window.updates;
 
+      const current = _this.master.current || {};
+      const hashrate = current.hashrate;
+      const metadata = current.metadata;
+      const miners = current.miners;
+      const network = current.network;
+      const transactions = current.transactions;
+      const workers = current.workers;
+
+      if (!hashrate || !metadata || !miners || !network || !transactions || !workers) {
+        callback();
+        return;
+      }
+
       // DEBUG: Step-by-step row counts for filters
-      const countCurrentHashrateMiner = _this.master.current.hashrate.countCurrentHashrateMiner(_this.pool, hashrateWindow, blockType);
-      const countCurrentHashrateWorkerSolo = _this.master.current.hashrate.countCurrentHashrateWorker(_this.pool, hashrateWindow, true, blockType);
-      const countCurrentHashrateWorkerShared = _this.master.current.hashrate.countCurrentHashrateWorker(_this.pool, hashrateWindow, false, blockType);
+      const countCurrentHashrateMiner = hashrate.countCurrentHashrateMiner(_this.pool, hashrateWindow, blockType);
+      const countCurrentHashrateWorkerSolo = hashrate.countCurrentHashrateWorker(_this.pool, hashrateWindow, true, blockType);
+      const countCurrentHashrateWorkerShared = hashrate.countCurrentHashrateWorker(_this.pool, hashrateWindow, false, blockType);
 
 
       // Build Combined Transaction
       let transaction = [
         'BEGIN;',
-        _this.master.current.hashrate.deleteCurrentHashrateInactive(_this.pool, hashrateWindow),
+        hashrate.deleteCurrentHashrateInactive(_this.pool, hashrateWindow),
         countCurrentHashrateMiner,
         countCurrentHashrateWorkerSolo,
         countCurrentHashrateWorkerShared,
-        _this.master.current.hashrate.sumCurrentHashrateMiner(_this.pool, hashrateWindow, blockType),
-        _this.master.current.hashrate.sumCurrentHashrateWorker(_this.pool, hashrateWindow, true, blockType),
-        _this.master.current.hashrate.sumCurrentHashrateWorker(_this.pool, hashrateWindow, false, blockType),
-        _this.master.current.hashrate.sumCurrentHashrateType(_this.pool, hashrateWindow, false, blockType),
-        _this.master.current.metadata.selectCurrentMetadataMain(_this.pool, { type: blockType }),
-        _this.master.current.miners.deleteCurrentMinersInactive(_this.pool, inactiveWindow),
-        _this.master.current.miners.selectCurrentMinersMain(_this.pool, { type: blockType }),
-        _this.master.current.network.selectCurrentNetworkMain(_this.pool, { type: blockType }),
-        _this.master.current.transactions.deleteCurrentTransactionsInactive(_this.pool, updateWindow),
-        _this.master.current.workers.deleteCurrentWorkersInactive(_this.pool, inactiveWindow),
-        _this.master.current.workers.selectCurrentWorkersMain(_this.pool, { solo: true, type: blockType }),
-        _this.master.current.workers.selectCurrentWorkersMain(_this.pool, { solo: false, type: blockType })
+        hashrate.sumCurrentHashrateMiner(_this.pool, hashrateWindow, blockType),
+        hashrate.sumCurrentHashrateWorker(_this.pool, hashrateWindow, true, blockType),
+        hashrate.sumCurrentHashrateWorker(_this.pool, hashrateWindow, false, blockType),
+        hashrate.sumCurrentHashrateType(_this.pool, hashrateWindow, false, blockType),
+        metadata.selectCurrentMetadataMain(_this.pool, { type: blockType }),
+        miners.deleteCurrentMinersInactive(_this.pool, inactiveWindow),
+        miners.selectCurrentMinersMain(_this.pool, { type: blockType }),
+        network.selectCurrentNetworkMain(_this.pool, { type: blockType }),
+        transactions.deleteCurrentTransactionsInactive(_this.pool, updateWindow),
+        workers.deleteCurrentWorkersInactive(_this.pool, inactiveWindow),
+        workers.selectCurrentWorkersMain(_this.pool, { solo: true, type: blockType }),
+        workers.selectCurrentWorkersMain(_this.pool, { solo: false, type: blockType })
       ];
       transaction.push('COMMIT;');
       // Defensive: Only keep SQL strings
       transaction = transaction.filter(q => typeof q === 'string');
 
+      const runUpdates = (handleUpdates) => {
+        let settled = false;
+        const onLookups = (lookups) => {
+          if (settled) return;
+          settled = true;
+          try {
+            handleUpdates(lookups, () => {
+              const updates = [_this.text.databaseUpdatesText1(blockType)];
+              _this.logger.debug('Statistics', _this.config.name, updates);
+              callback();
+            });
+          } catch (err) {
+            callback();
+          }
+        };
+
+        try {
+          const result = _this.master.executor(transaction, onLookups);
+          if (result && typeof result.then === 'function') {
+            result.then(onLookups).catch(() => {
+              if (!settled) callback();
+            });
+          } else if (result !== undefined) {
+            onLookups(result);
+          }
+        } catch (err) {
+          callback();
+        }
+      };
+
       if (blockType === 'primary') {
-        _this.master.executor(transaction)
-          .then((lookups) => {
-            try {
-              _this.handlePrimary(lookups, () => {
-                const updates = [_this.text.databaseUpdatesText1(blockType)];
-                _this.logger.debug('Statistics', _this.config.name, updates);
-                callback();
-              });
-            } catch (err) {
-              callback();
-            }
-          })
-          .catch(() => callback());
+        runUpdates(_this.handlePrimary);
       } else if (blockType === 'auxiliary') {
-        _this.master.executor(transaction)
-          .then((lookups) => {
-            try {
-              _this.handleAuxiliary(lookups, () => {
-                const updates = [_this.text.databaseUpdatesText1(blockType)];
-                _this.logger.debug('Statistics', _this.config.name, updates);
-                callback();
-              });
-            } catch (err) {
-              callback();
-            }
-          })
-          .catch(() => callback());
+        runUpdates(_this.handleAuxiliary);
       } else {
         callback();
       }
@@ -482,4 +508,7 @@ class Statistics {
   }
 }
 
-export default Statistics;
+const statistics = (...args) => new Statistics(...args);
+
+export { Statistics, statistics };
+export default statistics;
