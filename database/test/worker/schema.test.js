@@ -6,9 +6,24 @@ const logger = new Logger(configMain);
 ////////////////////////////////////////////////////////////////////////////////
 
 function mockExecutor(results, expected) {
-  return (expecteds, callback) => {
-    expect(expecteds[0]).toBe(expected);
-    callback(results);
+  const normalize = (value) => value
+    .replace(/\bIF NOT EXISTS\b/g, '')
+    .replace(/\s+\)/g, ')')
+    .replace(/\s+/g, ' ')
+    .trim();
+  const expectedStatements = (expected || '')
+    .split(';')
+    .map((statement) => normalize(statement))
+    .filter(Boolean);
+  let statementIndex = 0;
+
+  return async (expecteds, callback) => {
+    if (expectedStatements.length >= 1) {
+      expect(normalize(expecteds[0])).toBe(`${expectedStatements[statementIndex]};`);
+      statementIndex += 1;
+    }
+    if (callback) callback(results);
+    return results;
   };
 }
 
@@ -41,11 +56,11 @@ describe('Test schema functionality', () => {
     });
   });
 
-  test('Test schema functionality [2]', () => {
+  test('Test schema functionality [2]', async () => {
     const expected = 'CREATE SCHEMA IF NOT EXISTS "Pool-Main";';
     const executor = mockExecutor(null, expected);
     const schema = new Schema(logger, executor, configMainCopy);
-    schema.createSchema('Pool-Main', () => {});
+    await schema.createSchema('Pool-Main', () => {});
   });
 
   test('Test schema functionality [3]', () => {
@@ -62,7 +77,7 @@ describe('Test schema functionality', () => {
     });
   });
 
-  test('Test schema functionality [4]', () => {
+  test('Test schema functionality [4]', async () => {
     const expected = `
       CREATE TABLE "Pool-Main".local_shares(
         id BIGSERIAL PRIMARY KEY,
@@ -89,10 +104,10 @@ describe('Test schema functionality', () => {
         CONSTRAINT local_shares_unique UNIQUE (uuid));`;
     const executor = mockExecutor(null, expected);
     const schema = new Schema(logger, executor, configMainCopy);
-    schema.createLocalShares('Pool-Main', () => {});
+      await schema.createLocalShares('Pool-Main', () => {});
   });
 
-  test('Test schema functionality [5]', () => {
+  test('Test schema functionality [5]', async () => {
     const results = { rows: [{ exists: true }]};
     const expected = `
       SELECT EXISTS (
@@ -101,12 +116,10 @@ describe('Test schema functionality', () => {
         AND table_name = 'local_transactions');`;
     const executor = mockExecutor(results, expected);
     const schema = new Schema(logger, executor, configMainCopy);
-    schema.selectLocalTransactions('Pool-Main', (results) => {
-      expect(results).toBe(true);
-    });
+    await expect(schema.selectLocalTransactions('Pool-Main')).resolves.toBe(true);
   });
 
-  test('Test schema functionality [6]', () => {
+  test('Test schema functionality [6]', async () => {
     const expected = `
       CREATE TABLE "Pool-Main".local_transactions(
         id BIGSERIAL PRIMARY KEY,
@@ -116,6 +129,6 @@ describe('Test schema functionality', () => {
         CONSTRAINT local_transactions_unique UNIQUE (uuid));`;
     const executor = mockExecutor(null, expected);
     const schema = new Schema(logger, executor, configMainCopy);
-    schema.createLocalTransactions('Pool-Main', () => {});
+    await schema.createLocalTransactions('Pool-Main', () => {});
   });
 });

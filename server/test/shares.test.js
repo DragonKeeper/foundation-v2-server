@@ -5,6 +5,7 @@ import Shares from '../main/shares.js';
 import config from '../../configs/pools/example.js';
 import configMain from '../../configs/main/example.js';
 import events from 'events';
+import { expectSql } from './sql-utils.js';
 
 // Mock UUID Events
 jest.mock('uuid', () => ({ v4: () => '123456789' }));
@@ -172,7 +173,7 @@ describe('Test shares functionality', () => {
       DO NOTHING;`;
     client.on('transaction', (transaction) => {
       expect(transaction.length).toBe(3);
-      expect(transaction[1]).toBe(expectedShares);
+      expectSql(transaction[1], expectedShares);
       done();
     });
     shares.handleShares(shareData, true, true, () => {});

@@ -418,14 +418,17 @@ class Rounds {
       ];
 
       // Insert Work into Database
-      _this.worker.executor(transaction)
-        .then(() => callback())
-        .catch((err) => {
+      utils.executeExecutorTransaction(_this.worker.executor, transaction, (err) => {
+        if (err) {
           if (_this.logger && typeof _this.logger.error === 'function') {
             _this.logger.error('Rounds', 'worker.executor', err.stack || err.toString());
           }
           callback(err);
-        });
+          return;
+        }
+
+        callback();
+      });
     };
 
     // Handle Round Updates
@@ -498,14 +501,17 @@ class Rounds {
 
       // Insert Work into Database
       transaction.push('COMMIT;');
-      _this.master.executor(transaction)
-        .then(() => callback())
-        .catch((err) => {
+      utils.executeExecutorTransaction(_this.master.executor, transaction, (err) => {
+        if (err) {
           if (_this.logger && typeof _this.logger.error === 'function') {
             _this.logger.error('Rounds', 'master.executor', err.stack || err.toString());
           }
           callback(err);
-        });
+          return;
+        }
+
+        callback();
+      });
     };
 
     // Handle Primary Blocks
@@ -540,14 +546,17 @@ class Rounds {
       ];
 
       // Insert Work into Database
-      _this.master.executor(transaction)
-        .then(() => callback())
-        .catch((err) => {
+      utils.executeExecutorTransaction(_this.master.executor, transaction, (err) => {
+        if (err) {
           if (_this.logger && typeof _this.logger.error === 'function') {
             _this.logger.error('Rounds', 'master.executor', err.stack || err.toString());
           }
           callback(err);
-        });
+          return;
+        }
+
+        callback();
+      });
     };
 
     // Handle Auxiliary Blocks
@@ -582,14 +591,17 @@ class Rounds {
       ];
 
       // Insert Work into Database
-      _this.master.executor(transaction)
-        .then(() => callback())
-        .catch((err) => {
+      utils.executeExecutorTransaction(_this.master.executor, transaction, (err) => {
+        if (err) {
           if (_this.logger && typeof _this.logger.error === 'function') {
             _this.logger.error('Rounds', 'master.executor', err.stack || err.toString());
           }
           callback(err);
-        });
+          return;
+        }
+
+        callback();
+      });
     };
 
     // Handle Segment Batches
@@ -638,8 +650,15 @@ class Rounds {
 
         // Primary Behavior
         case 'primary':
-          _this.master.executor(transaction)
-            .then((lookups) => {
+          utils.executeExecutorTransaction(_this.master.executor, transaction, (err, lookups) => {
+            if (err) {
+              if (_this.logger && typeof _this.logger.error === 'function') {
+                _this.logger.error('Rounds', 'master.executor', err.stack || err.toString());
+              }
+              callback(err);
+              return;
+            }
+
               _this.handleUpdates(lookups, segment, () => {
                 if (segment[0].blockvalid) {
                   _this.handlePrimary(lookups, segment, () => {
@@ -649,19 +668,20 @@ class Rounds {
                   _this.handleCleanup(segment, () => callback());
                 }
               });
-            })
-            .catch((err) => {
-              if (_this.logger && typeof _this.logger.error === 'function') {
-                _this.logger.error('Rounds', 'master.executor', err.stack || err.toString());
-              }
-              callback(err);
             });
           break;
 
         // Auxiliary Behavior
         case 'auxiliary':
-          _this.master.executor(transaction)
-            .then((lookups) => {
+          utils.executeExecutorTransaction(_this.master.executor, transaction, (err, lookups) => {
+            if (err) {
+              if (_this.logger && typeof _this.logger.error === 'function') {
+                _this.logger.error('Rounds', 'master.executor', err.stack || err.toString());
+              }
+              callback(err);
+              return;
+            }
+
               _this.handleUpdates(lookups, segment, () => {
                 if (segment[0].blockvalid) {
                   _this.handleAuxiliary(lookups, segment, () => {
@@ -671,20 +691,21 @@ class Rounds {
                   _this.handleCleanup(segment, () => callback());
                 }
               });
-            })
-            .catch((err) => {
-              if (_this.logger && typeof _this.logger.error === 'function') {
-                _this.logger.error('Rounds', 'master.executor', err.stack || err.toString());
-              }
-              callback(err);
             });
           break;
 
         // Share Behavior
         case 'share':
           // Pass a unique contextTag for log tracing
-          _this.master.executor(transaction)
-            .then((lookups) => {
+          utils.executeExecutorTransaction(_this.master.executor, transaction, (err, lookups) => {
+            if (err) {
+              if (_this.logger && typeof _this.logger.error === 'function') {
+                _this.logger.error('Rounds', 'master.executor', err.stack || err.toString());
+              }
+              callback(err);
+              return;
+            }
+
               try {
                 _this.handleUpdates(lookups, segment, () => {
                   try {
@@ -706,12 +727,6 @@ class Rounds {
               } catch (err) {
                 if (typeof callback === 'function') callback(err);
               }
-            })
-            .catch((err) => {
-              if (_this.logger && typeof _this.logger.error === 'function') {
-                _this.logger.error('Rounds', 'master.executor', err.stack || err.toString());
-              }
-              callback(err);
             });
           break;
 
@@ -746,8 +761,15 @@ class Rounds {
 
       // Determine Specific Shares for Each Thread
       transaction.push('COMMIT;');
-      _this.worker.executor(transaction)
-        .then((results) => {
+      utils.executeExecutorTransaction(_this.worker.executor, transaction, (err, results) => {
+        if (err) {
+          if (_this.logger && typeof _this.logger.error === 'function') {
+            _this.logger.error('Rounds', 'worker.executor', err.stack || err.toString());
+          }
+          callback(err);
+          return;
+        }
+
           const shareUuids = lookups[1] && lookups[1].rows ? lookups[1].rows.map((share) => share.uuid) : [];
           const resultUuids = results[1] && results[1].rows ? results[1].rows.map((share) => share.uuid) : [];
           let shares = lookups[1].rows.filter((share) => resultUuids.includes((share || {}).uuid));
@@ -777,12 +799,6 @@ class Rounds {
             _this.logger.debug('Rounds', _this.config.name, updates);
             callback();
           }
-        })
-        .catch((err) => {
-          if (_this.logger && typeof _this.logger.error === 'function') {
-            _this.logger.error('Rounds', 'worker.executor', err.stack || err.toString());
-          }
-          callback(err);
         });
     };
 
@@ -803,19 +819,20 @@ class Rounds {
         'COMMIT;'
       ];
       // Remove mapping to objects, keep as SQL strings
-      _this.worker.executor(transaction)
-        .then((lookups) => {
+      utils.executeExecutorTransaction(_this.worker.executor, transaction, (err, lookups) => {
+        if (err) {
+          if (_this.logger && typeof _this.logger.error === 'function') {
+            _this.logger.error('Rounds', 'worker.executor', err.stack || err.toString());
+          }
+          if (callback) callback(err);
+          return;
+        }
+
           try {
             _this.handleBatches(lookups, callback);
           } catch (callbackException) {
             if (callback) callback(callbackException);
           }
-        })
-        .catch((err) => {
-          if (_this.logger && typeof _this.logger.error === 'function') {
-            _this.logger.error('Rounds', 'worker.executor', err.stack || err.toString());
-          }
-          if (callback) callback(err);
         });
     };
 

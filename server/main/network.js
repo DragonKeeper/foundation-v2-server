@@ -1,4 +1,5 @@
 import Text from '../../locales/index.js';
+import * as utils from './utils.js';
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -38,7 +39,7 @@ class Network {
     };
 
     // Handle Primary Updates
-    this.handlePrimary = async function (network, callback) {
+    this.handlePrimary = function (network, callback) {
       // Build Combined Transaction
       const networkUpdates = _this.handleCurrentNetwork(network, 'primary');
       let transaction = [
@@ -46,19 +47,21 @@ class Network {
         _this.master.current.network.insertCurrentNetworkMain(_this.pool, [networkUpdates]),
         'COMMIT;'
       ];
-      try {
-        await _this.master.executor(transaction);
-        callback();
-      } catch (err) {
-        if (_this.logger && typeof _this.logger.error === 'function') {
-          _this.logger.error('Network', 'handlePrimary', err.stack || err.toString());
+      utils.executeExecutorTransaction(_this.master.executor, transaction, (err) => {
+        if (err) {
+          if (_this.logger && typeof _this.logger.error === 'function') {
+            _this.logger.error('Network', 'handlePrimary', err.stack || err.toString());
+          }
+          callback(err);
+          return;
         }
-        callback(err);
-      }
+
+        callback();
+      });
     };
 
     // Handle Auxiliary Updates
-    this.handleAuxiliary = async function (network, callback) {
+    this.handleAuxiliary = function (network, callback) {
       // Build Combined Transaction
       const networkUpdates = _this.handleCurrentNetwork(network, 'auxiliary');
       const transaction = [
@@ -66,15 +69,17 @@ class Network {
         _this.master.current.network.insertCurrentNetworkMain(_this.pool, [networkUpdates]),
         'COMMIT;'
       ];
-      try {
-        await _this.master.executor(transaction);
-        callback();
-      } catch (err) {
-        if (_this.logger && typeof _this.logger.error === 'function') {
-          _this.logger.error('Network', 'handleAuxiliary', err.stack || err.toString());
+      utils.executeExecutorTransaction(_this.master.executor, transaction, (err) => {
+        if (err) {
+          if (_this.logger && typeof _this.logger.error === 'function') {
+            _this.logger.error('Network', 'handleAuxiliary', err.stack || err.toString());
+          }
+          callback(err);
+          return;
         }
-        callback(err);
-      }
+
+        callback();
+      });
     };
 
     // Handle Network Data Submissions

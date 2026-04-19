@@ -51,7 +51,7 @@ describe('Test database hashrate functionality', () => {
     const parameters = { timestamp: 'ge1', miner: 'miner1', solo: false, type: 'primary' };
     const response = hashrate.selectCurrentHashrateMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".current_hashrate WHERE timestamp >= 1 AND miner = \'miner1\' AND solo = false AND type = \'primary\';';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test hashrate command handling [2]', () => {
@@ -62,7 +62,7 @@ describe('Test database hashrate functionality', () => {
       FROM "Pool-Main".current_hashrate
       WHERE timestamp >= 1
       AND type = 'primary';`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test hashrate command handling [3]', () => {
@@ -73,7 +73,7 @@ describe('Test database hashrate functionality', () => {
       FROM "Pool-Main".current_hashrate
       WHERE timestamp >= 1
       AND type = 'primary' GROUP BY miner;`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test hashrate command handling [4]', () => {
@@ -81,7 +81,7 @@ describe('Test database hashrate functionality', () => {
     const parameters = { timestamp: 'ge1', worker: 'worker1', solo: false, type: 'primary' };
     const response = hashrate.selectCurrentHashrateMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".current_hashrate WHERE timestamp >= 1 AND worker = \'worker1\' AND solo = false AND type = \'primary\';';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test hashrate command handling [5]', () => {
@@ -92,7 +92,7 @@ describe('Test database hashrate functionality', () => {
       FROM "Pool-Main".current_hashrate
       WHERE timestamp >= 1
       AND solo = false AND type = 'primary';`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test hashrate command handling [6]', () => {
@@ -104,7 +104,7 @@ describe('Test database hashrate functionality', () => {
       WHERE timestamp >= 1
       AND solo = false AND type = 'primary'
       GROUP BY worker;`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test hashrate command handling [7]', () => {
@@ -112,7 +112,7 @@ describe('Test database hashrate functionality', () => {
     const parameters = { timestamp: 'ge1', solo: false, type: 'primary' };
     const response = hashrate.selectCurrentHashrateMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".current_hashrate WHERE timestamp >= 1 AND solo = false AND type = \'primary\';';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test hashrate command handling [8]', () => {
@@ -123,7 +123,7 @@ describe('Test database hashrate functionality', () => {
       FROM "Pool-Main".current_hashrate
       WHERE timestamp >= 1
       AND solo = false AND type = 'primary';`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test hashrate command handling [9]', () => {
@@ -131,7 +131,7 @@ describe('Test database hashrate functionality', () => {
     const parameters = { timestamp: 'ge1', solo: false, type: 'primary', hmm: 'test' };
     const response = hashrate.selectCurrentHashrateMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".current_hashrate WHERE timestamp >= 1 AND solo = false AND type = \'primary\';';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test hashrate command handling [10]', () => {
@@ -161,7 +161,7 @@ describe('Test database hashrate functionality', () => {
         false,
         'primary',
         8);`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test hashrate command handling [11]', () => {
@@ -199,7 +199,7 @@ describe('Test database hashrate functionality', () => {
         false,
         'primary',
         8);`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test hashrate command handling [12]', () => {
@@ -208,6 +208,6 @@ describe('Test database hashrate functionality', () => {
     const expected = `
       DELETE FROM "Pool-Main".current_hashrate
       WHERE timestamp < 1;`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 });

@@ -3,6 +3,7 @@ import Endpoints from '../main/endpoints.js';
 import Logger from '../main/logger.js';
 import configMain from '../../configs/main/example.js';
 import events from 'events';
+import { expectSql } from './sql-utils.js';
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -31,6 +32,7 @@ describe('Test endpoints functionality', () => {
     const endpoints = new Endpoints(logger, client, configMainCopy);
     expect(typeof endpoints.handleCurrentBlocks).toBe('function');
     expect(typeof endpoints.handleCurrentHashrate).toBe('function');
+    expect(typeof endpoints.handleCombinedBlockTimeSummary).toBe('function');
   });
 
   test('Test handleCurrentBlocks endpoint [1]', (done) => {
@@ -39,7 +41,7 @@ describe('Test endpoints functionality', () => {
     const endpoints = new Endpoints(logger, client, configMainCopy);
     const expected = 'SELECT * FROM "Pool1".current_blocks;';
     client.on('transaction', (transaction) => {
-      expect(transaction[0]).toBe(expected);
+      expectSql(transaction[0], expected);
       done();
     });
     endpoints.handleCurrentBlocks('Pool1', {}, () => {});
@@ -52,7 +54,7 @@ describe('Test endpoints functionality', () => {
     const queries = { limit: 100 };
     const expected = 'SELECT * FROM "Pool1".current_blocks LIMIT 100;';
     client.on('transaction', (transaction) => {
-      expect(transaction[0]).toBe(expected);
+      expectSql(transaction[0], expected);
       done();
     });
     endpoints.handleCurrentBlocks('Pool1', queries, () => {});
@@ -168,7 +170,7 @@ describe('Test endpoints functionality', () => {
     const endpoints = new Endpoints(logger, client, configMainCopy);
     const expected = 'SELECT * FROM "Pool1".current_hashrate;';
     client.on('transaction', (transaction) => {
-      expect(transaction[0]).toBe(expected);
+      expectSql(transaction[0], expected);
       done();
     });
     endpoints.handleCurrentHashrate('Pool1', {}, () => {});
@@ -181,7 +183,7 @@ describe('Test endpoints functionality', () => {
     const queries = { limit: 100 };
     const expected = 'SELECT * FROM "Pool1".current_hashrate LIMIT 100;';
     client.on('transaction', (transaction) => {
-      expect(transaction[0]).toBe(expected);
+      expectSql(transaction[0], expected);
       done();
     });
     endpoints.handleCurrentHashrate('Pool1', queries, () => {});
@@ -284,7 +286,7 @@ describe('Test endpoints functionality', () => {
     const endpoints = new Endpoints(logger, client, configMainCopy);
     const expected = 'SELECT * FROM "Pool1".current_metadata;';
     client.on('transaction', (transaction) => {
-      expect(transaction[0]).toBe(expected);
+      expectSql(transaction[0], expected);
       done();
     });
     endpoints.handleCurrentMetadata('Pool1', {}, () => {});
@@ -297,7 +299,7 @@ describe('Test endpoints functionality', () => {
     const queries = { limit: 100 };
     const expected = 'SELECT * FROM "Pool1".current_metadata LIMIT 100;';
     client.on('transaction', (transaction) => {
-      expect(transaction[0]).toBe(expected);
+      expectSql(transaction[0], expected);
       done();
     });
     endpoints.handleCurrentMetadata('Pool1', queries, () => {});
@@ -387,7 +389,7 @@ describe('Test endpoints functionality', () => {
     const endpoints = new Endpoints(logger, client, configMainCopy);
     const expected = 'SELECT * FROM "Pool1".current_miners;';
     client.on('transaction', (transaction) => {
-      expect(transaction[0]).toBe(expected);
+      expectSql(transaction[0], expected);
       done();
     });
     endpoints.handleCurrentMiners('Pool1', {}, () => {});
@@ -400,7 +402,7 @@ describe('Test endpoints functionality', () => {
     const queries = { limit: 100 };
     const expected = 'SELECT * FROM "Pool1".current_miners LIMIT 100;';
     client.on('transaction', (transaction) => {
-      expect(transaction[0]).toBe(expected);
+      expectSql(transaction[0], expected);
       done();
     });
     endpoints.handleCurrentMiners('Pool1', queries, () => {});
@@ -490,7 +492,7 @@ describe('Test endpoints functionality', () => {
     const endpoints = new Endpoints(logger, client, configMainCopy);
     const expected = 'SELECT * FROM "Pool1".current_network;';
     client.on('transaction', (transaction) => {
-      expect(transaction[0]).toBe(expected);
+      expectSql(transaction[0], expected);
       done();
     });
     endpoints.handleCurrentNetwork('Pool1', {}, () => {});
@@ -503,7 +505,7 @@ describe('Test endpoints functionality', () => {
     const queries = { limit: 100 };
     const expected = 'SELECT * FROM "Pool1".current_network LIMIT 100;';
     client.on('transaction', (transaction) => {
-      expect(transaction[0]).toBe(expected);
+      expectSql(transaction[0], expected);
       done();
     });
     endpoints.handleCurrentNetwork('Pool1', queries, () => {});
@@ -593,7 +595,7 @@ describe('Test endpoints functionality', () => {
     const endpoints = new Endpoints(logger, client, configMainCopy);
     const expected = 'SELECT * FROM "Pool1".current_payments;';
     client.on('transaction', (transaction) => {
-      expect(transaction[0]).toBe(expected);
+      expectSql(transaction[0], expected);
       done();
     });
     endpoints.handleCurrentPayments('Pool1', {}, () => {});
@@ -606,7 +608,7 @@ describe('Test endpoints functionality', () => {
     const queries = { limit: 100 };
     const expected = 'SELECT * FROM "Pool1".current_payments LIMIT 100;';
     client.on('transaction', (transaction) => {
-      expect(transaction[0]).toBe(expected);
+      expectSql(transaction[0], expected);
       done();
     });
     endpoints.handleCurrentPayments('Pool1', queries, () => {});
@@ -709,7 +711,7 @@ describe('Test endpoints functionality', () => {
     const endpoints = new Endpoints(logger, client, configMainCopy);
     const expected = 'SELECT * FROM "Pool1".current_rounds;';
     client.on('transaction', (transaction) => {
-      expect(transaction[0]).toBe(expected);
+      expectSql(transaction[0], expected);
       done();
     });
     endpoints.handleCurrentRounds('Pool1', {}, () => {});
@@ -722,7 +724,7 @@ describe('Test endpoints functionality', () => {
     const queries = { limit: 100 };
     const expected = 'SELECT * FROM "Pool1".current_rounds LIMIT 100;';
     client.on('transaction', (transaction) => {
-      expect(transaction[0]).toBe(expected);
+      expectSql(transaction[0], expected);
       done();
     });
     endpoints.handleCurrentRounds('Pool1', queries, () => {});
@@ -825,7 +827,7 @@ describe('Test endpoints functionality', () => {
     const endpoints = new Endpoints(logger, client, configMainCopy);
     const expected = 'SELECT * FROM "Pool1".current_transactions;';
     client.on('transaction', (transaction) => {
-      expect(transaction[0]).toBe(expected);
+      expectSql(transaction[0], expected);
       done();
     });
     endpoints.handleCurrentTransactions('Pool1', {}, () => {});
@@ -838,7 +840,7 @@ describe('Test endpoints functionality', () => {
     const queries = { limit: 100 };
     const expected = 'SELECT * FROM "Pool1".current_transactions LIMIT 100;';
     client.on('transaction', (transaction) => {
-      expect(transaction[0]).toBe(expected);
+      expectSql(transaction[0], expected);
       done();
     });
     endpoints.handleCurrentTransactions('Pool1', queries, () => {});
@@ -941,7 +943,7 @@ describe('Test endpoints functionality', () => {
     const endpoints = new Endpoints(logger, client, configMainCopy);
     const expected = 'SELECT * FROM "Pool1".current_workers;';
     client.on('transaction', (transaction) => {
-      expect(transaction[0]).toBe(expected);
+      expectSql(transaction[0], expected);
       done();
     });
     endpoints.handleCurrentWorkers('Pool1', {}, () => {});
@@ -954,7 +956,7 @@ describe('Test endpoints functionality', () => {
     const queries = { limit: 100 };
     const expected = 'SELECT * FROM "Pool1".current_workers LIMIT 100;';
     client.on('transaction', (transaction) => {
-      expect(transaction[0]).toBe(expected);
+      expectSql(transaction[0], expected);
       done();
     });
     endpoints.handleCurrentWorkers('Pool1', queries, () => {});
@@ -1044,7 +1046,7 @@ describe('Test endpoints functionality', () => {
     const endpoints = new Endpoints(logger, client, configMainCopy);
     const expected = 'SELECT * FROM "Pool1".historical_blocks;';
     client.on('transaction', (transaction) => {
-      expect(transaction[0]).toBe(expected);
+      expectSql(transaction[0], expected);
       done();
     });
     endpoints.handleHistoricalBlocks('Pool1', {}, () => {});
@@ -1057,7 +1059,7 @@ describe('Test endpoints functionality', () => {
     const queries = { limit: 100 };
     const expected = 'SELECT * FROM "Pool1".historical_blocks LIMIT 100;';
     client.on('transaction', (transaction) => {
-      expect(transaction[0]).toBe(expected);
+      expectSql(transaction[0], expected);
       done();
     });
     endpoints.handleHistoricalBlocks('Pool1', queries, () => {});
@@ -1173,7 +1175,7 @@ describe('Test endpoints functionality', () => {
     const endpoints = new Endpoints(logger, client, configMainCopy);
     const expected = 'SELECT * FROM "Pool1".historical_metadata;';
     client.on('transaction', (transaction) => {
-      expect(transaction[0]).toBe(expected);
+      expectSql(transaction[0], expected);
       done();
     });
     endpoints.handleHistoricalMetadata('Pool1', {}, () => {});
@@ -1186,7 +1188,7 @@ describe('Test endpoints functionality', () => {
     const queries = { limit: 100 };
     const expected = 'SELECT * FROM "Pool1".historical_metadata LIMIT 100;';
     client.on('transaction', (transaction) => {
-      expect(transaction[0]).toBe(expected);
+      expectSql(transaction[0], expected);
       done();
     });
     endpoints.handleHistoricalMetadata('Pool1', queries, () => {});
@@ -1276,7 +1278,7 @@ describe('Test endpoints functionality', () => {
     const endpoints = new Endpoints(logger, client, configMainCopy);
     const expected = 'SELECT * FROM "Pool1".historical_miners;';
     client.on('transaction', (transaction) => {
-      expect(transaction[0]).toBe(expected);
+      expectSql(transaction[0], expected);
       done();
     });
     endpoints.handleHistoricalMiners('Pool1', {}, () => {});
@@ -1289,7 +1291,7 @@ describe('Test endpoints functionality', () => {
     const queries = { limit: 100 };
     const expected = 'SELECT * FROM "Pool1".historical_miners LIMIT 100;';
     client.on('transaction', (transaction) => {
-      expect(transaction[0]).toBe(expected);
+      expectSql(transaction[0], expected);
       done();
     });
     endpoints.handleHistoricalMiners('Pool1', queries, () => {});
@@ -1379,7 +1381,7 @@ describe('Test endpoints functionality', () => {
     const endpoints = new Endpoints(logger, client, configMainCopy);
     const expected = 'SELECT * FROM "Pool1".historical_network;';
     client.on('transaction', (transaction) => {
-      expect(transaction[0]).toBe(expected);
+      expectSql(transaction[0], expected);
       done();
     });
     endpoints.handleHistoricalNetwork('Pool1', {}, () => {});
@@ -1392,7 +1394,7 @@ describe('Test endpoints functionality', () => {
     const queries = { limit: 100 };
     const expected = 'SELECT * FROM "Pool1".historical_network LIMIT 100;';
     client.on('transaction', (transaction) => {
-      expect(transaction[0]).toBe(expected);
+      expectSql(transaction[0], expected);
       done();
     });
     endpoints.handleHistoricalNetwork('Pool1', queries, () => {});
@@ -1482,7 +1484,7 @@ describe('Test endpoints functionality', () => {
     const endpoints = new Endpoints(logger, client, configMainCopy);
     const expected = 'SELECT * FROM "Pool1".historical_payments;';
     client.on('transaction', (transaction) => {
-      expect(transaction[0]).toBe(expected);
+      expectSql(transaction[0], expected);
       done();
     });
     endpoints.handleHistoricalPayments('Pool1', {}, () => {});
@@ -1495,7 +1497,7 @@ describe('Test endpoints functionality', () => {
     const queries = { limit: 100 };
     const expected = 'SELECT * FROM "Pool1".historical_payments LIMIT 100;';
     client.on('transaction', (transaction) => {
-      expect(transaction[0]).toBe(expected);
+      expectSql(transaction[0], expected);
       done();
     });
     endpoints.handleHistoricalPayments('Pool1', queries, () => {});
@@ -1585,7 +1587,7 @@ describe('Test endpoints functionality', () => {
     const endpoints = new Endpoints(logger, client, configMainCopy);
     const expected = 'SELECT * FROM "Pool1".historical_rounds;';
     client.on('transaction', (transaction) => {
-      expect(transaction[0]).toBe(expected);
+      expectSql(transaction[0], expected);
       done();
     });
     endpoints.handleHistoricalRounds('Pool1', {}, () => {});
@@ -1598,7 +1600,7 @@ describe('Test endpoints functionality', () => {
     const queries = { limit: 100 };
     const expected = 'SELECT * FROM "Pool1".historical_rounds LIMIT 100;';
     client.on('transaction', (transaction) => {
-      expect(transaction[0]).toBe(expected);
+      expectSql(transaction[0], expected);
       done();
     });
     endpoints.handleHistoricalRounds('Pool1', queries, () => {});
@@ -1701,7 +1703,7 @@ describe('Test endpoints functionality', () => {
     const endpoints = new Endpoints(logger, client, configMainCopy);
     const expected = 'SELECT * FROM "Pool1".historical_transactions;';
     client.on('transaction', (transaction) => {
-      expect(transaction[0]).toBe(expected);
+      expectSql(transaction[0], expected);
       done();
     });
     endpoints.handleHistoricalTransactions('Pool1', {}, () => {});
@@ -1714,7 +1716,7 @@ describe('Test endpoints functionality', () => {
     const queries = { limit: 100 };
     const expected = 'SELECT * FROM "Pool1".historical_transactions LIMIT 100;';
     client.on('transaction', (transaction) => {
-      expect(transaction[0]).toBe(expected);
+      expectSql(transaction[0], expected);
       done();
     });
     endpoints.handleHistoricalTransactions('Pool1', queries, () => {});
@@ -1804,7 +1806,7 @@ describe('Test endpoints functionality', () => {
     const endpoints = new Endpoints(logger, client, configMainCopy);
     const expected = 'SELECT * FROM "Pool1".historical_workers;';
     client.on('transaction', (transaction) => {
-      expect(transaction[0]).toBe(expected);
+      expectSql(transaction[0], expected);
       done();
     });
     endpoints.handleHistoricalWorkers('Pool1', {}, () => {});
@@ -1817,7 +1819,7 @@ describe('Test endpoints functionality', () => {
     const queries = { limit: 100 };
     const expected = 'SELECT * FROM "Pool1".historical_workers LIMIT 100;';
     client.on('transaction', (transaction) => {
-      expect(transaction[0]).toBe(expected);
+      expectSql(transaction[0], expected);
       done();
     });
     endpoints.handleHistoricalWorkers('Pool1', queries, () => {});
@@ -2148,6 +2150,31 @@ describe('Test endpoints functionality', () => {
     const expected = 'Invalid query parameter specified (type: primary, auxiliary). Verify your input and try again';
     const queries = { type: 'unknown' };
     endpoints.handleCombinedRounds('Pool1', queries, (code, message) => {
+      expect(code).toBe(400);
+      expect(message).toBe(expected);
+      done();
+    });
+  });
+
+  test('Test handleCombinedBlockTimeSummary endpoint [1]', (done) => {
+    const client = mockClient(configMainCopy, { rows: [] });
+    const logger = new Logger(configMainCopy);
+    const endpoints = new Endpoints(logger, client, configMainCopy);
+    const expected = ['SELECT * FROM "Pool1".block_time_summary ORDER BY label ASC;'];
+    client.on('transaction', (transaction) => {
+      expect(transaction).toStrictEqual(expected);
+      done();
+    });
+    endpoints.handleCombinedBlockTimeSummary('Pool1', {}, () => {});
+  });
+
+  test('Test handleCombinedBlockTimeSummary endpoint [2]', (done) => {
+    const client = mockClient(configMainCopy, { rows: [] });
+    const logger = new Logger(configMainCopy);
+    const endpoints = new Endpoints(logger, client, configMainCopy);
+    const expected = 'Invalid query parameter specified (unknown: <unknown>). Verify your input and try again';
+    const queries = { unknown: 'unknown' };
+    endpoints.handleCombinedBlockTimeSummary('Pool1', queries, (code, message) => {
       expect(code).toBe(400);
       expect(message).toBe(expected);
       done();

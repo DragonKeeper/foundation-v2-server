@@ -51,7 +51,7 @@ describe('Test database network functionality', () => {
     const parameters = { type: 'primary' };
     const response = network.selectHistoricalNetworkMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".historical_network WHERE type = \'primary\';';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test network command handling [2]', () => {
@@ -59,7 +59,7 @@ describe('Test database network functionality', () => {
     const parameters = { timestamp: 'ge1', type: 'primary' };
     const response = network.selectHistoricalNetworkMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".historical_network WHERE timestamp >= 1 AND type = \'primary\';';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test network command handling [3]', () => {
@@ -67,7 +67,7 @@ describe('Test database network functionality', () => {
     const parameters = { timestamp: 'ge1', type: 'primary', hmm: 'test' };
     const response = network.selectHistoricalNetworkMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".historical_network WHERE timestamp >= 1 AND type = \'primary\';';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test network command handling [2]', () => {
@@ -94,7 +94,7 @@ describe('Test database network functionality', () => {
         'primary')
       ON CONFLICT ON CONSTRAINT historical_network_recent
       DO NOTHING;`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test network command handling [3]', () => {
@@ -127,6 +127,6 @@ describe('Test database network functionality', () => {
         'primary')
       ON CONFLICT ON CONSTRAINT historical_network_recent
       DO NOTHING;`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 });

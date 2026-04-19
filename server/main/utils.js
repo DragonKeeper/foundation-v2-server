@@ -2,6 +2,45 @@ import os from 'os';
 
 ////////////////////////////////////////////////////////////////////////////////
 
+export function executeExecutorTransaction(executor, transaction, callback) {
+  let settled = false;
+
+  const handleResult = (results) => {
+    if (settled) return;
+    settled = true;
+    callback(null, results);
+  };
+
+  const handleError = (error) => {
+    if (settled) return;
+    settled = true;
+    callback(error);
+  };
+
+  try {
+    const result = executor(transaction, handleResult);
+    if (result && typeof result.then === 'function') {
+      result.then(handleResult).catch(handleError);
+    } else if (result !== undefined) {
+      handleResult(result);
+    }
+  } catch (error) {
+    handleError(error);
+  }
+}
+
+export function createPromiseExecutor(executor) {
+  return (commands) => new Promise((resolve, reject) => {
+    executeExecutorTransaction(executor, commands, (error, results) => {
+      if (error) {
+        reject(error);
+        return;
+      }
+      resolve(results);
+    });
+  });
+}
+
 export function checkSoloMining(poolConfig, data) {
   let isSoloMining = false;
   const activePort = poolConfig.ports.filter((port) => port.port === data.port);

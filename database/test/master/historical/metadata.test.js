@@ -51,7 +51,7 @@ describe('Test database metadata functionality', () => {
     const parameters = { type: 'primary' };
     const response = metadata.selectHistoricalMetadataMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".historical_metadata WHERE type = \'primary\';';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test metadata command handling [2]', () => {
@@ -59,7 +59,7 @@ describe('Test database metadata functionality', () => {
     const parameters = { timestamp: 'ge1', type: 'primary' };
     const response = metadata.selectHistoricalMetadataMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".historical_metadata WHERE timestamp >= 1 AND type = \'primary\';';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test metadata command handling [3]', () => {
@@ -67,7 +67,7 @@ describe('Test database metadata functionality', () => {
     const parameters = { timestamp: 'ge1', type: 'primary', hmm: 'test' };
     const response = metadata.selectHistoricalMetadataMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".historical_metadata WHERE timestamp >= 1 AND type = \'primary\';';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test metadata command handling [4]', () => {
@@ -110,7 +110,7 @@ describe('Test database metadata functionality', () => {
         1)
       ON CONFLICT ON CONSTRAINT historical_metadata_recent
       DO NOTHING;`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test metadata command handling [5]', () => {
@@ -166,6 +166,6 @@ describe('Test database metadata functionality', () => {
         1)
       ON CONFLICT ON CONSTRAINT historical_metadata_recent
       DO NOTHING;`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 });

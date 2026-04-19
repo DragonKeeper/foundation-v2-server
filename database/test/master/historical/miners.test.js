@@ -51,7 +51,7 @@ describe('Test database miners functionality', () => {
     const parameters = { miner: 'miner1', type: 'primary' };
     const response = miners.selectHistoricalMinersMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".historical_miners WHERE miner = \'miner1\' AND type = \'primary\';';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test miners command handling [2]', () => {
@@ -59,7 +59,7 @@ describe('Test database miners functionality', () => {
     const parameters = { type: 'primary' };
     const response = miners.selectHistoricalMinersMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".historical_miners WHERE type = \'primary\';';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test miners command handling [3]', () => {
@@ -67,7 +67,7 @@ describe('Test database miners functionality', () => {
     const parameters = { type: 'primary', hmm: 'test' };
     const response = miners.selectHistoricalMinersMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".historical_miners WHERE type = \'primary\';';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test miners command handling [4]', () => {
@@ -106,7 +106,7 @@ describe('Test database miners functionality', () => {
         1)
       ON CONFLICT ON CONSTRAINT historical_miners_recent
       DO NOTHING;`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test miners command handling [5]', () => {
@@ -156,6 +156,6 @@ describe('Test database miners functionality', () => {
         1)
       ON CONFLICT ON CONSTRAINT historical_miners_recent
       DO NOTHING;`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 });

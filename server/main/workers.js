@@ -1,7 +1,7 @@
 import Checks from './checks.js';
 import Payments from './payments.js';
 import Rounds from './rounds.js';
-import Statistics from './statistics.js';
+import { Statistics } from './statistics.js';
 import Stratum from './stratum.js';
 
 ////////////////////////////////////////////////////////////////////////////////

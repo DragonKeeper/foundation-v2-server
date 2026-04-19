@@ -6,6 +6,7 @@ const { statistics, default: createStatistics } = require('../main/statistics.js
 import config from '../../configs/pools/example.js';
 import configMain from '../../configs/main/example.js';
 import events from 'events';
+import { expectSql } from './sql-utils.js';
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -593,6 +594,8 @@ describe('Test statistics functionality', () => {
     global.expectedHistoricalNetwork = expectedHistoricalNetwork;
     global.expectedSoloHistoricalWorkers = expectedSoloHistoricalWorkers;
     global.expectedSharedHistoricalWorkers = expectedSharedHistoricalWorkers;
+    const expectedBlockTimeSummary = statistics.master.blockTimeSummary.refreshBlockTimeSummaryMain(
+      'Pool-Bitcoin', 1634742080841);
 
     client.on('transaction', (transaction) => {
         // Debug logs for received SQL strings
@@ -600,7 +603,7 @@ describe('Test statistics functionality', () => {
         console.log('Expected transaction[1]:', expectedMetadata);
         console.log('Received transaction[3]:', transaction[3]);
         console.log('Expected transaction[3]:', expectedSoloWorkers);
-      expect(transaction.length).toBe(11);
+      expect(transaction.length).toBe(12);
       function normalizeSQL(str) {
         return str.replace(/\s+/g, ' ').trim();
       }
@@ -616,6 +619,7 @@ describe('Test statistics functionality', () => {
       assertSQL(normalizeSQL(transaction[7]), normalizeSQL(expectedHistoricalNetwork));
       assertSQL(normalizeSQL(transaction[8]), normalizeSQL(expectedSoloHistoricalWorkers));
       assertSQL(normalizeSQL(transaction[9]), normalizeSQL(expectedSharedHistoricalWorkers));
+      assertSQL(normalizeSQL(transaction[10]), normalizeSQL(expectedBlockTimeSummary));
       done();
     });
     statistics.handlePrimary(lookups, () => {});
@@ -871,15 +875,15 @@ describe('Test statistics functionality', () => {
       DO NOTHING;`;
     client.on('transaction', (transaction) => {
       expect(transaction.length).toBe(11);
-      expect(transaction[1]).toBe(expectedMetadata);
-      expect(transaction[2]).toBe(expectedMiners);
-      expect(transaction[3]).toBe(expectedSoloWorkers);
-      expect(transaction[4]).toBe(expectedSharedWorkers);
-      expect(transaction[5]).toBe(expectedHistoricalMetadata);
-      expect(transaction[6]).toBe(expectedHistoricalMiners);
-      expect(transaction[7]).toBe(expectedHistoricalNetwork);
-      expect(transaction[8]).toBe(expectedSoloHistoricalWorkers);
-      expect(transaction[9]).toBe(expectedSharedHistoricalWorkers);
+      expectSql(transaction[1], expectedMetadata);
+      expectSql(transaction[2], expectedMiners);
+      expectSql(transaction[3], expectedSoloWorkers);
+      expectSql(transaction[4], expectedSharedWorkers);
+      expectSql(transaction[5], expectedHistoricalMetadata);
+      expectSql(transaction[6], expectedHistoricalMiners);
+      expectSql(transaction[7], expectedHistoricalNetwork);
+      expectSql(transaction[8], expectedSoloHistoricalWorkers);
+      expectSql(transaction[9], expectedSharedHistoricalWorkers);
       done();
     });
     statistics.handlePrimary(lookups, () => {});
@@ -911,7 +915,10 @@ describe('Test statistics functionality', () => {
       { rows: [] },
       null];
     client.on('transaction', (transaction) => {
-      expect(transaction.length).toBe(2);
+      const expectedBlockTimeSummary = statistics.master.blockTimeSummary.refreshBlockTimeSummaryMain(
+        'Pool-Bitcoin', 1634742080841);
+      expect(transaction.length).toBe(3);
+      expectSql(transaction[1], expectedBlockTimeSummary);
       done();
     });
     statistics.handlePrimary(lookups, () => {});
@@ -1178,15 +1185,15 @@ describe('Test statistics functionality', () => {
 
     client.on('transaction', (transaction) => {
       expect(transaction.length).toBe(11);
-      expect(transaction[1]).toBe(expectedMetadata);
-      expect(transaction[2]).toBe(expectedMiners);
-      expect(transaction[3]).toBe(expectedSoloWorkers);
-      expect(transaction[4]).toBe(expectedSharedWorkers);
-      expect(transaction[5]).toBe(expectedHistoricalMetadata);
-      expect(transaction[6]).toBe(expectedHistoricalMiners);
-      expect(transaction[7]).toBe(expectedHistoricalNetwork);
-      expect(transaction[8]).toBe(expectedSoloHistoricalWorkers);
-      expect(transaction[9]).toBe(expectedSharedHistoricalWorkers);
+      expectSql(transaction[1], expectedMetadata);
+      expectSql(transaction[2], expectedMiners);
+      expectSql(transaction[3], expectedSoloWorkers);
+      expectSql(transaction[4], expectedSharedWorkers);
+      expectSql(transaction[5], expectedHistoricalMetadata);
+      expectSql(transaction[6], expectedHistoricalMiners);
+      expectSql(transaction[7], expectedHistoricalNetwork);
+      expectSql(transaction[8], expectedSoloHistoricalWorkers);
+      expectSql(transaction[9], expectedSharedHistoricalWorkers);
       done();
     });
     statistics.handleAuxiliary(lookups, () => {});
@@ -1430,15 +1437,15 @@ describe('Test statistics functionality', () => {
       DO NOTHING;`;
     client.on('transaction', (transaction) => {
       expect(transaction.length).toBe(11);
-      expect(transaction[1]).toBe(expectedMetadata);
-      expect(transaction[2]).toBe(expectedMiners);
-      expect(transaction[3]).toBe(expectedSoloWorkers);
-      expect(transaction[4]).toBe(expectedSharedWorkers);
-      expect(transaction[5]).toBe(expectedHistoricalMetadata);
-      expect(transaction[6]).toBe(expectedHistoricalMiners);
-      expect(transaction[7]).toBe(expectedHistoricalNetwork);
-      expect(transaction[8]).toBe(expectedSoloHistoricalWorkers);
-      expect(transaction[9]).toBe(expectedSharedHistoricalWorkers);
+      expectSql(transaction[1], expectedMetadata);
+      expectSql(transaction[2], expectedMiners);
+      expectSql(transaction[3], expectedSoloWorkers);
+      expectSql(transaction[4], expectedSharedWorkers);
+      expectSql(transaction[5], expectedHistoricalMetadata);
+      expectSql(transaction[6], expectedHistoricalMiners);
+      expectSql(transaction[7], expectedHistoricalNetwork);
+      expectSql(transaction[8], expectedSoloHistoricalWorkers);
+      expectSql(transaction[9], expectedSharedHistoricalWorkers);
       done();
     });
     statistics.handleAuxiliary(lookups, () => {});
@@ -1470,7 +1477,10 @@ describe('Test statistics functionality', () => {
       { rows: [] },
       null];
     client.on('transaction', (transaction) => {
-      expect(transaction.length).toBe(2);
+      const expectedBlockTimeSummary = statistics.master.blockTimeSummary.refreshBlockTimeSummaryMain(
+        'Pool-Bitcoin', 1634742080841);
+      expect(transaction.length).toBe(3);
+      expectSql(transaction[1], expectedBlockTimeSummary);
       done();
     });
     statistics.handleAuxiliary(lookups, () => {});

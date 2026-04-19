@@ -51,7 +51,7 @@ describe('Test database blocks functionality', () => {
     const parameters = { miner: 'miner1', type: 'primary' };
     const response = blocks.selectHistoricalBlocksMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".historical_blocks WHERE miner = \'miner1\' AND type = \'primary\';';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test block command handling [2]', () => {
@@ -59,7 +59,7 @@ describe('Test database blocks functionality', () => {
     const parameters = { worker: 'worker1', type: 'primary' };
     const response = blocks.selectHistoricalBlocksMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".historical_blocks WHERE worker = \'worker1\' AND type = \'primary\';';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test block command handling [3]', () => {
@@ -67,7 +67,7 @@ describe('Test database blocks functionality', () => {
     const parameters = { category: 'generate', type: 'primary' };
     const response = blocks.selectHistoricalBlocksMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".historical_blocks WHERE category = \'generate\' AND type = \'primary\';';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test block command handling [4]', () => {
@@ -75,7 +75,7 @@ describe('Test database blocks functionality', () => {
     const parameters = { identifier: 'master', type: 'primary' };
     const response = blocks.selectHistoricalBlocksMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".historical_blocks WHERE identifier = \'master\' AND type = \'primary\';';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test block command handling [5]', () => {
@@ -83,7 +83,7 @@ describe('Test database blocks functionality', () => {
     const parameters = { type: 'primary' };
     const response = blocks.selectHistoricalBlocksMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".historical_blocks WHERE type = \'primary\';';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test block command handling [6]', () => {
@@ -91,7 +91,7 @@ describe('Test database blocks functionality', () => {
     const parameters = { confirmations: 'gt100', solo: false };
     const response = blocks.selectHistoricalBlocksMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".historical_blocks WHERE confirmations > 100 AND solo = false;';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test block command handling [7]', () => {
@@ -99,7 +99,7 @@ describe('Test database blocks functionality', () => {
     const parameters = { confirmations: 'gt100', solo: false, hmm: 'test' };
     const response = blocks.selectHistoricalBlocksMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".historical_blocks WHERE confirmations > 100 AND solo = false;';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test block command handling [8]', () => {
@@ -149,7 +149,7 @@ describe('Test database blocks functionality', () => {
         'transaction1',
         'primary')
       ON CONFLICT DO NOTHING;`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test block command handling [9]', () => {
@@ -215,6 +215,6 @@ describe('Test database blocks functionality', () => {
         'transaction1',
         'primary')
       ON CONFLICT DO NOTHING;`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 });

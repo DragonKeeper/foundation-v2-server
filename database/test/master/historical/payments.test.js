@@ -51,7 +51,7 @@ describe('Test database payments functionality', () => {
     const parameters = { miner: 'miner1', type: 'primary' };
     const response = payments.selectHistoricalPaymentsMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".historical_payments WHERE miner = \'miner1\' AND type = \'primary\';';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test payment command handling [2]', () => {
@@ -59,7 +59,7 @@ describe('Test database payments functionality', () => {
     const parameters = { transaction: 'transaction1', type: 'primary' };
     const response = payments.selectHistoricalPaymentsMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".historical_payments WHERE transaction = \'transaction1\' AND type = \'primary\';';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test payment command handling [3]', () => {
@@ -67,7 +67,7 @@ describe('Test database payments functionality', () => {
     const parameters = { type: 'primary' };
     const response = payments.selectHistoricalPaymentsMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".historical_payments WHERE type = \'primary\';';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test payment command handling [4]', () => {
@@ -75,7 +75,7 @@ describe('Test database payments functionality', () => {
     const parameters = { type: 'primary', hmm: 'test' };
     const response = payments.selectHistoricalPaymentsMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".historical_payments WHERE type = \'primary\';';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test payment command handling [5]', () => {
@@ -99,7 +99,7 @@ describe('Test database payments functionality', () => {
         'transaction1',
         'primary')
       ON CONFLICT DO NOTHING;`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test payment command handling [6]', () => {
@@ -128,6 +128,6 @@ describe('Test database payments functionality', () => {
         'transaction1',
         'primary')
       ON CONFLICT DO NOTHING;`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 });

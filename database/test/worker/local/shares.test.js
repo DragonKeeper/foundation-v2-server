@@ -51,7 +51,7 @@ describe('Test database shares functionality', () => {
     const parameters = { type: 'primary' };
     const response = shares.selectLocalSharesMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".local_shares WHERE type = \'primary\';';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test shares command handling [2]', () => {
@@ -59,7 +59,7 @@ describe('Test database shares functionality', () => {
     const parameters = { uuid: 'uuid1', type: 'primary' };
     const response = shares.selectLocalSharesMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".local_shares WHERE uuid = \'uuid1\' AND type = \'primary\';';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test shares command handling [3]', () => {
@@ -119,7 +119,7 @@ describe('Test database shares functionality', () => {
         'transaction1')
       ON CONFLICT ON CONSTRAINT local_shares_unique
       DO NOTHING;`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test shares command handling [4]', () => {
@@ -199,7 +199,7 @@ describe('Test database shares functionality', () => {
         'transaction1')
       ON CONFLICT ON CONSTRAINT local_shares_unique
       DO NOTHING;`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test shares command handling [5]', () => {
@@ -208,6 +208,6 @@ describe('Test database shares functionality', () => {
     const expected = `
       DELETE FROM "Pool-Main".local_shares
       WHERE uuid IN (round1);`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 });

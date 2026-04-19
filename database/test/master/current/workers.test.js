@@ -51,7 +51,7 @@ describe('Test database workers functionality', () => {
     const parameters = { miner: 'miner1', type: 'primary' };
     const response = workers.selectCurrentWorkersMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".current_workers WHERE miner = \'miner1\' AND type = \'primary\';';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test workers command handling [2]', () => {
@@ -59,7 +59,7 @@ describe('Test database workers functionality', () => {
     const parameters = { worker: 'worker1', type: 'primary' };
     const response = workers.selectCurrentWorkersMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".current_workers WHERE worker = \'worker1\' AND type = \'primary\';';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test workers command handling [3]', () => {
@@ -67,7 +67,7 @@ describe('Test database workers functionality', () => {
     const parameters = { type: 'primary' };
     const response = workers.selectCurrentWorkersMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".current_workers WHERE type = \'primary\';';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test workers command handling [4]', () => {
@@ -75,7 +75,7 @@ describe('Test database workers functionality', () => {
     const parameters = { type: 'primary', hmm: 'test' };
     const response = workers.selectCurrentWorkersMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".current_workers WHERE type = \'primary\';';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test workers command handling [5]', () => {
@@ -86,7 +86,7 @@ describe('Test database workers functionality', () => {
       SELECT DISTINCT ON (worker) * FROM "Pool-Main".current_workers
       WHERE worker IN (address1, address2, address3) AND type = 'primary'
       ORDER BY worker, timestamp DESC;`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test workers command handling [6]', () => {
@@ -94,7 +94,7 @@ describe('Test database workers functionality', () => {
     const response = workers.selectCurrentWorkersBatchAddresses('Pool-Main', [], 'primary');
     const expected = `
       SELECT * FROM "Pool-Main".current_workers LIMIT 0;`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test workers command handling [7]', () => {
@@ -123,7 +123,7 @@ describe('Test database workers functionality', () => {
       DO UPDATE SET
         timestamp = EXCLUDED.timestamp,
         hashrate = EXCLUDED.hashrate;`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test workers command handling [8]', () => {
@@ -158,7 +158,7 @@ describe('Test database workers functionality', () => {
       DO UPDATE SET
         timestamp = EXCLUDED.timestamp,
         hashrate = EXCLUDED.hashrate;`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test workers command handling [9]', () => {
@@ -205,7 +205,7 @@ describe('Test database workers functionality', () => {
         stale = "Pool-Main".current_workers.stale + EXCLUDED.stale,
         valid = "Pool-Main".current_workers.valid + EXCLUDED.valid,
         work = "Pool-Main".current_workers.work + EXCLUDED.work;`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test workers command handling [10]', () => {
@@ -263,7 +263,7 @@ describe('Test database workers functionality', () => {
         stale = "Pool-Main".current_workers.stale + EXCLUDED.stale,
         valid = "Pool-Main".current_workers.valid + EXCLUDED.valid,
         work = "Pool-Main".current_workers.work + EXCLUDED.work;`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test workers command handling [11]', () => {
@@ -272,6 +272,6 @@ describe('Test database workers functionality', () => {
     const expected = `
       DELETE FROM "Pool-Main".current_workers
       WHERE timestamp < 1;`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 });

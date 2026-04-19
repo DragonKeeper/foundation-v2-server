@@ -51,7 +51,7 @@ describe('Test database blocks functionality', () => {
     const parameters = { miner: 'miner1', type: 'primary' };
     const response = blocks.selectCurrentBlocksMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".current_blocks WHERE miner = \'miner1\' AND type = \'primary\';';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test block command handling [2]', () => {
@@ -59,7 +59,7 @@ describe('Test database blocks functionality', () => {
     const parameters = { worker: 'worker1', type: 'primary' };
     const response = blocks.selectCurrentBlocksMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".current_blocks WHERE worker = \'worker1\' AND type = \'primary\';';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test block command handling [3]', () => {
@@ -67,7 +67,7 @@ describe('Test database blocks functionality', () => {
     const parameters = { category: 'immature', type: 'primary' };
     const response = blocks.selectCurrentBlocksMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".current_blocks WHERE category = \'immature\' AND type = \'primary\';';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test block command handling [4]', () => {
@@ -75,7 +75,7 @@ describe('Test database blocks functionality', () => {
     const parameters = { identifier: 'master', type: 'primary' };
     const response = blocks.selectCurrentBlocksMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".current_blocks WHERE identifier = \'master\' AND type = \'primary\';';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test block command handling [5]', () => {
@@ -83,7 +83,7 @@ describe('Test database blocks functionality', () => {
     const parameters = { type: 'primary' };
     const response = blocks.selectCurrentBlocksMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".current_blocks WHERE type = \'primary\';';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test block command handling [6]', () => {
@@ -91,7 +91,7 @@ describe('Test database blocks functionality', () => {
     const parameters = { confirmations: 'gt100', solo: false };
     const response = blocks.selectCurrentBlocksMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".current_blocks WHERE confirmations > 100 AND solo = false;';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test block command handling [7]', () => {
@@ -99,7 +99,7 @@ describe('Test database blocks functionality', () => {
     const parameters = { confirmations: 'gt100', solo: false, hmm: 'test' };
     const response = blocks.selectCurrentBlocksMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".current_blocks WHERE confirmations > 100 AND solo = false;';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test block command handling [8]', () => {
@@ -165,7 +165,7 @@ describe('Test database blocks functionality', () => {
         solo = EXCLUDED.solo,
         transaction = EXCLUDED.transaction,
         type = EXCLUDED.type;`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test block command handling [9]', () => {
@@ -247,7 +247,7 @@ describe('Test database blocks functionality', () => {
         solo = EXCLUDED.solo,
         transaction = EXCLUDED.transaction,
         type = EXCLUDED.type;`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test block command handling [10]', () => {
@@ -256,6 +256,6 @@ describe('Test database blocks functionality', () => {
     const expected = `
       DELETE FROM "Pool-Main".current_blocks
       WHERE round IN (round1);`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 });

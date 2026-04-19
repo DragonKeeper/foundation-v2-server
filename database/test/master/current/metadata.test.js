@@ -51,7 +51,7 @@ describe('Test database metadata functionality', () => {
     const parameters = { type: 'primary' };
     const response = metadata.selectCurrentMetadataMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".current_metadata WHERE type = \'primary\';';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test metadata command handling [2]', () => {
@@ -59,7 +59,7 @@ describe('Test database metadata functionality', () => {
     const parameters = { timestamp: 'ge1', type: 'primary' };
     const response = metadata.selectCurrentMetadataMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".current_metadata WHERE timestamp >= 1 AND type = \'primary\';';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test metadata command handling [3]', () => {
@@ -67,7 +67,7 @@ describe('Test database metadata functionality', () => {
     const parameters = { timestamp: 'ge1', type: 'primary', hmm: 'test' };
     const response = metadata.selectCurrentMetadataMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".current_metadata WHERE timestamp >= 1 AND type = \'primary\';';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test metadata command handling [4]', () => {
@@ -89,7 +89,7 @@ describe('Test database metadata functionality', () => {
       DO UPDATE SET
         timestamp = EXCLUDED.timestamp,
         blocks = "Pool-Main".current_metadata.blocks + EXCLUDED.blocks;`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test metadata command handling [5]', () => {
@@ -114,7 +114,7 @@ describe('Test database metadata functionality', () => {
       DO UPDATE SET
         timestamp = EXCLUDED.timestamp,
         blocks = "Pool-Main".current_metadata.blocks + EXCLUDED.blocks;`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test metadata command handling [6]', () => {
@@ -143,7 +143,7 @@ describe('Test database metadata functionality', () => {
         hashrate = EXCLUDED.hashrate,
         miners = EXCLUDED.miners,
         workers = EXCLUDED.workers;`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test metadata command handling [7]', () => {
@@ -177,7 +177,7 @@ describe('Test database metadata functionality', () => {
         hashrate = EXCLUDED.hashrate,
         miners = EXCLUDED.miners,
         workers = EXCLUDED.workers;`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test metadata command handling [8]', () => {
@@ -197,7 +197,7 @@ describe('Test database metadata functionality', () => {
         timestamp = EXCLUDED.timestamp,
         efficiency = 0, effort = 0, invalid = 0,
         stale = 0, valid = 0, work = 0;`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test metadata command handling [9]', () => {
@@ -219,7 +219,7 @@ describe('Test database metadata functionality', () => {
         timestamp = EXCLUDED.timestamp,
         efficiency = 0, effort = 0, invalid = 0,
         stale = 0, valid = 0, work = 0;`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test metadata command handling [10]', () => {
@@ -258,7 +258,7 @@ describe('Test database metadata functionality', () => {
         stale = "Pool-Main".current_metadata.stale + EXCLUDED.stale,
         valid = "Pool-Main".current_metadata.valid + EXCLUDED.valid,
         work = "Pool-Main".current_metadata.work + EXCLUDED.work;`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test metadata command handling [11]', () => {
@@ -305,6 +305,6 @@ describe('Test database metadata functionality', () => {
         stale = "Pool-Main".current_metadata.stale + EXCLUDED.stale,
         valid = "Pool-Main".current_metadata.valid + EXCLUDED.valid,
         work = "Pool-Main".current_metadata.work + EXCLUDED.work;`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 });

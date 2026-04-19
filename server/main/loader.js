@@ -2,11 +2,9 @@
 import Text from '../../locales/index.js';
 import fs from 'fs';
 import path from 'path';
-import { fileURLToPath, pathToFileURL } from 'url';
+import { pathToFileURL } from 'url';
 
-// Define __filename and __dirname for ES module compatibility
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const configsDirectory = path.resolve(process.cwd(), 'configs/pools');
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -120,7 +118,7 @@ class Loader {
     this.handleConfigs = async function () {
       const configs = {};
       // Use CommonJS globals for compatibility with Jest
-      const normalizedPath = path.join(__dirname, '../../configs/pools/');
+      const normalizedPath = `${configsDirectory}${path.sep}`;
       if (!_this.checkPoolCertificates(_this.configMain)) return;
       for (const file of fs.readdirSync(normalizedPath)) {
         if (fs.existsSync(normalizedPath + file) && path.extname(normalizedPath + file) === '.js') {

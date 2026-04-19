@@ -360,6 +360,18 @@ describe('Test API functionality', () => {
     });
   });
 
+  test('Test API request handling [21.1]', (done) => {
+    const request = mockRequest('Pool1', 'combined', 'blocktimesummary', {});
+    const client = mockClient(configMainCopy, { rows: [] });
+    const logger = new Logger(configMainCopy);
+    const api = new Api(logger, client, configs, configMainCopy);
+    api.handleApiV2(request, (code, message) => {
+      expect(code).toBe(200);
+      expect(message).toStrictEqual([]);
+      done();
+    });
+  });
+
   test('Test API request handling [22]', (done) => {
     const request = mockRequest('Pool1', '', '', {});
     const client = mockClient(configMainCopy, { rows: [] });

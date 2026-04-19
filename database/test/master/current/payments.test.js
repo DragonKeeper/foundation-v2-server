@@ -51,7 +51,7 @@ describe('Test database payments functionality', () => {
     const parameters = { type: 'primary' };
     const response = payments.selectCurrentPaymentsMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".current_payments WHERE type = \'primary\';';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test payments command handling [2]', () => {
@@ -59,7 +59,7 @@ describe('Test database payments functionality', () => {
     const parameters = { timestamp: 'ge1', type: 'primary' };
     const response = payments.selectCurrentPaymentsMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".current_payments WHERE timestamp >= 1 AND type = \'primary\';';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test payments command handling [3]', () => {
@@ -67,7 +67,7 @@ describe('Test database payments functionality', () => {
     const parameters = { timestamp: 'ge1', type: 'primary', hmm: 'test' };
     const response = payments.selectCurrentPaymentsMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".current_payments WHERE timestamp >= 1 AND type = \'primary\';';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test payments command handling [4]', () => {
@@ -87,7 +87,7 @@ describe('Test database payments functionality', () => {
         'primary')
       ON CONFLICT ON CONSTRAINT current_payments_unique
       DO NOTHING RETURNING round;`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test payments command handling [5]', () => {
@@ -110,7 +110,7 @@ describe('Test database payments functionality', () => {
         'primary')
       ON CONFLICT ON CONSTRAINT current_payments_unique
       DO NOTHING RETURNING round;`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test payments command handling [6]', () => {
@@ -119,6 +119,6 @@ describe('Test database payments functionality', () => {
     const expected = `
       DELETE FROM "Pool-Main".current_payments
       WHERE round IN (round1);`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 });

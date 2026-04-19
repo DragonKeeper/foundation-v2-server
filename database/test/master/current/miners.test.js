@@ -51,7 +51,7 @@ describe('Test database miners functionality', () => {
     const parameters = { miner: 'miner1', type: 'primary' };
     const response = miners.selectCurrentMinersMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".current_miners WHERE miner = \'miner1\' AND type = \'primary\';';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test miners command handling [2]', () => {
@@ -59,7 +59,7 @@ describe('Test database miners functionality', () => {
     const parameters = { balance: 'gt0', type: 'primary' };
     const response = miners.selectCurrentMinersMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".current_miners WHERE balance > 0 AND type = \'primary\';';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test miners command handling [3]', () => {
@@ -67,7 +67,7 @@ describe('Test database miners functionality', () => {
     const parameters = { type: 'primary' };
     const response = miners.selectCurrentMinersMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".current_miners WHERE type = \'primary\';';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test miners command handling [4]', () => {
@@ -75,7 +75,7 @@ describe('Test database miners functionality', () => {
     const parameters = { type: 'primary', hmm: 'test' };
     const response = miners.selectCurrentMinersMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".current_miners WHERE type = \'primary\';';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test miners command handling [5]', () => {
@@ -86,7 +86,7 @@ describe('Test database miners functionality', () => {
       SELECT DISTINCT ON (miner) * FROM "Pool-Main".current_miners
       WHERE miner IN (address1, address2, address3) AND type = 'primary'
       ORDER BY miner, timestamp DESC;`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test miners command handling [6]', () => {
@@ -94,7 +94,7 @@ describe('Test database miners functionality', () => {
     const response = miners.selectCurrentMinersBatchAddresses('Pool-Main', [], 'primary');
     const expected = `
       SELECT * FROM "Pool-Main".current_miners LIMIT 0;`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test miners command handling [7]', () => {
@@ -119,7 +119,7 @@ describe('Test database miners functionality', () => {
       DO UPDATE SET
         timestamp = EXCLUDED.timestamp,
         hashrate = EXCLUDED.hashrate;`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test miners command handling [8]', () => {
@@ -148,7 +148,7 @@ describe('Test database miners functionality', () => {
       DO UPDATE SET
         timestamp = EXCLUDED.timestamp,
         hashrate = EXCLUDED.hashrate;`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test miners command handling [9]', () => {
@@ -189,7 +189,7 @@ describe('Test database miners functionality', () => {
         stale = "Pool-Main".current_miners.stale + EXCLUDED.stale,
         valid = "Pool-Main".current_miners.valid + EXCLUDED.valid,
         work = "Pool-Main".current_miners.work + EXCLUDED.work;`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test miners command handling [10]', () => {
@@ -239,7 +239,7 @@ describe('Test database miners functionality', () => {
         stale = "Pool-Main".current_miners.stale + EXCLUDED.stale,
         valid = "Pool-Main".current_miners.valid + EXCLUDED.valid,
         work = "Pool-Main".current_miners.work + EXCLUDED.work;`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test miners command handling [11]', () => {
@@ -267,7 +267,7 @@ describe('Test database miners functionality', () => {
         timestamp = EXCLUDED.timestamp,
         balance = EXCLUDED.balance,
         paid = "Pool-Main".current_miners.paid + EXCLUDED.paid;`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test miners command handling [12]', () => {
@@ -300,7 +300,7 @@ describe('Test database miners functionality', () => {
         timestamp = EXCLUDED.timestamp,
         balance = EXCLUDED.balance,
         paid = "Pool-Main".current_miners.paid + EXCLUDED.paid;`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test miners command handling [13]', () => {
@@ -328,7 +328,7 @@ describe('Test database miners functionality', () => {
         timestamp = EXCLUDED.timestamp,
         generate = "Pool-Main".current_miners.generate + EXCLUDED.generate,
         immature = "Pool-Main".current_miners.immature + EXCLUDED.immature;`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test miners command handling [14]', () => {
@@ -361,7 +361,7 @@ describe('Test database miners functionality', () => {
         timestamp = EXCLUDED.timestamp,
         generate = "Pool-Main".current_miners.generate + EXCLUDED.generate,
         immature = "Pool-Main".current_miners.immature + EXCLUDED.immature;`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test miners command handling [15]', () => {
@@ -370,7 +370,7 @@ describe('Test database miners functionality', () => {
     const expected = `
       UPDATE "Pool-Main".current_miners
       SET generate = 0 WHERE type = 'primary';`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test miners command handling [16]', () => {
@@ -380,6 +380,6 @@ describe('Test database miners functionality', () => {
       DELETE FROM "Pool-Main".current_miners
       WHERE timestamp < 1 AND balance = 0
       AND generate = 0 AND immature = 0 AND paid = 0;`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 });

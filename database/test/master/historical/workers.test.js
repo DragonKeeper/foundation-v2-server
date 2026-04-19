@@ -51,7 +51,7 @@ describe('Test database workers functionality', () => {
     const parameters = { miner: 'miner1', type: 'primary' };
     const response = workers.selectHistoricalWorkersMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".historical_workers WHERE miner = \'miner1\' AND type = \'primary\';';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test workers command handling [2]', () => {
@@ -59,7 +59,7 @@ describe('Test database workers functionality', () => {
     const parameters = { worker: 'worker1', type: 'primary' };
     const response = workers.selectHistoricalWorkersMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".historical_workers WHERE worker = \'worker1\' AND type = \'primary\';';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test workers command handling [3]', () => {
@@ -67,7 +67,7 @@ describe('Test database workers functionality', () => {
     const parameters = { type: 'primary' };
     const response = workers.selectHistoricalWorkersMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".historical_workers WHERE type = \'primary\';';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test workers command handling [4]', () => {
@@ -75,7 +75,7 @@ describe('Test database workers functionality', () => {
     const parameters = { type: 'primary', hmm: 'test' };
     const response = workers.selectHistoricalWorkersMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".historical_workers WHERE type = \'primary\';';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test workers command handling [5]', () => {
@@ -118,7 +118,7 @@ describe('Test database workers functionality', () => {
         1)
       ON CONFLICT ON CONSTRAINT historical_workers_recent
       DO NOTHING;`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test workers command handling [6]', () => {
@@ -174,6 +174,6 @@ describe('Test database workers functionality', () => {
         1)
       ON CONFLICT ON CONSTRAINT historical_workers_recent
       DO NOTHING;`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 });

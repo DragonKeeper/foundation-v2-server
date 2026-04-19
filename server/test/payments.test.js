@@ -5,6 +5,7 @@ import Payments from '../main/payments.js';
 import config from '../../configs/pools/example.js';
 import configMain from '../../configs/main/example.js';
 import events from 'events';
+import { expectSql } from './sql-utils.js';
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -212,8 +213,8 @@ describe('Test payments functionality', () => {
       WHERE round IN ('round1', 'round2', 'round3', 'round4', 'round5', 'round6');`;
     client.on('transaction', (transaction) => {
       expect(transaction.length).toBe(4);
-      expect(transaction[1]).toBe(expectedPayments);
-      expect(transaction[2]).toBe(expectedTransactions);
+      expectSql(transaction[1], expectedPayments);
+      expectSql(transaction[2], expectedTransactions);
       done();
     });
     payments.handleFailures(blocks, () => {});
@@ -528,15 +529,15 @@ describe('Test payments functionality', () => {
       WHERE round IN ('round1', 'round2', 'round3', 'round4', 'round5', 'round6');`;
     client.on('transaction', (transaction) => {
       expect(transaction.length).toBe(11);
-      expect(transaction[1]).toBe(expectedGenerateBlocksDeletes);
-      expect(transaction[2]).toBe(expectedResetMiners);
-      expect(transaction[3]).toBe(expectedMiners);
-      expect(transaction[4]).toBe(expectedGenerateRoundsDeletes);
-      expect(transaction[5]).toBe(expectedGenerateBlocksUpdates);
-      expect(transaction[6]).toBe(expectedPayments);
-      expect(transaction[7]).toBe(expectedGenerateRoundsUpdates);
-      expect(transaction[8]).toBe(expectedTransactions);
-      expect(transaction[9]).toBe(expectedTransactionsDelete);
+      expectSql(transaction[1], expectedGenerateBlocksDeletes);
+      expectSql(transaction[2], expectedResetMiners);
+      expectSql(transaction[3], expectedMiners);
+      expectSql(transaction[4], expectedGenerateRoundsDeletes);
+      expectSql(transaction[5], expectedGenerateBlocksUpdates);
+      expectSql(transaction[6], expectedPayments);
+      expectSql(transaction[7], expectedGenerateRoundsUpdates);
+      expectSql(transaction[8], expectedTransactions);
+      expectSql(transaction[9], expectedTransactionsDelete);
       done();
     });
     payments.handleUpdates(blocks, rounds, amounts, balances, 'transaction1', 'primary', () => {});
@@ -552,7 +553,7 @@ describe('Test payments functionality', () => {
       SET generate = 0 WHERE type = 'primary';`;
     client.on('transaction', (transaction) => {
       expect(transaction.length).toBe(3);
-      expect(transaction[1]).toBe(expectedResetMiners);
+      expectSql(transaction[1], expectedResetMiners);
       done();
     });
     payments.handleUpdates([], [], {}, {}, null, 'primary', () => {});
@@ -811,15 +812,15 @@ describe('Test payments functionality', () => {
     client.on('transaction', (transaction) => {
       if (currentIdx === 1) {
         expect(transaction.length).toBe(11);
-        expect(transaction[1]).toBe(expectedGenerateBlocksDeletes);
-        expect(transaction[2]).toBe(expectedResetMiners);
-        expect(transaction[3]).toBe(expectedMiners);
-        expect(transaction[4]).toBe(expectedGenerateRoundsDeletes);
-        expect(transaction[5]).toBe(expectedGenerateBlocksUpdates);
-        expect(transaction[6]).toBe(expectedPayments);
-        expect(transaction[7]).toBe(expectedGenerateRoundsUpdates);
-        expect(transaction[8]).toBe(expectedTransactions);
-        expect(transaction[9]).toBe(expectedTransactionsDelete);
+        expectSql(transaction[1], expectedGenerateBlocksDeletes);
+        expectSql(transaction[2], expectedResetMiners);
+        expectSql(transaction[3], expectedMiners);
+        expectSql(transaction[4], expectedGenerateRoundsDeletes);
+        expectSql(transaction[5], expectedGenerateBlocksUpdates);
+        expectSql(transaction[6], expectedPayments);
+        expectSql(transaction[7], expectedGenerateRoundsUpdates);
+        expectSql(transaction[8], expectedTransactions);
+        expectSql(transaction[9], expectedTransactionsDelete);
       } else currentIdx += 1;
     });
     payments.handlePrimary(blocks, {}, () => done());
@@ -893,8 +894,8 @@ describe('Test payments functionality', () => {
     client.on('transaction', (transaction) => {
       if (currentIdx === 1) {
         expect(transaction.length).toBe(4);
-        expect(transaction[1]).toBe(expectedPayments);
-        expect(transaction[2]).toBe(expectedTransactions);
+        expectSql(transaction[1], expectedPayments);
+        expectSql(transaction[2], expectedTransactions);
       } else currentIdx += 1;
     });
     payments.handlePrimary(blocks, {}, () => done());
@@ -968,8 +969,8 @@ describe('Test payments functionality', () => {
     client.on('transaction', (transaction) => {
       if (currentIdx === 1) {
         expect(transaction.length).toBe(4);
-        expect(transaction[1]).toBe(expectedPayments);
-        expect(transaction[2]).toBe(expectedTransactions);
+        expectSql(transaction[1], expectedPayments);
+        expectSql(transaction[2], expectedTransactions);
       } else currentIdx += 1;
     });
     payments.handlePrimary(blocks, {}, () => done());
@@ -1042,8 +1043,8 @@ describe('Test payments functionality', () => {
     client.on('transaction', (transaction) => {
       if (currentIdx === 1) {
         expect(transaction.length).toBe(4);
-        expect(transaction[1]).toBe(expectedPayments);
-        expect(transaction[2]).toBe(expectedTransactions);
+        expectSql(transaction[1], expectedPayments);
+        expectSql(transaction[2], expectedTransactions);
       } else currentIdx += 1;
     });
     payments.handlePrimary(blocks, {}, () => done());
@@ -1302,15 +1303,15 @@ describe('Test payments functionality', () => {
     client.on('transaction', (transaction) => {
       if (currentIdx === 1) {
         expect(transaction.length).toBe(11);
-        expect(transaction[1]).toBe(expectedGenerateBlocksDeletes);
-        expect(transaction[2]).toBe(expectedResetMiners);
-        expect(transaction[3]).toBe(expectedMiners);
-        expect(transaction[4]).toBe(expectedGenerateRoundsDeletes);
-        expect(transaction[5]).toBe(expectedGenerateBlocksUpdates);
-        expect(transaction[6]).toBe(expectedPayments);
-        expect(transaction[7]).toBe(expectedGenerateRoundsUpdates);
-        expect(transaction[8]).toBe(expectedTransactions);
-        expect(transaction[9]).toBe(expectedTransactionsDelete);
+        expectSql(transaction[1], expectedGenerateBlocksDeletes);
+        expectSql(transaction[2], expectedResetMiners);
+        expectSql(transaction[3], expectedMiners);
+        expectSql(transaction[4], expectedGenerateRoundsDeletes);
+        expectSql(transaction[5], expectedGenerateBlocksUpdates);
+        expectSql(transaction[6], expectedPayments);
+        expectSql(transaction[7], expectedGenerateRoundsUpdates);
+        expectSql(transaction[8], expectedTransactions);
+        expectSql(transaction[9], expectedTransactionsDelete);
       } else currentIdx += 1;
     });
     payments.handleAuxiliary(blocks, {}, () => done());
@@ -1384,8 +1385,8 @@ describe('Test payments functionality', () => {
     client.on('transaction', (transaction) => {
       if (currentIdx === 1) {
         expect(transaction.length).toBe(4);
-        expect(transaction[1]).toBe(expectedPayments);
-        expect(transaction[2]).toBe(expectedTransactions);
+        expectSql(transaction[1], expectedPayments);
+        expectSql(transaction[2], expectedTransactions);
       } else currentIdx += 1;
     });
     payments.handleAuxiliary(blocks, {}, () => done());
@@ -1459,8 +1460,8 @@ describe('Test payments functionality', () => {
     client.on('transaction', (transaction) => {
       if (currentIdx === 1) {
         expect(transaction.length).toBe(4);
-        expect(transaction[1]).toBe(expectedPayments);
-        expect(transaction[2]).toBe(expectedTransactions);
+        expectSql(transaction[1], expectedPayments);
+        expectSql(transaction[2], expectedTransactions);
       } else currentIdx += 1;
     });
     payments.handleAuxiliary(blocks, {}, () => done());
@@ -1533,8 +1534,8 @@ describe('Test payments functionality', () => {
     client.on('transaction', (transaction) => {
       if (currentIdx === 1) {
         expect(transaction.length).toBe(4);
-        expect(transaction[1]).toBe(expectedPayments);
-        expect(transaction[2]).toBe(expectedTransactions);
+        expectSql(transaction[1], expectedPayments);
+        expectSql(transaction[2], expectedTransactions);
       } else currentIdx += 1;
     });
     payments.handleAuxiliary(blocks, {}, () => done());

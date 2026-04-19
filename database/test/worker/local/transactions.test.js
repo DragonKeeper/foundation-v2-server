@@ -51,7 +51,7 @@ describe('Test database transactions functionality', () => {
     const parameters = { type: 'primary' };
     const response = transactions.selectLocalTransactionsMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".local_transactions WHERE type = \'primary\';';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test transactions command handling [2]', () => {
@@ -59,7 +59,7 @@ describe('Test database transactions functionality', () => {
     const parameters = { uuid: 'uuid1', type: 'primary' };
     const response = transactions.selectLocalTransactionsMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".local_transactions WHERE uuid = \'uuid1\' AND type = \'primary\';';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test transactions command handling [3]', () => {
@@ -79,7 +79,7 @@ describe('Test database transactions functionality', () => {
         'primary')
       ON CONFLICT ON CONSTRAINT local_transactions_unique
       DO NOTHING RETURNING uuid;`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test transactions command handling [4]', () => {
@@ -102,7 +102,7 @@ describe('Test database transactions functionality', () => {
         'primary')
       ON CONFLICT ON CONSTRAINT local_transactions_unique
       DO NOTHING RETURNING uuid;`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test transactions command handling [5]', () => {
@@ -111,7 +111,7 @@ describe('Test database transactions functionality', () => {
     const expected = `
       DELETE FROM "Pool-Main".local_transactions
       WHERE uuid IN (round1);`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test transactions command handling [6]', () => {
@@ -120,6 +120,6 @@ describe('Test database transactions functionality', () => {
     const expected = `
       DELETE FROM "Pool-Main".local_transactions
       WHERE timestamp < 1;`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 });

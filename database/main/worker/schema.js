@@ -92,7 +92,11 @@ class Schema {
       return new Promise((resolve, reject) => {
         _this.executor([command], (results) => {
           try {
-            resolve(results.rows[0].exists);
+            const exists = results.rows[0].exists;
+            if (typeof callback === 'function') {
+              callback(exists);
+            }
+            resolve(exists);
           } catch (err) {
             reject(err);
           }

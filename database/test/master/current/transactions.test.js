@@ -51,7 +51,7 @@ describe('Test database transactions functionality', () => {
     const parameters = { type: 'primary' };
     const response = transactions.selectCurrentTransactionsMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".current_transactions WHERE type = \'primary\';';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test transactions command handling [2]', () => {
@@ -59,7 +59,7 @@ describe('Test database transactions functionality', () => {
     const parameters = { timestamp: 'ge1', type: 'primary' };
     const response = transactions.selectCurrentTransactionsMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".current_transactions WHERE timestamp >= 1 AND type = \'primary\';';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test transactions command handling [3]', () => {
@@ -67,7 +67,7 @@ describe('Test database transactions functionality', () => {
     const parameters = { timestamp: 'ge1', type: 'primary', hmm: 'test' };
     const response = transactions.selectCurrentTransactionsMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".current_transactions WHERE timestamp >= 1 AND type = \'primary\';';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test transaction command handling [4]', () => {
@@ -87,7 +87,7 @@ describe('Test database transactions functionality', () => {
         'primary')
       ON CONFLICT ON CONSTRAINT current_transactions_unique
       DO NOTHING RETURNING round;`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test transaction command handling [5]', () => {
@@ -110,7 +110,7 @@ describe('Test database transactions functionality', () => {
         'primary')
       ON CONFLICT ON CONSTRAINT current_transactions_unique
       DO NOTHING RETURNING round;`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test transaction command handling [6]', () => {
@@ -119,7 +119,7 @@ describe('Test database transactions functionality', () => {
     const expected = `
       DELETE FROM "Pool-Main".current_transactions
       WHERE round IN (round1);`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test transaction command handling [7]', () => {
@@ -128,6 +128,6 @@ describe('Test database transactions functionality', () => {
     const expected = `
       DELETE FROM "Pool-Main".current_transactions
       WHERE timestamp < 1;`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 });

@@ -1,5 +1,6 @@
 import Schema from './schema.js';
 import Text from '../../../locales/index.js';
+import BlockTimeSummary from './block-time-summary.js';
 import CurrentBlocks from './current/blocks.js';
 import CurrentHashrate from './current/hashrate.js';
 import CurrentMetadata from './current/metadata.js';
@@ -38,6 +39,7 @@ class Commands {
     this.timing = [1000, 5000, 30000];
 
     // Database Table Structure
+    this.blockTimeSummary = new BlockTimeSummary(this.logger, this.configMain);
     this.current = {};
     this.historical = {};
     this.retries = 0;

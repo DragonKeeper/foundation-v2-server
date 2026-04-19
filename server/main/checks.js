@@ -286,8 +286,15 @@ class Checks {
 
         // Primary Behavior
         case 'primary':
-          _this.master.executor(transaction)
-            .then((results) => {
+          utils.executeExecutorTransaction(_this.master.executor, transaction, (err, results) => {
+            if (err) {
+              if (_this.logger && typeof _this.logger.error === 'function') {
+                _this.logger.error('Checks', 'executor', err.stack || err.toString());
+              }
+              callback(err);
+              return;
+            }
+
               if (results.length > 2) {
                 results = results[1].rows.map((block) => block.round);
                 const blocks = lookups[1].rows.filter((block) => results.includes((block || {}).round));
@@ -309,19 +316,20 @@ class Checks {
                 _this.logger.debug('Checks', _this.config.name, updates);
                 callback();
               }
-            })
-            .catch((err) => {
-              if (_this.logger && typeof _this.logger.error === 'function') {
-                _this.logger.error('Checks', 'executor', err.stack || err.toString());
-              }
-              callback(err);
             });
           break;
 
         // Auxiliary Behavior
         case 'auxiliary':
-          _this.master.executor(transaction)
-            .then((results) => {
+          utils.executeExecutorTransaction(_this.master.executor, transaction, (err, results) => {
+            if (err) {
+              if (_this.logger && typeof _this.logger.error === 'function') {
+                _this.logger.error('Checks', 'executor', err.stack || err.toString());
+              }
+              callback(err);
+              return;
+            }
+
               if (results.length > 2) {
                 results = results[1].rows.map((block) => block.round);
                 const blocks = lookups[1].rows.filter((block) => results.includes((block || {}).round));
@@ -343,12 +351,6 @@ class Checks {
                 _this.logger.debug('Checks', _this.config.name, updates);
                 callback();
               }
-            })
-            .catch((err) => {
-              if (_this.logger && typeof _this.logger.error === 'function') {
-                _this.logger.error('Checks', 'executor', err.stack || err.toString());
-              }
-              callback(err);
             });
           break;
 

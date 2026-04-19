@@ -7,13 +7,14 @@ const logger = new Logger(configMain);
 
 function mockClient(error, results) {
   let requests = 0;
-  return { query: (commands, callback) => {
-    if (requests >= 1) callback(false, results);
-    else {
+  return {
+    query: () => {
+      if (requests >= 1) return Promise.resolve(results);
       requests += 1;
-      callback(error, results);
-    }
-  }};
+      if (error) return Promise.reject(error);
+      return Promise.resolve(results);
+    },
+  };
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -32,29 +33,25 @@ describe('Test command functionality', () => {
     expect(typeof commands.executor).toBe('function');
   });
 
-  test('Test executor functionality [1]', () => {
+  test('Test executor functionality [1]', async () => {
     const client = mockClient(null, ['test']);
     const commands = new Commands(logger, client, configMainCopy);
-    commands.executor(['test'], (results) => {
-      expect(results[0]).toBe('test');
-    });
+    const results = await commands.executor(['test']);
+    expect(results[0]).toBe('test');
   });
 
-  test('Test executor functionality [2]', (done) => {
-    const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
-    const client = mockClient(true, null);
+  test('Test executor functionality [2]', async () => {
+    const client = mockClient(new Error('retry'), ['test']);
     const commands = new Commands(logger, client, configMainCopy);
-    commands.executor(['test'], () => {
-      expect(consoleSpy).toHaveBeenCalled();
-      console.log.mockClear();
-      done();
-    });
+    const results = await commands.executor(['test']);
+    expect(results[0]).toBe('test');
+    expect(commands.retries).toBe(0);
   });
 
-  test('Test executor functionality [3]', () => {
-    const client = mockClient(true, null);
+  test('Test executor functionality [3]', async () => {
+    const client = mockClient(new Error('fail'), null);
     const commands = new Commands(logger, client, configMainCopy);
     commands.retries = 3;
-    expect(() => commands.executor(['test'], () => {})).toThrow(Error);
+    await expect(commands.executor(['test'])).rejects.toThrow('fail');
   });
 });

@@ -5,6 +5,7 @@ import Checks from '../main/checks.js';
 import config from '../../configs/pools/example.js';
 import configMain from '../../configs/main/example.js';
 import events from 'events';
+import { expectSql } from './sql-utils.js';
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -490,14 +491,14 @@ describe('Test checks functionality', () => {
 
     client.on('transaction', (transaction) => {
       expect(transaction.length).toBe(10);
-      expect(transaction[1]).toBe(expectedOrphanBlocksDeletes);
-      expect(transaction[2]).toBe(expectedImmatureUpdates);
-      expect(transaction[3]).toBe(expectedGenerateUpdates);
-      expect(transaction[4]).toBe(expectedMiners);
-      expect(transaction[5]).toBe(expectedOrphanRoundsDeletes);
-      expect(transaction[6]).toBe(expectedOrphanRoundsUpdates);
-      expect(transaction[7]).toBe(expectedOrphanBlocksUpdates);
-      expect(transaction[8]).toBe(expectedTransactions);
+      expectSql(transaction[1], expectedOrphanBlocksDeletes);
+      expectSql(transaction[2], expectedImmatureUpdates);
+      expectSql(transaction[3], expectedGenerateUpdates);
+      expectSql(transaction[4], expectedMiners);
+      expectSql(transaction[5], expectedOrphanRoundsDeletes);
+      expectSql(transaction[6], expectedOrphanRoundsUpdates);
+      expectSql(transaction[7], expectedOrphanBlocksUpdates);
+      expectSql(transaction[8], expectedTransactions);
       done();
     });
     checks.handleUpdates(blocks, rounds, payments, 'primary', () => {});
@@ -647,11 +648,11 @@ describe('Test checks functionality', () => {
       WHERE round IN ('round1', 'round2');`;
     client.on('transaction', (transaction) => {
       expect(transaction.length).toBe(7);
-      expect(transaction[1]).toBe(expectedOrphanBlocksDeletes);
-      expect(transaction[2]).toBe(expectedOrphanRoundsDeletes);
-      expect(transaction[3]).toBe(expectedOrphanRoundsUpdates);
-      expect(transaction[4]).toBe(expectedOrphanBlocksUpdates);
-      expect(transaction[5]).toBe(expectedTransactions);
+      expectSql(transaction[1], expectedOrphanBlocksDeletes);
+      expectSql(transaction[2], expectedOrphanRoundsDeletes);
+      expectSql(transaction[3], expectedOrphanRoundsUpdates);
+      expectSql(transaction[4], expectedOrphanBlocksUpdates);
+      expectSql(transaction[5], expectedTransactions);
       done();
     });
     checks.handleUpdates(blocks, rounds, {}, 'primary', () => {});
@@ -793,9 +794,9 @@ describe('Test checks functionality', () => {
       WHERE round IN ('round1', 'round2');`;
     client.on('transaction', (transaction) => {
       expect(transaction.length).toBe(5);
-      expect(transaction[1]).toBe(expectedImmatureUpdates);
-      expect(transaction[2]).toBe(expectedGenerateUpdates);
-      expect(transaction[3]).toBe(expectedTransactions);
+      expectSql(transaction[1], expectedImmatureUpdates);
+      expectSql(transaction[2], expectedGenerateUpdates);
+      expectSql(transaction[3], expectedTransactions);
       done();
     });
     checks.handleUpdates(blocks, rounds, {}, 'primary', () => {});
@@ -974,10 +975,10 @@ describe('Test checks functionality', () => {
     client.on('transaction', (transaction) => {
       if (currentIdx === 1) {
         expect(transaction.length).toBe(6);
-        expect(transaction[1]).toBe(expectedImmatureUpdates);
-        expect(transaction[2]).toBe(expectedGenerateUpdates);
-        expect(transaction[3]).toBe(expectedMiners);
-        expect(transaction[4]).toBe(expectedTransactions);
+        expectSql(transaction[1], expectedImmatureUpdates);
+        expectSql(transaction[2], expectedGenerateUpdates);
+        expectSql(transaction[3], expectedMiners);
+        expectSql(transaction[4], expectedTransactions);
       } else currentIdx += 1;
     });
     checks.handlePrimary(blocks, () => done());
@@ -1210,10 +1211,10 @@ describe('Test checks functionality', () => {
     client.on('transaction', (transaction) => {
       if (currentIdx === 1) {
         expect(transaction.length).toBe(6);
-        expect(transaction[1]).toBe(expectedImmatureUpdates);
-        expect(transaction[2]).toBe(expectedGenerateUpdates);
-        expect(transaction[3]).toBe(expectedMiners);
-        expect(transaction[4]).toBe(expectedTransactions);
+        expectSql(transaction[1], expectedImmatureUpdates);
+        expectSql(transaction[2], expectedGenerateUpdates);
+        expectSql(transaction[3], expectedMiners);
+        expectSql(transaction[4], expectedTransactions);
       } else currentIdx += 1;
     });
     checks.handleAuxiliary(blocks, () => done());

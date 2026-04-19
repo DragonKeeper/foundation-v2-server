@@ -167,14 +167,17 @@ class Payments {
       ];
 
       // Insert Work into Database
-      _this.master.executor(transaction)
-        .then(() => callback())
-        .catch((err) => {
+      utils.executeExecutorTransaction(_this.master.executor, transaction, (err) => {
+        if (err) {
           if (_this.logger && typeof _this.logger.error === 'function') {
             _this.logger.error('Payments', 'executor', err.stack || err.toString());
           }
           callback(err);
-        });
+          return;
+        }
+
+        callback();
+      });
     };
 
     // Handle Round Success Updates
@@ -259,8 +262,15 @@ class Payments {
 
       // Determine Workers for Rounds
       transaction.push('COMMIT;');
-      _this.master.executor(transaction)
-        .then((results) => {
+      utils.executeExecutorTransaction(_this.master.executor, transaction, (err, results) => {
+        if (err) {
+          if (_this.logger && typeof _this.logger.error === 'function') {
+            _this.logger.error('Payments', 'executor', err.stack || err.toString());
+          }
+          callback(err);
+          return;
+        }
+
           const rounds = results.slice(1, -1).map((round) => round.rows);
           const sending = true;
           _this.stratum.stratum.handlePrimaryRounds(blocks, (error, updates) => {
@@ -276,12 +286,6 @@ class Payments {
               });
             });
           });
-        })
-        .catch((err) => {
-          if (_this.logger && typeof _this.logger.error === 'function') {
-            _this.logger.error('Payments', 'executor', err.stack || err.toString());
-          }
-          callback(err);
         });
     };
 
@@ -299,8 +303,15 @@ class Payments {
 
       // Determine Workers for Rounds
       transaction.push('COMMIT;');
-      _this.master.executor(transaction)
-        .then((results) => {
+      utils.executeExecutorTransaction(_this.master.executor, transaction, (err, results) => {
+        if (err) {
+          if (_this.logger && typeof _this.logger.error === 'function') {
+            _this.logger.error('Payments', 'executor', err.stack || err.toString());
+          }
+          callback(err);
+          return;
+        }
+
           const rounds = results.slice(1, -1).map((round) => round.rows);
           const sending = true;
           _this.stratum.stratum.handleAuxiliaryRounds(blocks, (error, updates) => {
@@ -316,12 +327,6 @@ class Payments {
               });
             });
           });
-        })
-        .catch((err) => {
-          if (_this.logger && typeof _this.logger.error === 'function') {
-            _this.logger.error('Payments', 'executor', err.stack || err.toString());
-          }
-          callback(err);
         });
     };
 
@@ -455,33 +460,35 @@ class Payments {
 
         // Primary Behavior
         case 'primary':
-          _this.master.executor(transaction)
-            .then((results) => {
-              results = results[1].rows.map((block) => block.round);
-              const blocks = lookups[1].rows.filter((block) => results.includes((block || {}).round));
-              _this.handleRounds(blocks, balances, blockType, callback);
-            })
-            .catch((err) => {
+          utils.executeExecutorTransaction(_this.master.executor, transaction, (err, results) => {
+            if (err) {
               if (_this.logger && typeof _this.logger.error === 'function') {
                 _this.logger.error('Payments', 'executor', err.stack || err.toString());
               }
               callback(err);
+              return;
+            }
+
+              results = results[1].rows.map((block) => block.round);
+              const blocks = lookups[1].rows.filter((block) => results.includes((block || {}).round));
+              _this.handleRounds(blocks, balances, blockType, callback);
             });
           break;
 
         // Auxiliary Behavior
         case 'auxiliary':
-          _this.master.executor(transaction)
-            .then((results) => {
-              results = results[1].rows.map((block) => block.round);
-              const blocks = lookups[1].rows.filter((block) => results.includes((block || {}).round));
-              _this.handleRounds(blocks, balances, blockType, callback);
-            })
-            .catch((err) => {
+          utils.executeExecutorTransaction(_this.master.executor, transaction, (err, results) => {
+            if (err) {
               if (_this.logger && typeof _this.logger.error === 'function') {
                 _this.logger.error('Payments', 'executor', err.stack || err.toString());
               }
               callback(err);
+              return;
+            }
+
+              results = results[1].rows.map((block) => block.round);
+              const blocks = lookups[1].rows.filter((block) => results.includes((block || {}).round));
+              _this.handleRounds(blocks, balances, blockType, callback);
             });
           break;
 
@@ -512,15 +519,16 @@ class Payments {
       ];
 
       // Establish Separate Behavior
-      _this.master.executor(transaction)
-        .then((lookups) => {
-          _this.handleChecks(lookups, blockType, callback);
-        })
-        .catch((err) => {
+      utils.executeExecutorTransaction(_this.master.executor, transaction, (err, lookups) => {
+        if (err) {
           if (_this.logger && typeof _this.logger.error === 'function') {
             _this.logger.error('Payments', 'executor', err.stack || err.toString());
           }
           callback(err);
+          return;
+        }
+
+          _this.handleChecks(lookups, blockType, callback);
         });
     };
 

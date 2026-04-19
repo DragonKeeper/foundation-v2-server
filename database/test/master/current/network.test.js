@@ -51,7 +51,7 @@ describe('Test database network functionality', () => {
     const parameters = { type: 'primary' };
     const response = network.selectCurrentNetworkMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".current_network WHERE type = \'primary\';';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test network command handling [2]', () => {
@@ -59,7 +59,7 @@ describe('Test database network functionality', () => {
     const parameters = { timestamp: 'ge1', type: 'primary' };
     const response = network.selectCurrentNetworkMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".current_network WHERE timestamp >= 1 AND type = \'primary\';';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test network command handling [3]', () => {
@@ -67,7 +67,7 @@ describe('Test database network functionality', () => {
     const parameters = { timestamp: 'ge1', type: 'primary', hmm: 'test' };
     const response = network.selectCurrentNetworkMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".current_network WHERE timestamp >= 1 AND type = \'primary\';';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test network command handling [4]', () => {
@@ -96,7 +96,7 @@ describe('Test database network functionality', () => {
         difficulty = EXCLUDED.difficulty,
         hashrate = EXCLUDED.hashrate,
         height = EXCLUDED.height;`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test network command handling [5]', () => {
@@ -130,6 +130,6 @@ describe('Test database network functionality', () => {
         difficulty = EXCLUDED.difficulty,
         hashrate = EXCLUDED.hashrate,
         height = EXCLUDED.height;`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 });

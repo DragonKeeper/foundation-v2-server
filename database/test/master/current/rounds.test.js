@@ -51,7 +51,7 @@ describe('Test database rounds functionality', () => {
     const parameters = { miner: 'miner1', type: 'primary' };
     const response = rounds.selectCurrentRoundsMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".current_rounds WHERE miner = \'miner1\' AND type = \'primary\';';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test rounds command handling [2]', () => {
@@ -59,7 +59,7 @@ describe('Test database rounds functionality', () => {
     const parameters = { worker: 'worker1', type: 'primary' };
     const response = rounds.selectCurrentRoundsMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".current_rounds WHERE worker = \'worker1\' AND type = \'primary\';';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test rounds command handling [3]', () => {
@@ -67,7 +67,7 @@ describe('Test database rounds functionality', () => {
     const parameters = { identifier: 'master', type: 'primary' };
     const response = rounds.selectCurrentRoundsMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".current_rounds WHERE identifier = \'master\' AND type = \'primary\';';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test rounds command handling [4]', () => {
@@ -75,7 +75,7 @@ describe('Test database rounds functionality', () => {
     const parameters = { solo: true, round: 'round1', type: 'primary' };
     const response = rounds.selectCurrentRoundsMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".current_rounds WHERE solo = true AND round = \'round1\' AND type = \'primary\';';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test rounds command handling [5]', () => {
@@ -83,7 +83,7 @@ describe('Test database rounds functionality', () => {
     const parameters = { worker: 'worker1', solo: true, type: 'primary' };
     const response = rounds.selectCurrentRoundsMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".current_rounds WHERE worker = \'worker1\' AND solo = true AND type = \'primary\';';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test rounds command handling [6]', () => {
@@ -91,7 +91,7 @@ describe('Test database rounds functionality', () => {
     const parameters = { worker: 'worker1', solo: true, round: 'round1', type: 'primary' };
     const response = rounds.selectCurrentRoundsMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".current_rounds WHERE worker = \'worker1\' AND solo = true AND round = \'round1\' AND type = \'primary\';';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test rounds command handling [7]', () => {
@@ -99,7 +99,7 @@ describe('Test database rounds functionality', () => {
     const parameters = { timestamp: 'ge1', type: 'primary', hmm: 'test' };
     const response = rounds.selectCurrentRoundsMain('Pool-Main', parameters);
     const expected = 'SELECT * FROM "Pool-Main".current_rounds WHERE timestamp >= 1 AND type = \'primary\';';
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test rounds command handling [8]', () => {
@@ -110,7 +110,7 @@ describe('Test database rounds functionality', () => {
       SELECT DISTINCT ON (worker) * FROM "Pool-Main".current_rounds
       WHERE worker IN (address1, address2, address3) AND type = 'primary'
       ORDER BY worker, timestamp DESC;`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test rounds command handling [9]', () => {
@@ -118,7 +118,7 @@ describe('Test database rounds functionality', () => {
     const response = rounds.selectCurrentRoundsBatchAddresses('Pool-Main', [], 'primary');
     const expected = `
       SELECT * FROM "Pool-Main".current_rounds LIMIT 0;`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test rounds command handling [10]', () => {
@@ -139,7 +139,7 @@ describe('Test database rounds functionality', () => {
         AND m.round = t.round AND m.solo = t.solo AND m.type = t.type
       WHERE m.round = 'round1' AND m.solo = false
       AND m.type = 'primary';`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test rounds command handling [11]', () => {
@@ -191,7 +191,7 @@ describe('Test database rounds functionality', () => {
         times = GREATEST("Pool-Main".current_rounds.times, EXCLUDED.times),
         valid = "Pool-Main".current_rounds.valid + EXCLUDED.valid,
         work = "Pool-Main".current_rounds.work + EXCLUDED.work;`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test rounds command handling [12]', () => {
@@ -257,7 +257,7 @@ describe('Test database rounds functionality', () => {
         times = GREATEST("Pool-Main".current_rounds.times, EXCLUDED.times),
         valid = "Pool-Main".current_rounds.valid + EXCLUDED.valid,
         work = "Pool-Main".current_rounds.work + EXCLUDED.work;`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test rounds command handling [13]', () => {
@@ -268,7 +268,7 @@ describe('Test database rounds functionality', () => {
       SET round = 'round1'
       WHERE round = 'current' AND miner = 'miner1'
       AND solo = true AND type = 'primary';`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test rounds command handling [14]', () => {
@@ -279,7 +279,7 @@ describe('Test database rounds functionality', () => {
       SET round = 'round1'
       WHERE round = 'current' AND solo = false
       AND type = 'primary';`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test rounds command handling [15]', () => {
@@ -288,7 +288,7 @@ describe('Test database rounds functionality', () => {
     const expected = `
       DELETE FROM "Pool-Main".current_rounds
       WHERE round = 'current' AND submitted < 1;`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 
   test('Test rounds command handling [15]', () => {
@@ -297,6 +297,6 @@ describe('Test database rounds functionality', () => {
     const expected = `
       DELETE FROM "Pool-Main".current_rounds
       WHERE round IN (round1);`;
-    expect(response).toBe(expected);
+    expectSql(response, expected);
   });
 });

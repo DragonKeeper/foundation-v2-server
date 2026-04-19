@@ -99,7 +99,7 @@ class CurrentHashrate {
       SELECT worker, SUM(work) as current_work\
       FROM "${pool}".current_hashrate\
       WHERE timestamp >= ${timestamp}\
-      AND solo IS FALSE AND type = '${type}'\
+      AND solo = ${solo} AND type = '${type}'\
       GROUP BY worker;`;
     };
 
@@ -109,7 +109,7 @@ class CurrentHashrate {
       SELECT SUM(work) as current_work\
       FROM "${pool}".current_hashrate\
       WHERE timestamp >= ${timestamp}\
-      AND solo IS FALSE AND type = '${type}';`;
+      AND solo = ${solo} AND type = '${type}';`;
     };
 
     // Build Hashrate Values String

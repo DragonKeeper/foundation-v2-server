@@ -6,6 +6,7 @@ import Rounds from '../main/rounds.js';
 import config from '../../configs/pools/example.js';
 import configMain from '../../configs/main/example.js';
 import events from 'events';
+import { expectSql } from './sql-utils.js';
 
 // Mock UUID Events
 jest.mock('uuid', () => ({ v4: () => '123456789' }));
@@ -1395,8 +1396,8 @@ describe('Test rounds functionality', () => {
       WHERE uuid IN ('uuid1', 'uuid2', 'uuid3');`;
     client.on('transaction', (transaction) => {
       expect(transaction.length).toBe(4);
-      expect(transaction[1]).toBe(expectedShares);
-      expect(transaction[2]).toBe(expectedTransactions);
+      expectSql(transaction[1], expectedShares);
+      expectSql(transaction[2], expectedTransactions);
       done();
     });
     rounds.handleCleanup(segment, () => {});
@@ -1562,11 +1563,11 @@ describe('Test rounds functionality', () => {
         work = "Pool-Bitcoin".current_workers.work + EXCLUDED.work;`;
     client.on('transaction', (transaction) => {
       expect(transaction.length).toBe(7);
-      expect(transaction[1]).toBe(expectedHashrate);
-      expect(transaction[2]).toBe(expectedMetadata);
-      expect(transaction[3]).toBe(expectedMiners);
-      expect(transaction[4]).toBe(expectedRounds);
-      expect(transaction[5]).toBe(expectedWorkers);
+      expectSql(transaction[1], expectedHashrate);
+      expectSql(transaction[2], expectedMetadata);
+      expectSql(transaction[3], expectedMiners);
+      expectSql(transaction[4], expectedRounds);
+      expectSql(transaction[5], expectedWorkers);
       done();
     });
     rounds.handleUpdates(lookups, [share], () => {});
@@ -1696,9 +1697,9 @@ describe('Test rounds functionality', () => {
         work = "Pool-Bitcoin".current_workers.work + EXCLUDED.work;`;
     client.on('transaction', (transaction) => {
       expect(transaction.length).toBe(5);
-      expect(transaction[1]).toBe(expectedMiners);
-      expect(transaction[2]).toBe(expectedRounds);
-      expect(transaction[3]).toBe(expectedWorkers);
+      expectSql(transaction[1], expectedMiners);
+      expectSql(transaction[2], expectedRounds);
+      expectSql(transaction[3], expectedWorkers);
       done();
     });
     rounds.handleUpdates(lookups, [share], () => {});
@@ -1984,16 +1985,16 @@ describe('Test rounds functionality', () => {
         work = "Pool-Bitcoin".current_workers.work + EXCLUDED.work;`;
     client.on('transaction', (transaction) => {
       expect(transaction.length).toBe(12);
-      expect(transaction[1]).toBe(expectedPrimaryHashrate);
-      expect(transaction[2]).toBe(expectedAuxiliaryHashrate);
-      expect(transaction[3]).toBe(expectedPrimaryMetadata);
-      expect(transaction[4]).toBe(expectedAuxiliaryMetadata);
-      expect(transaction[5]).toBe(expectedPrimaryMiners);
-      expect(transaction[6]).toBe(expectedAuxiliaryMiners);
-      expect(transaction[7]).toBe(expectedPrimaryRounds);
-      expect(transaction[8]).toBe(expectedAuxiliaryRounds);
-      expect(transaction[9]).toBe(expectedPrimaryWorkers);
-      expect(transaction[10]).toBe(expectedAuxiliaryWorkers);
+      expectSql(transaction[1], expectedPrimaryHashrate);
+      expectSql(transaction[2], expectedAuxiliaryHashrate);
+      expectSql(transaction[3], expectedPrimaryMetadata);
+      expectSql(transaction[4], expectedAuxiliaryMetadata);
+      expectSql(transaction[5], expectedPrimaryMiners);
+      expectSql(transaction[6], expectedAuxiliaryMiners);
+      expectSql(transaction[7], expectedPrimaryRounds);
+      expectSql(transaction[8], expectedAuxiliaryRounds);
+      expectSql(transaction[9], expectedPrimaryWorkers);
+      expectSql(transaction[10], expectedAuxiliaryWorkers);
       done();
     });
     rounds.handleUpdates(lookups, [share], () => {});
@@ -2126,10 +2127,10 @@ describe('Test rounds functionality', () => {
       AND type = 'primary';`;
     client.on('transaction', (transaction) => {
       expect(transaction.length).toBe(6);
-      expect(transaction[1]).toBe(expectedBlocks);
-      expect(transaction[2]).toBe(expectedMetadataBlocks);
-      expect(transaction[3]).toBe(expectedMetadataReset);
-      expect(transaction[4]).toBe(expectedRounds);
+      expectSql(transaction[1], expectedBlocks);
+      expectSql(transaction[2], expectedMetadataBlocks);
+      expectSql(transaction[3], expectedMetadataReset);
+      expectSql(transaction[4], expectedRounds);
       done();
     });
     rounds.handlePrimary(lookups, [share], () => {});
@@ -2238,10 +2239,10 @@ describe('Test rounds functionality', () => {
       AND solo = true AND type = 'primary';`;
     client.on('transaction', (transaction) => {
       expect(transaction.length).toBe(6);
-      expect(transaction[1]).toBe(expectedBlocks);
-      expect(transaction[2]).toBe(expectedMetadataBlocks);
-      expect(transaction[3]).toBe(expectedMetadataReset);
-      expect(transaction[4]).toBe(expectedRounds);
+      expectSql(transaction[1], expectedBlocks);
+      expectSql(transaction[2], expectedMetadataBlocks);
+      expectSql(transaction[3], expectedMetadataReset);
+      expectSql(transaction[4], expectedRounds);
       done();
     });
     rounds.handlePrimary(lookups, [share], () => {});
@@ -2348,10 +2349,10 @@ describe('Test rounds functionality', () => {
       AND type = 'primary';`;
     client.on('transaction', (transaction) => {
       expect(transaction.length).toBe(6);
-      expect(transaction[1]).toBe(expectedBlocks);
-      expect(transaction[2]).toBe(expectedMetadataBlocks);
-      expect(transaction[3]).toBe(expectedMetadataReset);
-      expect(transaction[4]).toBe(expectedRounds);
+      expectSql(transaction[1], expectedBlocks);
+      expectSql(transaction[2], expectedMetadataBlocks);
+      expectSql(transaction[3], expectedMetadataReset);
+      expectSql(transaction[4], expectedRounds);
       done();
     });
     rounds.handlePrimary(lookups, [share], () => {});
@@ -2459,10 +2460,10 @@ describe('Test rounds functionality', () => {
       AND type = 'auxiliary';`;
     client.on('transaction', (transaction) => {
       expect(transaction.length).toBe(6);
-      expect(transaction[1]).toBe(expectedBlocks);
-      expect(transaction[2]).toBe(expectedMetadataBlocks);
-      expect(transaction[3]).toBe(expectedMetadataReset);
-      expect(transaction[4]).toBe(expectedRounds);
+      expectSql(transaction[1], expectedBlocks);
+      expectSql(transaction[2], expectedMetadataBlocks);
+      expectSql(transaction[3], expectedMetadataReset);
+      expectSql(transaction[4], expectedRounds);
       done();
     });
     rounds.handleAuxiliary(lookups, [share], () => {});
@@ -2571,10 +2572,10 @@ describe('Test rounds functionality', () => {
       AND solo = true AND type = 'auxiliary';`;
     client.on('transaction', (transaction) => {
       expect(transaction.length).toBe(6);
-      expect(transaction[1]).toBe(expectedBlocks);
-      expect(transaction[2]).toBe(expectedMetadataBlocks);
-      expect(transaction[3]).toBe(expectedMetadataReset);
-      expect(transaction[4]).toBe(expectedRounds);
+      expectSql(transaction[1], expectedBlocks);
+      expectSql(transaction[2], expectedMetadataBlocks);
+      expectSql(transaction[3], expectedMetadataReset);
+      expectSql(transaction[4], expectedRounds);
       done();
     });
     rounds.handleAuxiliary(lookups, [share], () => {});
@@ -2681,10 +2682,10 @@ describe('Test rounds functionality', () => {
       AND type = 'auxiliary';`;
     client.on('transaction', (transaction) => {
       expect(transaction.length).toBe(6);
-      expect(transaction[1]).toBe(expectedBlocks);
-      expect(transaction[2]).toBe(expectedMetadataBlocks);
-      expect(transaction[3]).toBe(expectedMetadataReset);
-      expect(transaction[4]).toBe(expectedRounds);
+      expectSql(transaction[1], expectedBlocks);
+      expectSql(transaction[2], expectedMetadataBlocks);
+      expectSql(transaction[3], expectedMetadataReset);
+      expectSql(transaction[4], expectedRounds);
       done();
     });
     rounds.handleAuxiliary(lookups, [share], () => {});

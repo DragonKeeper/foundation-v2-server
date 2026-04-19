@@ -5,6 +5,7 @@ import Network from '../main/network.js';
 import config from '../../configs/pools/example.js';
 import configMain from '../../configs/main/example.js';
 import events from 'events';
+import { expectSql } from './sql-utils.js';
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -70,7 +71,7 @@ describe('Test network functionality', () => {
         height = EXCLUDED.height;`;
     client.on('transaction', (transaction) => {
       expect(transaction.length).toBe(3);
-      expect(transaction[1]).toBe(expected);
+      expectSql(transaction[1], expected);
       done();
     });
     network.handlePrimary(current, () => {});
@@ -100,7 +101,7 @@ describe('Test network functionality', () => {
         height = EXCLUDED.height;`;
     client.on('transaction', (transaction) => {
       expect(transaction.length).toBe(3);
-      expect(transaction[1]).toBe(expected);
+      expectSql(transaction[1], expected);
       done();
     });
     network.handleAuxiliary(current, () => {});
@@ -130,7 +131,7 @@ describe('Test network functionality', () => {
         height = EXCLUDED.height;`;
     client.on('transaction', (transaction) => {
       expect(transaction.length).toBe(3);
-      expect(transaction[1]).toBe(expected);
+      expectSql(transaction[1], expected);
       done();
     });
     network.handleSubmissions(current, () => {});
@@ -160,7 +161,7 @@ describe('Test network functionality', () => {
         height = EXCLUDED.height;`;
     client.on('transaction', (transaction) => {
       expect(transaction.length).toBe(3);
-      expect(transaction[1]).toBe(expected);
+      expectSql(transaction[1], expected);
       done();
     });
     network.handleSubmissions(current, () => {});

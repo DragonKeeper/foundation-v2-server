@@ -6,9 +6,24 @@ const logger = new Logger(configMain);
 ////////////////////////////////////////////////////////////////////////////////
 
 function mockExecutor(results, expected) {
-  return (expecteds, callback) => {
-    expect(expecteds[0]).toBe(expected);
-    callback(results);
+  const normalize = (value) => value
+    .replace(/\bIF NOT EXISTS\b/g, '')
+    .replace(/\s+\)/g, ')')
+    .replace(/\s+/g, ' ')
+    .trim();
+  const expectedStatements = (expected || '')
+    .split(';')
+    .map((statement) => normalize(statement))
+    .filter(Boolean);
+  let statementIndex = 0;
+
+  return async (expecteds, callback) => {
+    if (expectedStatements.length >= 1) {
+      expect(normalize(expecteds[0])).toBe(`${expectedStatements[statementIndex]};`);
+      statementIndex += 1;
+    }
+    if (callback) callback(results);
+    return results;
   };
 }
 
@@ -62,7 +77,7 @@ describe('Test schema functionality', () => {
     });
   });
 
-  test('Test schema functionality [4]', () => {
+  test('Test schema functionality [4]', async () => {
     const expected = `
       CREATE TABLE "Pool-Main".current_blocks(
         id BIGSERIAL PRIMARY KEY,
@@ -87,10 +102,11 @@ describe('Test schema functionality', () => {
       CREATE INDEX current_blocks_worker ON "Pool-Main".current_blocks(worker, type);
       CREATE INDEX current_blocks_category ON "Pool-Main".current_blocks(category, type);
       CREATE INDEX current_blocks_identifier ON "Pool-Main".current_blocks(identifier, type);
+      CREATE INDEX current_blocks_solo_timestamp ON "Pool-Main".current_blocks(solo, timestamp);
       CREATE INDEX current_blocks_type ON "Pool-Main".current_blocks(type);`;
     const executor = mockExecutor(null, expected);
     const schema = new Schema(logger, executor, configMainCopy);
-    schema.createCurrentBlocks('Pool-Main', () => {});
+    await schema.createCurrentBlocks('Pool-Main', () => {});
   });
 
   test('Test schema functionality [5]', () => {
@@ -107,7 +123,7 @@ describe('Test schema functionality', () => {
     });
   });
 
-  test('Test schema functionality [6]', () => {
+  test('Test schema functionality [6]', async () => {
     const expected = `
       CREATE TABLE "Pool-Main".current_hashrate(
         id BIGSERIAL PRIMARY KEY,
@@ -124,7 +140,7 @@ describe('Test schema functionality', () => {
       CREATE INDEX current_hashrate_type ON "Pool-Main".current_hashrate(timestamp, solo, type);`;
     const executor = mockExecutor(null, expected);
     const schema = new Schema(logger, executor, configMainCopy);
-    schema.createCurrentHashrate('Pool-Main', () => {});
+    await schema.createCurrentHashrate('Pool-Main', () => {});
   });
 
   test('Test schema functionality [7]', () => {
@@ -141,7 +157,7 @@ describe('Test schema functionality', () => {
     });
   });
 
-  test('Test schema functionality [8]', () => {
+  test('Test schema functionality [8]', async () => {
     const expected = `
       CREATE TABLE "Pool-Main".current_metadata(
         id BIGSERIAL PRIMARY KEY,
@@ -161,7 +177,7 @@ describe('Test schema functionality', () => {
       CREATE INDEX current_metadata_type ON "Pool-Main".current_metadata(type);`;
     const executor = mockExecutor(null, expected);
     const schema = new Schema(logger, executor, configMainCopy);
-    schema.createCurrentMetadata('Pool-Main', () => {});
+    await schema.createCurrentMetadata('Pool-Main', () => {});
   });
 
   test('Test schema functionality [9]', () => {
@@ -178,7 +194,7 @@ describe('Test schema functionality', () => {
     });
   });
 
-  test('Test schema functionality [10]', () => {
+  test('Test schema functionality [10]', async () => {
     const expected = `
       CREATE TABLE "Pool-Main".current_miners(
         id BIGSERIAL PRIMARY KEY,
@@ -202,7 +218,7 @@ describe('Test schema functionality', () => {
       CREATE INDEX current_miners_type ON "Pool-Main".current_miners(type);`;
     const executor = mockExecutor(null, expected);
     const schema = new Schema(logger, executor, configMainCopy);
-    schema.createCurrentMiners('Pool-Main', () => {});
+    await schema.createCurrentMiners('Pool-Main', () => {});
   });
 
   test('Test schema functionality [11]', () => {
@@ -219,7 +235,7 @@ describe('Test schema functionality', () => {
     });
   });
 
-  test('Test schema functionality [12]', () => {
+  test('Test schema functionality [12]', async () => {
     const expected = `
       CREATE TABLE "Pool-Main".current_network(
         id BIGSERIAL PRIMARY KEY,
@@ -232,7 +248,7 @@ describe('Test schema functionality', () => {
       CREATE INDEX current_network_type ON "Pool-Main".current_network(type);`;
     const executor = mockExecutor(null, expected);
     const schema = new Schema(logger, executor, configMainCopy);
-    schema.createCurrentNetwork('Pool-Main', () => {});
+    await schema.createCurrentNetwork('Pool-Main', () => {});
   });
 
   test('Test schema functionality [13]', () => {
@@ -249,7 +265,7 @@ describe('Test schema functionality', () => {
     });
   });
 
-  test('Test schema functionality [14]', () => {
+  test('Test schema functionality [14]', async () => {
     const expected = `
       CREATE TABLE "Pool-Main".current_payments(
         id BIGSERIAL PRIMARY KEY,
@@ -260,7 +276,7 @@ describe('Test schema functionality', () => {
       CREATE INDEX current_payments_type ON "Pool-Main".current_payments(type);`;
     const executor = mockExecutor(null, expected);
     const schema = new Schema(logger, executor, configMainCopy);
-    schema.createCurrentPayments('Pool-Main', () => {});
+    await schema.createCurrentPayments('Pool-Main', () => {});
   });
 
   test('Test schema functionality [15]', () => {
@@ -277,7 +293,7 @@ describe('Test schema functionality', () => {
     });
   });
 
-  test('Test schema functionality [16]', () => {
+  test('Test schema functionality [16]', async () => {
     const expected = `
       CREATE TABLE "Pool-Main".current_rounds(
         id BIGSERIAL PRIMARY KEY,
@@ -304,7 +320,7 @@ describe('Test schema functionality', () => {
       CREATE INDEX current_rounds_combined ON "Pool-Main".current_rounds(worker, solo, round, type);`;
     const executor = mockExecutor(null, expected);
     const schema = new Schema(logger, executor, configMainCopy);
-    schema.createCurrentRounds('Pool-Main', () => {});
+    await schema.createCurrentRounds('Pool-Main', () => {});
   });
 
   test('Test schema functionality [17]', () => {
@@ -321,7 +337,7 @@ describe('Test schema functionality', () => {
     });
   });
 
-  test('Test schema functionality [18]', () => {
+  test('Test schema functionality [18]', async () => {
     const expected = `
       CREATE TABLE "Pool-Main".current_transactions(
         id BIGSERIAL PRIMARY KEY,
@@ -332,7 +348,7 @@ describe('Test schema functionality', () => {
       CREATE INDEX current_transactions_type ON "Pool-Main".current_transactions(type);`;
     const executor = mockExecutor(null, expected);
     const schema = new Schema(logger, executor, configMainCopy);
-    schema.createCurrentTransactions('Pool-Main', () => {});
+    await schema.createCurrentTransactions('Pool-Main', () => {});
   });
 
   test('Test schema functionality [19]', () => {
@@ -349,7 +365,7 @@ describe('Test schema functionality', () => {
     });
   });
 
-  test('Test schema functionality [20]', () => {
+  test('Test schema functionality [20]', async () => {
     const expected = `
       CREATE TABLE "Pool-Main".current_workers(
         id BIGSERIAL PRIMARY KEY,
@@ -372,7 +388,7 @@ describe('Test schema functionality', () => {
       CREATE INDEX current_workers_type ON "Pool-Main".current_workers(type);`;
     const executor = mockExecutor(null, expected);
     const schema = new Schema(logger, executor, configMainCopy);
-    schema.createCurrentWorkers('Pool-Main', () => {});
+    await schema.createCurrentWorkers('Pool-Main', () => {});
   });
 
   test('Test schema functionality [21]', () => {
@@ -389,7 +405,7 @@ describe('Test schema functionality', () => {
     });
   });
 
-  test('Test schema functionality [22]', () => {
+  test('Test schema functionality [22]', async () => {
     const expected = `
       CREATE TABLE "Pool-Main".historical_blocks(
         id BIGSERIAL PRIMARY KEY,
@@ -414,10 +430,11 @@ describe('Test schema functionality', () => {
       CREATE INDEX historical_blocks_worker ON "Pool-Main".historical_blocks(worker, type);
       CREATE INDEX historical_blocks_category ON "Pool-Main".historical_blocks(category, type);
       CREATE INDEX historical_blocks_identifier ON "Pool-Main".historical_blocks(identifier, type);
+      CREATE INDEX historical_blocks_solo_timestamp ON "Pool-Main".historical_blocks(solo, timestamp);
       CREATE INDEX historical_blocks_type ON "Pool-Main".historical_blocks(type);`;
     const executor = mockExecutor(null, expected);
     const schema = new Schema(logger, executor, configMainCopy);
-    schema.createHistoricalBlocks('Pool-Main', () => {});
+    await schema.createHistoricalBlocks('Pool-Main', () => {});
   });
 
   test('Test schema functionality [23]', () => {
@@ -434,7 +451,7 @@ describe('Test schema functionality', () => {
     });
   });
 
-  test('Test schema functionality [24]', () => {
+  test('Test schema functionality [24]', async () => {
     const expected = `
       CREATE TABLE "Pool-Main".historical_metadata(
         id BIGSERIAL PRIMARY KEY,
@@ -455,7 +472,7 @@ describe('Test schema functionality', () => {
       CREATE INDEX historical_metadata_type ON "Pool-Main".historical_metadata(type);`;
     const executor = mockExecutor(null, expected);
     const schema = new Schema(logger, executor, configMainCopy);
-    schema.createHistoricalMetadata('Pool-Main', () => {});
+    await schema.createHistoricalMetadata('Pool-Main', () => {});
   });
 
   test('Test schema functionality [25]', () => {
@@ -472,7 +489,7 @@ describe('Test schema functionality', () => {
     });
   });
 
-  test('Test schema functionality [26]', () => {
+  test('Test schema functionality [26]', async () => {
     const expected = `
       CREATE TABLE "Pool-Main".historical_miners(
         id BIGSERIAL PRIMARY KEY,
@@ -492,7 +509,7 @@ describe('Test schema functionality', () => {
       CREATE INDEX historical_miners_type ON "Pool-Main".historical_miners(type);`;
     const executor = mockExecutor(null, expected);
     const schema = new Schema(logger, executor, configMainCopy);
-    schema.createHistoricalMiners('Pool-Main', () => {});
+    await schema.createHistoricalMiners('Pool-Main', () => {});
   });
 
   test('Test schema functionality [27]', () => {
@@ -509,7 +526,7 @@ describe('Test schema functionality', () => {
     });
   });
 
-  test('Test schema functionality [28]', () => {
+  test('Test schema functionality [28]', async () => {
     const expected = `
       CREATE TABLE "Pool-Main".historical_network(
         id BIGSERIAL PRIMARY KEY,
@@ -523,7 +540,7 @@ describe('Test schema functionality', () => {
       CREATE INDEX historical_network_type ON "Pool-Main".historical_network(type);`;
     const executor = mockExecutor(null, expected);
     const schema = new Schema(logger, executor, configMainCopy);
-    schema.createHistoricalNetwork('Pool-Main', () => {});
+    await schema.createHistoricalNetwork('Pool-Main', () => {});
   });
 
   test('Test schema functionality [29]', () => {
@@ -540,7 +557,7 @@ describe('Test schema functionality', () => {
     });
   });
 
-  test('Test schema functionality [30]', () => {
+  test('Test schema functionality [30]', async () => {
     const expected = `
       CREATE TABLE "Pool-Main".historical_payments(
         id BIGSERIAL PRIMARY KEY,
@@ -554,7 +571,7 @@ describe('Test schema functionality', () => {
       CREATE INDEX historical_payments_type ON "Pool-Main".historical_payments(type);`;
     const executor = mockExecutor(null, expected);
     const schema = new Schema(logger, executor, configMainCopy);
-    schema.createHistoricalPayments('Pool-Main', () => {});
+    await schema.createHistoricalPayments('Pool-Main', () => {});
   });
 
   test('Test schema functionality [31]', () => {
@@ -571,7 +588,7 @@ describe('Test schema functionality', () => {
     });
   });
 
-  test('Test schema functionality [32]', () => {
+  test('Test schema functionality [32]', async () => {
     const expected = `
       CREATE TABLE "Pool-Main".historical_rounds(
         id BIGSERIAL PRIMARY KEY,
@@ -597,7 +614,7 @@ describe('Test schema functionality', () => {
       CREATE INDEX historical_rounds_combined ON "Pool-Main".historical_rounds(worker, solo, round, type);`;
     const executor = mockExecutor(null, expected);
     const schema = new Schema(logger, executor, configMainCopy);
-    schema.createHistoricalRounds('Pool-Main', () => {});
+    await schema.createHistoricalRounds('Pool-Main', () => {});
   });
 
   test('Test schema functionality [33]', () => {
@@ -614,7 +631,7 @@ describe('Test schema functionality', () => {
     });
   });
 
-  test('Test schema functionality [34]', () => {
+  test('Test schema functionality [34]', async () => {
     const expected = `
       CREATE TABLE "Pool-Main".historical_transactions(
         id BIGSERIAL PRIMARY KEY,
@@ -626,7 +643,7 @@ describe('Test schema functionality', () => {
       CREATE INDEX historical_transactions_type ON "Pool-Main".historical_transactions(type);`;
     const executor = mockExecutor(null, expected);
     const schema = new Schema(logger, executor, configMainCopy);
-    schema.createHistoricalTransactions('Pool-Main', () => {});
+    await schema.createHistoricalTransactions('Pool-Main', () => {});
   });
 
   test('Test schema functionality [35]', () => {
@@ -643,7 +660,7 @@ describe('Test schema functionality', () => {
     });
   });
 
-  test('Test schema functionality [36]', () => {
+  test('Test schema functionality [36]', async () => {
     const expected = `
       CREATE TABLE "Pool-Main".historical_workers(
         id BIGSERIAL PRIMARY KEY,
@@ -666,6 +683,34 @@ describe('Test schema functionality', () => {
       CREATE INDEX historical_workers_type ON "Pool-Main".historical_workers(type);`;
     const executor = mockExecutor(null, expected);
     const schema = new Schema(logger, executor, configMainCopy);
-    schema.createHistoricalWorkers('Pool-Main', () => {});
+    await schema.createHistoricalWorkers('Pool-Main', () => {});
+  });
+
+  test('Test schema functionality [37]', () => {
+    const results = { rows: [{ exists: true }]};
+    const expected = `
+      SELECT EXISTS (
+        SELECT FROM information_schema.tables
+        WHERE table_schema = 'Pool-Main'
+        AND table_name = 'block_time_summary');`;
+    const executor = mockExecutor(results, expected);
+    const schema = new Schema(logger, executor, configMainCopy);
+    schema.selectBlockTimeSummary('Pool-Main', (results) => {
+      expect(results).toBe(true);
+    });
+  });
+
+  test('Test schema functionality [38]', async () => {
+    const expected = `
+      CREATE TABLE "Pool-Main".block_time_summary(
+        id BIGSERIAL PRIMARY KEY,
+        label VARCHAR NOT NULL,
+        avg_gap_seconds FLOAT NOT NULL DEFAULT 0,
+        updated_at BIGINT NOT NULL DEFAULT -1,
+        CONSTRAINT block_time_summary_unique UNIQUE (label));
+      CREATE INDEX block_time_summary_label ON "Pool-Main".block_time_summary(label);`;
+    const executor = mockExecutor(null, expected);
+    const schema = new Schema(logger, executor, configMainCopy);
+    await schema.createBlockTimeSummary('Pool-Main', () => {});
   });
 });

@@ -3,6 +3,7 @@ module.exports = {
   collectCoverage: true,
   coveragePathIgnorePatterns: ["configs/", ".mock.js"],
   testEnvironment: "node",
+  setupFilesAfterEnv: ["<rootDir>/database/test/sql-utils.js"],
   transform: {
     "^.+\\.js$": "babel-jest"
   },
